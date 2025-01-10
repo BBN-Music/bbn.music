@@ -30,6 +30,9 @@ import criticz from "./assets/criticz.jpg";
 // @deno-types="https://raw.githubusercontent.com/lucsoft-DevTeam/lucsoft.de/master/custom.d.ts"
 import redz from "./assets/redz.jpg";
 
+import criticz from "./assets/criticz.jpg";
+import redz from "./assets/redz.jpg";
+
 await RegisterAuthRefresh();
 
 const images = () =>
