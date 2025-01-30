@@ -1,13 +1,13 @@
 import { assert } from "@std/assert";
 import { Footer } from "shared/footer.ts";
 import { ErrorMessage, RegisterAuthRefresh } from "shared/helper.ts";
-import { API } from "shared/mod.ts";
 import { appendBody, Box, Color, Content, css, EmailInput, Empty, FullWidthSection, Grid, Image, isMobile, Label, mediaQueryRef, PasswordInput, PrimaryButton, Spinner, TextButton, TextInput, WebGenTheme } from "webgen/mod.ts";
 import "../../assets/css/main.css";
 import { discordLogo, googleLogo } from "../../assets/imports.ts";
 import { DynaNavigation } from "../../components/nav.ts";
 import { handleStateChange, loginUser, registerUser } from "./actions.ts";
 import { state } from "./state.ts";
+import { API, APITools } from "../../spec/mod.ts";
 
 // @deno-types="https://raw.githubusercontent.com/lucsoft-DevTeam/lucsoft.de/master/custom.d.ts"
 import backgroundImage from "../holding/resources/background.jpg";
@@ -69,9 +69,11 @@ appendBody(
                                 PrimaryButton("Reset your Password")
                                     .onPromiseClick(async () => {
                                         try {
-                                            assert(API.getToken(), "Missing Token!");
-                                            await API.user.setMe.post({
-                                                password: state.password.value,
+                                            assert(APITools.token(), "Missing Token!");
+                                            await API.putUserByUser({
+                                                body: {
+                                                    password: state.password.value,
+                                                },
                                             });
                                             state.type.setValue("login");
                                         } catch (_) {
@@ -80,7 +82,7 @@ appendBody(
                                     })
                                     .setId("submit-button")
                                     .setJustifyContent("center"),
-                                Label(API.getToken() ? "" : "Error: Link is invalid"),
+                                Label(APITools.token() ? "" : "Error: Link is invalid"),
                                 ErrorMessage(state.error),
                             ));
                         }
@@ -93,8 +95,11 @@ appendBody(
                                     .onPromiseClick(async () => {
                                         try {
                                             assert(state.email, "Email is missing");
-
-                                            await API.auth.forgotPassword.post(state.email.value);
+                                            await API.postResetPasswordByAuth({
+                                                body: {
+                                                    email: state.email.value,
+                                                },
+                                            });
 
                                             alert("Email sent! Please check your Inbox/Spam folder.");
                                         } catch (err) {
@@ -120,7 +125,7 @@ appendBody(
                                             .setCssStyle("scale", ".9"),
                                     )
                                     .onClick(() => {
-                                        location.href = API.auth.oauthRedirect("google");
+                                        location.href = APITools.oauthRedirect("google");
                                     }),
                                 PrimaryButton("Sign in with Discord")
                                     .addPrefix(
@@ -128,7 +133,7 @@ appendBody(
                                             .setWidth("20px"),
                                     )
                                     .onClick(() => {
-                                        location.href = API.auth.oauthRedirect("discord");
+                                        location.href = APITools.oauthRedirect("discord");
                                     })
                                     // LinkButton("Sign in with Microsoft", API.auth.oauthRedirect("microsoft"))
                                     //     .setJustifyContent("center")
