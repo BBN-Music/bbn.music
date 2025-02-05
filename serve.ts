@@ -96,7 +96,7 @@ serve({
         // "hosting": "./pages/hosting/main.ts",
         // "hosting/create": "./pages/hosting/views/create.ts",
         "settings": "./pages/user/settings.ts",
-        // "admin": "./pages/admin/admin.ts",
+        "admin": "./pages/admin/main.ts",
         // "admin/review": "./pages/admin/review.ts",
         "wallet": "./pages/wallet/wallet.ts",
         // "share": "./pages/music/share.ts",
