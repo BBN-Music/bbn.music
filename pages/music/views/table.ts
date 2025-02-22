@@ -1,10 +1,10 @@
 import { ProfilePicture, sheetStack } from "shared/helper.ts";
-import { asRef, asRefRecord, Box, Checkbox, DropDown, Empty, Grid, Label, MaterialIcon, PrimaryButton, SecondaryButton, SheetHeader, Table, TextInput, WriteSignal } from "webgen/mod.ts";
+import { asRef, asRefRecord, Box, Checkbox, DropDown, Empty, Grid, Label, MaterialIcon, PrimaryButton, SecondaryButton, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
+import languages from "../../../data/language.json" with { type: "json" };
 import { API, Artist, ArtistRef, Song, stupidErrorAlert, zArtistTypes } from "../../../spec/mod.ts";
 import "./table.css";
-import languages from "../../../data/language.json" with { type: "json" };
 
-export function ManageSongs(songs: WriteSignal<Song[]>, primaryGenre: WriteSignal<string | undefined>, genres: { primary: WriteSignal<string[]>, secondary: WriteSignal<Record<string, string[]>> }, artistList?: Artist[]) {
+export function ManageSongs(songs: WriteSignal<Song[]>, primaryGenre: WriteSignal<string | undefined>, genres: { primary: WriteSignal<string[]>; secondary: WriteSignal<Record<string, string[]>> }, artistList?: Artist[]) {
     return Grid(
         Label("Manage your Songs").setTextSize("2xl"),
         Grid(
@@ -24,14 +24,14 @@ export function ManageSongs(songs: WriteSignal<Song[]>, primaryGenre: WriteSigna
                     Box(
                         Empty(),
                         ...song.artists.map((artist) => "name" in artist ? ProfilePicture(Label(""), artist.name) : ProfilePicture(Label(""), artist._id)),
-                        SecondaryButton("add")
+                        SecondaryButton("add"),
                     ),
                     TextInput(songobj.year, "Year"),
-                    DropDown(Object.keys(languages), songobj.language, "Language").setValueRender((x) => (languages as Record<string, string>)[ x ]),
-                    primaryGenre.map((primaryGenre) => DropDown(primaryGenre ? genres.secondary.getValue()[ primaryGenre ] : [], songobj.secondaryGenre, "Secondary Genre")).value,
+                    DropDown(Object.keys(languages), songobj.language, "Language").setValueRender((x) => (languages as Record<string, string>)[x]),
+                    primaryGenre.map((primaryGenre) => DropDown(primaryGenre ? genres.secondary.getValue()[primaryGenre] : [], songobj.secondaryGenre, "Secondary Genre")).value,
                     Checkbox(songobj.instrumental).setDisabled(songobj.explicit),
                     Checkbox(songobj.explicit).setDisabled(songobj.instrumental),
-                    PrimaryButton("").addPrefix(MaterialIcon("delete")).setWidth("min-content")
+                    PrimaryButton("").addPrefix(MaterialIcon("delete")).setWidth("min-content"),
                 ).setEvenColumns(8).setGap();
             })
         )),
@@ -136,35 +136,50 @@ export const EditArtistsDialog = (artists: WriteSignal<ArtistRef[]>, provided?: 
 
     return Grid(
         SheetHeader("Edit Artists", sheetStack),
-        artistList.map((list) =>
+        Box(artistList.map((list) =>
             Grid(
                 Grid(
                     Label("Type").setFontWeight("bold"),
                     Label("Name").setFontWeight("bold"),
                     Label("Action").setFontWeight("bold"),
                 ).setTemplateColumns("30% 60% 10%"),
-                ...artists.map((x) =>
+                Box(artists.map((x) =>
                     x.map((artist) => {
-                        const type = asRef(artist.type);
-                        type.listen((val, oldVal) => {
+                        const refArtist = asRefRecord(artist);
+                        refArtist.type.listen((val, oldVal) => {
                             if (oldVal !== undefined) {
-                                x[x.indexOf(artist)] = val == zArtistTypes.enum.PRIMARY || val == zArtistTypes.enum.FEATURING ? { type: val, _id: null! } : { type: val, name: "" };
-                                console.log(x);
-                                artists.setValue(x);
+                                const newArtist = {
+                                    type: val,
+                                    name: val === zArtistTypes.enum.PRODUCER || val === zArtistTypes.enum.SONGWRITER ? artist.type === zArtistTypes.enum.PRODUCER || artist.type === zArtistTypes.enum.SONGWRITER ? artist.name : "" : undefined,
+                                    _id: val === zArtistTypes.enum.PRIMARY || val === zArtistTypes.enum.FEATURING ? artist.type === zArtistTypes.enum.PRIMARY || artist.type === zArtistTypes.enum.FEATURING ? artist._id : null! : undefined,
+                                } as typeof artist;
+                                artists.setValue(x.map((x) => x !== artist ? x : newArtist));
                             }
                         });
+                        if (artist.type === zArtistTypes.enum.SONGWRITER || artist.type === zArtistTypes.enum.PRODUCER) {
+                            (refArtist as typeof refArtist & { name: WriteSignal<string> }).name.listen((val, oldVal) => {
+                                if (oldVal !== undefined) {
+                                    artists.setValue(x.map((x) => x !== artist ? x : { type: artist.type, name: val }));
+                                }
+                            });
+                        } else if (artist.type === zArtistTypes.enum.PRIMARY || artist.type === zArtistTypes.enum.FEATURING) {
+                            (refArtist as typeof refArtist & { _id: WriteSignal<string> })._id.listen((val, oldVal) => {
+                                if (oldVal !== undefined) {
+                                    artists.setValue(x.map((x) => x !== artist ? x : { type: artist.type, _id: val }));
+                                }
+                            });
+                        }
                         return Grid(
-                            DropDown(Object.values(zArtistTypes.enum), type, "Type"),
-                            artist.type == zArtistTypes.enum.PRIMARY || artist.type == zArtistTypes.enum.FEATURING ? DropDown(list.map((x) => x._id), asRef(artist._id), "Name").setValueRender(id => artistList.get().find(a => a._id === id)?.name ?? "Name not found") : TextInput(asRef("artist.name"), "Name"),
+                            DropDown(Object.values(zArtistTypes.enum), refArtist.type, "Type"),
+                            artist.type == zArtistTypes.enum.PRIMARY || artist.type == zArtistTypes.enum.FEATURING ? DropDown(list.map((x) => x._id), (refArtist as typeof refArtist & { _id: WriteSignal<string> })._id, "Name").setValueRender((id) => artistList.get().find((a) => a._id === id)?.name ?? "Name not found") : TextInput((refArtist as typeof refArtist & { name: WriteSignal<string> }).name, "Name", "change"),
                             PrimaryButton("").addPrefix(MaterialIcon("delete")).onClick(() => {
-                                x.splice(x.indexOf(artist), 1);
-                                artists.setValue(x);
+                                artists.setValue(x.toSpliced(x.indexOf(artist), 1));
                             }),
                         ).setGap().setTemplateColumns("30% 60% 10%");
                     })
-                ).value,
+                )),
             ).setGap()
-        ).value,
+        )),
         PrimaryButton("Add Artist")
             .setJustifySelf("end")
             .onClick(() => artists.setValue([...artists.value, { type: zArtistTypes.enum.PRIMARY, _id: null! }])),
