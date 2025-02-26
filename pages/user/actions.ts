@@ -65,7 +65,7 @@ export async function handleStateChange() {
     };
 
     if (params.type && ["google", "discord", "microsoft"].includes(params.type) && params.code) {
-        const rsp = await API.postProviderByOauthByAuth({ path: { provider: params.type, code: params.code } });
+        const rsp = await API.postCodeByProviderByOauthByAuth({ path: { provider: params.type, code: params.code } });
         if (rsp.error) {
             return state.error = displayError(rsp.error);
         }

@@ -569,15 +569,16 @@ export type GetTokenByFromUserInteractionByAuthData = {
     url: '/api/@bbn/auth/from-user-interaction/{token}';
 };
 
-export type PostProviderByOauthByAuthData = {
+export type PostCodeByProviderByOauthByAuthData = {
     body?: {
         [key: string]: unknown;
     };
     path: {
         provider: string;
+        code: string;
     };
     query?: never;
-    url: '/api/@bbn/auth/oauth/{provider}';
+    url: '/api/@bbn/auth/oauth/{provider}/{code}';
 };
 
 export type GetProviderByRedirectByAuthData = {
