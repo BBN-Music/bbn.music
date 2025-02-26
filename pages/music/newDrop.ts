@@ -5,13 +5,15 @@ import "../../assets/css/main.css";
 import { DynaNavigation } from "../../components/nav.ts";
 import genres from "../../data/genres.json" with { type: "json" };
 import language from "../../data/language.json" with { type: "json" };
-import { API, ArtistRef, Song, stupidErrorAlert, zArtistTypes, zDropType } from "../../spec/mod.ts";
+import { API, ArtistRef, DATE_PATTERN, Song, stupidErrorAlert, zArtistRef, zArtistTypes, zDropType, zSong } from "../../spec/mod.ts";
 import { allowedAudioFormats, allowedImageFormats, CenterAndRight, ExistingSongDialog, getSecondary, RegisterAuthRefresh, sheetStack } from "../shared/helper.ts";
 import { uploadArtwork, uploadSongToDrop } from "./data.ts";
 import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
 
 // Do no move this import
 import "./newDrop.css";
+import { z } from "zod/mod.ts";
+import { sumOf } from "@std/collections";
 
 await RegisterAuthRefresh();
 
@@ -245,3 +247,39 @@ const wizard = creationState.$page.map((page) => {
     }
     return LoadingSpinner();
 }).asRefComponent();
+
+
+const pageOne = zod.object({
+    title: z.string(),
+    artists: zArtistRef.array().refine((x) => x.some(({ type }) => type == "PRIMARY"), { message: "At least one primary artist is required" }).refine((x) => x.some(({ type }) => type == "SONGWRITER"), { message: "At least one songwriter is required" }),
+    release: zod.string().regex(DATE_PATTERN, { message: "Not a date" }),
+    language: zod.string(),
+    primaryGenre: zod.string(),
+    secondaryGenre: zod.string(),
+    gtin: zod.preprocess(
+        (x) => x === "" ? undefined : x,
+        zod.string().trim()
+            .min(12, { message: "UPC/EAN: Invalid length" })
+            .max(13, { message: "UPC/EAN: Invalid length" })
+            .regex(/^\d+$/, { message: "UPC/EAN: Not a number" })
+            .refine((gtin) => parseInt(gtin.slice(-1), 10) === (10 - (sumOf(gtin.slice(0, -1).split("").map((digit, index) => parseInt(digit, 10) * ((16 - gtin.length + index) % 2 === 0 ? 3 : 1)), (x) => x) % 10)) % 10, {
+                message: "UPC/EAN: Invalid checksum",
+            }).optional(),
+    ),
+    compositionCopyright: z.string(),
+    soundRecordingCopyright: z.string(),
+});
+
+const pageTwo = zod.object({
+    artwork: zod.string(),
+    artworkClientData: zod.object({
+        type: zod.string().refine((x) => x !== "uploading", { message: "Artwork is still uploading" }),
+    }).transform(() => undefined),
+});
+
+const pageThree = zod.object({
+    songs: zSong.omit({user: true}).array().min(1, { message: "At least one song is required" }).refine((songs) => songs.every(({ instrumental, explicit }) => !(instrumental && explicit)), "Can't have an explicit instrumental song"),
+    uploadingSongs: zod.array(zod.string()).max(0, { message: "Some uploads are still in progress" }),
+});
+
+export const pages = <zod.AnyZodObject[]> [pageOne, pageTwo, pageThree];
