@@ -71,7 +71,7 @@ export const musicMenu = Navigation({
                                     datasets: [
                                         {
                                             label: "Revenue by Month",
-                                            data: payouts.map((row) => row.moneythisperiod).reverse(),
+                                            data: payouts.map((row) => row.moneythisperiod.replace("£ ", "")).reverse(),
                                         },
                                     ],
                                 },
