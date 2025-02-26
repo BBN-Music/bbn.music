@@ -1,4 +1,4 @@
-import { Artist, BugReport, Drop, DropType, Group, Meta, OAuthApp, Payout, RequestPayoutResponse, Server, ServerAudit, ServerCreate, ServerTypes, Share, Song, StoreItems, Wallet } from "../../spec/music.ts";
+import { Artist, BugReport, Drop, DropType, Group, OAuthApp, Payout, RequestPayoutResponse, Share, Song, Wallet } from "../../spec/music.ts";
 import { SearchResult } from "../admin/state.ts";
 import { ProfileData } from "./helper.ts";
 
@@ -8,7 +8,6 @@ export const Permissions = [
     "/hmsys/user/manage",
 
     "/bbn",
-    "/bbn/hosting",
     "/bbn/manage",
     "/bbn/manage/drops",
     "/bbn/manage/drops/review",
@@ -377,83 +376,6 @@ export const API = {
                         .catch(reject),
             }),
         },
-    }),
-    hosting: ({
-        versions: (type: ServerTypes) =>
-            fetch(`${API.BASE_URL}hosting/versions`, {
-                method: "PUT",
-                body: JSON.stringify({ type }),
-                headers: headers(API.getToken()),
-            }).then(json<string[]>()).catch(reject),
-        servers: (): Promise<Server[]> =>
-            fetch(`${API.BASE_URL}hosting/servers`, {
-                headers: headers(API.getToken()),
-            }).then((x) => x.json()),
-        create: (data: ServerCreate) =>
-            fetch(`${API.BASE_URL}hosting/servers`, {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: headers(API.getToken()),
-            })
-                .then(none())
-                .catch(reject),
-        meta: (): Promise<Meta> =>
-            fetch(`${API.BASE_URL}hosting/meta`, {
-                headers: headers(API.getToken()),
-            }).then((x) => x.json()),
-        serverId: (id: string) => ({
-            get: () =>
-                fetch(`${API.BASE_URL}hosting/servers/${id}`, {
-                    headers: headers(API.getToken()),
-                })
-                    .then(json<Server>())
-                    .catch(reject),
-            edit: (data: { name?: string; memory?: number; disk?: number; cpu?: number }) =>
-                fetch(`${API.BASE_URL}hosting/servers/${id}`, {
-                    method: "PATCH",
-                    body: JSON.stringify(data),
-                    headers: headers(API.getToken()),
-                })
-                    .then(none())
-                    .catch(reject),
-            delete: () =>
-                fetch(`${API.BASE_URL}hosting/servers/${id}`, {
-                    method: "DELETE",
-                    headers: headers(API.getToken()),
-                })
-                    .then(none())
-                    .catch(reject),
-            audit: () =>
-                fetch(`${API.BASE_URL}hosting/servers/${id}/audit`, {
-                    headers: headers(API.getToken()),
-                })
-                    .then(json<ServerAudit[]>())
-                    .catch(reject),
-            forcerestart: () =>
-                fetch(`${API.BASE_URL}hosting/servers`, {
-                    method: "PUT",
-                    body: JSON.stringify({ id }),
-                    headers: headers(API.getToken()),
-                })
-                    .then(none())
-                    .catch(reject),
-            start: () =>
-                fetch(`${API.BASE_URL}hosting/servers/${id}/start`, {
-                    headers: headers(API.getToken()),
-                })
-                    .then(none())
-                    .catch(reject),
-        }),
-        store: ({
-            create: (type: StoreItems) =>
-                fetch(`${API.BASE_URL}hosting/store`, {
-                    method: "POST",
-                    body: JSON.stringify(type),
-                    headers: headers(API.getToken()),
-                })
-                    .then(none())
-                    .catch(reject),
-        }),
     }),
     music: ({
         songs: {

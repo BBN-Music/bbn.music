@@ -50,7 +50,7 @@ const navMenuPopover = Popover(
         style.height = "min-content";
     });
 
-export function DynaNavigation(type: "Home" | "Music" | "Settings" | "Hosting" | "Admin" | "Wallet") {
+export function DynaNavigation(type: "Home" | "Music" | "Settings" | "Admin" | "Wallet") {
     return Nav(
         Grid(
             Horizontal(

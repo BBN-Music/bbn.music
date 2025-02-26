@@ -27,14 +27,7 @@ export function Footer() {
 
                         ["Products", [
                             ["Music", "/music"],
-                            ["Hosting", "/hosting"],
                         ]] as const,
-
-                        // ["Use Cases", [
-                        //     ["Newcomers", "/music"],
-                        //     ["Personal", "/hosting"],
-                        //     ["Small Business", "/hosting"],
-                        // ]] as const,
 
                         ["Resources", [
                             // ["Blog", "https://blog.bbn.one/"],

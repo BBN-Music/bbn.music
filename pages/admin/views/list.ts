@@ -19,31 +19,6 @@ export function entryWallet(wallet: Wallet) {
     }).addClass("small");
 } */
 
-export function transcriptMenu(transcripts: External<Transcript[]> | "loading"): RenderItem[] {
-    if (transcripts === "loading" || transcripts.status !== "fulfilled") {
-        return [{
-            title: "Loading...",
-            id: "loading",
-        }];
-    }
-    const data = transcripts.value;
-    return data.map((transcript) => ({
-        title: `${transcript.with}`,
-        id: transcript._id,
-        children: [
-            {
-                title: `Close${transcript.with}`,
-                id: "close",
-            },
-            ...transcript.messages.map((x, i) => (<RenderItem> {
-                id: i.toString(),
-                title: `${x.author}`,
-                subtitle: x.content,
-            })),
-        ],
-    }));
-}
-
 export function entryOAuth(app: OAuthApp) {
     return Entry({
         title: app.name,

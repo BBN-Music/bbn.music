@@ -64,13 +64,6 @@ export const adminMenu = Navigation({
                             );
                         case "drops":
                             return ReviewEntry(it._source);
-                        case "servers":
-                            return Entry(
-                                {
-                                    title: it._source._id,
-                                    subtitle: it._index,
-                                },
-                            );
                         case "users":
                             return Entry({
                                 title: it._source.profile.username,

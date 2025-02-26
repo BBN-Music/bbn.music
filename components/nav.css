@@ -41,10 +41,6 @@ nav.music {
     filter: invert();
 }
 
-nav.hosting {
-    background: linear-gradient(184.32deg, #28A9F1 -11.55%, #5495E1 86.12%);
-}
-
 nav.admin {
     background: linear-gradient(166deg, #bb2727 6.59%, #b91616 101.73%);
 }

@@ -109,12 +109,6 @@ h3 {
         linear-gradient(137deg, var(--bg-start) 0%, var(--bg-end) 100%);
 }
 
-.service-card.hosting {
-    --bg-start: #28A9F1;
-    --bg-end: #4A7BB5;
-
-}
-
 .service-card .wimage {
     transform: translateZ(20px)
 }
