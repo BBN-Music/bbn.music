@@ -1,4 +1,3 @@
-import { dirname } from "@std/path";
 import { RenderItem } from "shared/mod.ts";
 import { asRef, Component, refMerge } from "webgen/mod.ts";
 import { RemotePath } from "../types.ts";
@@ -13,7 +12,7 @@ export const allFiles = refMerge({
     uploadingFiles: uploadingFiles
         .map((files) =>
             Object.entries(files)
-                .filter(([filePath]) => dirname(filePath) === path.getValue().replace(/\/$/, ""))
+                // .filter(([filePath]) => dirname(filePath) === path.getValue().replace(/\/$/, ""))
                 .map(([_path, file]) => file)
         ),
     currentFiles: currentFiles.map((it) => {
