@@ -3,7 +3,7 @@ import { Body, Vertical, WebGen } from "webgen/mod.ts";
 import "../../assets/css/main.css";
 import "../../assets/css/music.css";
 import { DynaNavigation } from "../../components/nav.ts";
-import { API, DropType, stupidErrorAlert, zDropType } from "../../spec/mod.ts";
+import { API, stupidErrorAlert, zDropType } from "../../spec/mod.ts";
 import { menuState, musicMenu } from "./views/menu.ts";
 
 await RegisterAuthRefresh();

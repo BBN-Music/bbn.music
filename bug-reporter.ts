@@ -10,7 +10,7 @@ globalThis.onerror = (e) => {
     report(typeof e == "string" ? e : (<ErrorEvent> e).error);
 };
 
-function report(msg: any) {
+function report(msg: unknown) {
     if (["ResizeObserver loop completed with undelivered notifications.", "ResizeObserver loop limit exceeded", "Uncaught aborting javascript here"].includes(msg)) return;
 
     API.postBugTrack({
@@ -18,11 +18,11 @@ function report(msg: any) {
             type: "web-frontend",
             platform: browser.os?.family,
             platformVersion: browser.os?.version,
-            error: msg instanceof Error ? msg.message : msg,
-            errorStack: (msg instanceof Error ? msg.stack : msg),
+            error: msg instanceof Error ? msg.message : String(msg),
+            errorStack: (msg instanceof Error ? msg.stack ?? "" : String(msg)),
             browser: browser.name,
             // null safe version of getting the error
-            userId: localStorage["access-token"]?.split(".").filter((_: string, i: number) => i <= 1).map((x: string) => JSON.parse(atob(x))).filter((_: string, i: number) => i == 1).map((it: any) => it.userId).join(),
+            userId: localStorage["access-token"]?.split(".").filter((_: string, i: number) => i <= 1).map((x: string) => JSON.parse(atob(x))).filter((_: string, i: number) => i == 1).map((it: unknown) => it.userId).join(),
             browserVersion: browser.version,
             location: location.toString(),
         },

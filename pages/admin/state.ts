@@ -1,6 +1,6 @@
 import { ProfileData } from "shared/helper.ts";
 import { asState } from "webgen/mod.ts";
-import { AdminDrop, AdminWallet, Artist, Drop, FullDrop, Group, OAuthApp, PayoutList, SearchReturn } from "../../spec/mod.ts";
+import { AdminDrop, AdminWallet, Artist, Drop, Group, OAuthApp, PayoutList, SearchReturn } from "../../spec/mod.ts";
 
 export const state = asState({
     drops: {

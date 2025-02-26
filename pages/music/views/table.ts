@@ -3,9 +3,8 @@ import { Progress, Table2 } from "shared/mod.ts";
 import { asRef, asState, Box, Button, Checkbox, Color, DropDownInput, Grid, Horizontal, IconButton, InlineTextInput, Label, MIcon, Reference, SheetDialog, Spacer, TextInput } from "webgen/mod.ts";
 import genres from "../../../data/genres.json" with { type: "json" };
 import language from "../../../data/language.json" with { type: "json" };
-import { API, Artist, ArtistRef, ArtistTypes, Song, stupidErrorAlert, zArtistTypes, zPostArtistsByMusicResponse } from "../../../spec/mod.ts";
+import { API, Artist, ArtistRef, Song, stupidErrorAlert, zArtistTypes } from "../../../spec/mod.ts";
 import "./table.css";
-import { assert } from "@std/assert/assert";
 
 export function ManageSongs(songs: Reference<Song[]>, uploadingSongs: Reference<{ [uploadId: string]: number }[]>, primaryGenre: string, artistList?: Artist[]) {
     return new Table2(songs)
@@ -81,7 +80,7 @@ export const createArtistSheet = (name?: string) => {
                 .setJustifySelf("start")
                 .onPromiseClick(async () => {
                     await API.postArtistsByMusic({
-                        body: state
+                        body: state,
                     });
                     dialog.close();
                     resolve();
