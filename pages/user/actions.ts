@@ -1,21 +1,23 @@
 import { assert } from "@std/assert";
 import { delay } from "@std/async";
-import { API, displayError, stupidErrorAlert } from "shared/mod.ts";
 import { forceRefreshToken, gotoGoal } from "../shared/helper.ts";
 import { state } from "./state.ts";
+import { API, displayError, stupidErrorAlert } from "../../spec/mod.ts";
 
 export async function loginUser() {
     try {
         assert(state.email && state.password, "Missing Email or Password");
-        const rsp = await API.auth.email.post({
-            email: state.email,
-            password: state.password,
+        const rsp = await API.postEmailByAuth({
+            body: {
+                email: state.email,
+                password: state.password,
+            }
         });
-        if (rsp.status == "rejected") {
-            throw rsp.reason;
+        if (rsp.error) {
+            throw rsp.error;
         }
 
-        await logIn(rsp.value);
+        await logIn(rsp.data);
         gotoGoal();
     } catch (error) {
         state.error = displayError(error);
@@ -30,16 +32,18 @@ export async function registerUser() {
             name: state.name ?? "",
         };
         assert(name && email && password, "Missing fields");
-        const rsp = await API.auth.register.post({
-            name,
-            email,
-            password,
+        const rsp = await API.postRegisterByAuth({
+            body: {
+                name,
+                email,
+                password,
+            }
         });
-        if (rsp.status == "rejected") {
-            throw rsp.reason;
+        if (rsp.error) {
+            throw rsp.error;
         }
 
-        await logIn(rsp.value);
+        await logIn(rsp.data);
         gotoGoal();
     } catch (error) {
         state.error = displayError(error);
@@ -47,7 +51,7 @@ export async function registerUser() {
 }
 
 export async function logIn(data: { token: string }) {
-    const access = await API.auth.refreshAccessToken.post(data.token).then(stupidErrorAlert);
+    const access = await API.postRefreshAccessTokenByAuth({ headers: { "Authorization": data.token } }).then(stupidErrorAlert);
     localStorage["access-token"] = access.token;
     localStorage["refresh-token"] = data.token;
 }
@@ -61,27 +65,29 @@ export async function handleStateChange() {
     };
 
     if (params.type && ["google", "discord", "microsoft"].includes(params.type) && params.code) {
-        const rsp = await API.auth.oauth.post(params.type, params.code);
-        if (rsp.status === "rejected") {
-            return state.error = displayError(rsp.reason);
+        const rsp = await API.postProviderByOauthByAuth({ path: { provider: params.type, code: params.code } });
+        if (rsp.error) {
+            return state.error = displayError(rsp.error);
         }
-        await logIn(rsp.value);
+        await logIn(rsp.data);
         gotoGoal();
         return;
     }
     if (params.type == "reset-password" && params.token) {
-        const rsp = await API.auth.fromUserInteraction.get(params.token);
-        if (rsp.status === "rejected") {
-            return state.error = displayError(rsp.reason);
+        const rsp = await API.getTokenByFromUserInteractionByAuth({
+            path: { token: params.token }
+        });
+        if (rsp.error) {
+            return state.error = displayError(rsp.error);
         }
-        await logIn(rsp.value);
+        await logIn(rsp.data);
         gotoGoal();
         return;
     }
     if (params.type == "verify-email" && params.token) {
-        const rsp = await API.user.mail.validate.post(params.token);
-        if (rsp.status === "rejected") {
-            return state.error = displayError(rsp.reason);
+        const rsp = await API.postTokenByValidateByMailByUser({ path: { token: params.token } });
+        if (rsp.error) {
+            return state.error = displayError(rsp.error);
         }
         await forceRefreshToken();
         await delay(1000);

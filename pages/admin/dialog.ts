@@ -1,8 +1,8 @@
-import { API, LoadingSpinner } from "shared/mod.ts";
+import { LoadingSpinner } from "shared/mod.ts";
 import { asState, Box, Button, ButtonStyle, CenterV, Checkbox, createElement, css, Custom, Empty, getErrorMessage, Horizontal, Label, SheetDialog, Spacer, Validate, Vertical } from "webgen/mod.ts";
 import { zod } from "webgen/zod.ts";
 import reviewTexts from "../../data/reviewTexts.json" with { type: "json" };
-import { Drop, ReviewResponse } from "../../spec/music.ts";
+import { API, Drop, ReviewResponse, zReviewResponse } from "../../spec/mod.ts";
 import { sheetStack } from "../shared/helper.ts";
 import { clientRender, dropPatternMatching, rawTemplate, render } from "./email.ts";
 
@@ -30,7 +30,7 @@ const reviewResponse = [
     "Malicious Activity",
 ];
 
-const rejectReasons = [ReviewResponse.DeclineCopyright];
+const rejectReasons = [zReviewResponse.enum.DECLINE_COPYRIGHT];
 export const dialogState = asState({
     drop: <Drop | undefined> undefined,
     responseText: "",
@@ -92,11 +92,16 @@ export const ApproveDialog = SheetDialog(
                                 return;
                             }
 
-                            await API.music.id(drop._id).review.post({
-                                title: dropPatternMatching(reviewTexts.APPROVED.header, drop),
-                                reason: ["APPROVED"],
-                                body: rawTemplate(dropPatternMatching(dialogState.responseText, drop)),
-                                denyEdits: false,
+                            await API.postReviewByDropByMusic({
+                                path: {
+                                    dropId: drop._id,
+                                },
+                                body: {
+                                    title: dropPatternMatching(reviewTexts.APPROVED.header, drop),
+                                    reason: [ "APPROVED" ],
+                                    body: rawTemplate(dropPatternMatching(dialogState.responseText, drop)),
+                                    denyEdits: false,
+                                }
                             });
 
                             ApproveDialog.close();
@@ -233,12 +238,14 @@ export const DeclineDialog = SheetDialog(
 
                         const reason = <ReviewResponse[]> rejectState.respones;
 
-                        await API.music.id(dialogState.drop!._id).review.post({
-                            title: dropPatternMatching(reviewTexts.REJECTED.header, dialogState.drop!),
-                            reason,
-                            body: rawTemplate(dropPatternMatching(rejectState.responseText, dialogState.drop!)),
-                            denyEdits: rejectState.denyEdits,
-                        });
+                        await API.postReviewByDropByMusic({
+                            path: { dropId: dialogState.drop!._id }, body: {
+                                title: dropPatternMatching(reviewTexts.REJECTED.header, dialogState.drop!),
+                                reason,
+                                body: rawTemplate(dropPatternMatching(rejectState.responseText, dialogState.drop!)),
+                                denyEdits: rejectState.denyEdits,
+                            }
+});
 
                         DeclineDialog.close();
                     }),

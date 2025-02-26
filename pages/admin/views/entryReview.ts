@@ -1,6 +1,5 @@
-import { API } from "shared/mod.ts";
 import { asState, Button, ButtonStyle, Color, DropDownInput, Entry, Horizontal, SheetDialog, Spacer, Vertical } from "webgen/mod.ts";
-import { Drop, DropType } from "../../../spec/music.ts";
+import { API, Drop, DropType, zDropType } from "../../../spec/mod.ts";
 import { sheetStack, showPreviewImage } from "../../shared/helper.ts";
 
 export function ReviewEntry(x: Drop) {
@@ -28,11 +27,11 @@ export const changeTypeDialog = SheetDialog(
     sheetStack,
     "Change Drop Type",
     Vertical(
-        DropDownInput("Change Type", Object.values(DropType)).ref(changeState.$type),
+        DropDownInput("Change Type", Object.values(zDropType.Values)).ref(changeState.$type),
         Horizontal(
             Spacer(),
             Button("Change").onPromiseClick(async () => {
-                await API.music.id(changeState.drop!._id).type.post(changeState.type!);
+                await API.postTypeByTypeByDropByMusic({ path: { dropId: changeState.drop!._id, type: changeState.type! } });
                 changeTypeDialog.close();
             }),
         ),

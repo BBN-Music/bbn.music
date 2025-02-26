@@ -1,12 +1,11 @@
-import { API, stupidErrorAlert } from "shared/mod.ts";
 import { asRef, asState, Box, Button, CenterV, createFilePicker, Empty, getErrorMessage, Grid, Horizontal, Label, Spacer, Validate } from "webgen/mod.ts";
 import { zod } from "webgen/zod.ts";
-import { Artist, Drop, Song, song } from "../../../spec/music.ts";
+import { API, Artist, FullDrop, Song, stupidErrorAlert, zSong } from "../../../spec/mod.ts";
 import { allowedAudioFormats, ExistingSongDialog } from "../../shared/helper.ts";
 import { uploadSongToDrop } from "../data.ts";
 import { ManageSongs } from "./table.ts";
 
-export function ChangeSongs(drop: Drop, artistList?: Artist[]) {
+export function ChangeSongs(drop: FullDrop, artistList?: Artist[]) {
     const state = asState({
         uploadingSongs: <string[]> [],
         validationState: <zod.ZodError | undefined> undefined,
@@ -15,11 +14,11 @@ export function ChangeSongs(drop: Drop, artistList?: Artist[]) {
     const { data, error, validate } = Validate(
         asState(drop),
         zod.object({
-            songs: song.array().min(1, { message: "At least one song is required" }),
+            songs: zSong.array().min(1, { message: "At least one song is required" }),
         }),
     );
 
-    const songs = asRef(<undefined | Song[]> undefined);
+    const songs = asRef(<Song[]> []);
     const existingSongDialog = ExistingSongDialog(data.songs, songs);
 
     return Grid(
@@ -40,7 +39,7 @@ export function ChangeSongs(drop: Drop, artistList?: Artist[]) {
                 .onClick(async () => {
                     const validation = validate();
                     if (error.getValue()) return state.validationState = error.getValue();
-                    if (validation) await API.music.id(data._id!).update(validation);
+                    if (validation) await API.patchIdByDropsByMusic({ path: { id: data._id! }, body: validation });
                     location.reload(); // Handle this Smarter => Make it a Reload Event.
                 }),
         ),
@@ -54,7 +53,7 @@ export function ChangeSongs(drop: Drop, artistList?: Artist[]) {
                 ).setMargin("0 1rem 0 0"),
             Button("Add an existing Song")
                 .onPromiseClick(async () => {
-                    songs.setValue((await API.music.songs.list().then(stupidErrorAlert)).filter((song) => !data.songs.some((dropsong) => dropsong._id === song._id)));
+                    songs.setValue((await API.getSongsByMusic().then(stupidErrorAlert)).filter((song) => !data.songs.some((dropsong) => dropsong._id === song._id)));
                     existingSongDialog.open();
                 }),
         ),

@@ -1,7 +1,7 @@
-import { API, stupidErrorAlert } from "shared/restSpec.ts";
 import { asRef, Body, Empty, Horizontal, Image, Label, LinkButton, Vertical, WebGen } from "webgen/mod.ts";
 import { changeThemeColor, sheetStack, streamingImages } from "../shared/helper.ts";
 import "./share.css";
+import { API, stupidErrorAlert } from "../../spec/mod.ts";
 
 WebGen({
     events: {
@@ -27,20 +27,20 @@ const share = asRef(
     }> undefined,
 );
 
-const reqShare = await API.music.share(data.s).get();
-if (reqShare.status === "rejected") {
+const reqShare = await API.getSlugByShareByMusic({ path: { slug: data.s } });
+if (reqShare.error) {
     location.href = "https://bbn.one/";
 }
 
 share.setValue(stupidErrorAlert(reqShare));
 
 sheetStack.setDefault(Vertical(
-    Image({ type: "direct", source: () => API.music.share(data.s).artwork().then(stupidErrorAlert) }, "Background").addClass("bgImg"),
+    Image({ type: "direct", source: () => API.getArtworkBySlugByShareByMusic({ path: { slug: data.s } }).then(stupidErrorAlert) }, "Background").addClass("bgImg"),
     share.map((shareVal) =>
         shareVal
             ? Horizontal(
                 Vertical(
-                    Image({ type: "direct", source: () => API.music.share(data.s).artwork().then(stupidErrorAlert) }, "A Song Artwork")
+                    Image({ type: "direct", source: () => API.getArtworkBySlugByShareByMusic({ path: { slug: data.s } }).then(stupidErrorAlert) }, "A Song Artwork")
                         .setMinHeight("250px").setMinWidth("250px").setBorderRadius("mid"),
                     Label(shareVal.title).setTextAlign("center").setTextSize("2xl").setMargin("0 10px 0 0"),
                     Label(shareVal.artistNames.join(", ")).setTextAlign("center"),

@@ -1,11 +1,11 @@
-import { API, LoadingSpinner, stupidErrorAlert } from "shared/mod.ts";
+import { LoadingSpinner } from "shared/mod.ts";
 import { AdvancedImage, asRef, asState, Body, Box, Button, ButtonStyle, Center, CenterV, Color, createFilePicker, Custom, DropAreaInput, DropDownInput, Empty, getErrorMessage, Grid, Horizontal, Image, Label, MediaQuery, Reference, SheetDialog, Spacer, SupportedThemes, TextInput, Validate, Vertical, WebGen } from "webgen/mod.ts";
 import { zod } from "webgen/zod.ts";
 import "../../assets/css/main.css";
 import { DynaNavigation } from "../../components/nav.ts";
 import genres from "../../data/genres.json" with { type: "json" };
 import language from "../../data/language.json" with { type: "json" };
-import { ArtistRef, ArtistTypes, DropType, pages, Song } from "../../spec/music.ts";
+import { API, ArtistRef, Song, stupidErrorAlert, zArtistTypes, zDropType } from "../../spec/mod.ts";
 import { allowedAudioFormats, allowedImageFormats, CenterAndRight, ExistingSongDialog, getSecondary, RegisterAuthRefresh, sheetStack } from "../shared/helper.ts";
 import { uploadArtwork, uploadSongToDrop } from "./data.ts";
 import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
@@ -50,20 +50,20 @@ export const creationState = asState({
     validationState: <zod.ZodError | undefined> undefined,
 });
 
-API.music.id(dropId).get().then(stupidErrorAlert)
+API.getIdByDropsByMusic({ path: { id: dropId } }).then(stupidErrorAlert)
     .then((drop) => {
         creationState._id = dropId;
         creationState.gtin = drop.gtin;
         creationState.title = drop.title;
         creationState.release = drop.release;
         creationState.language = drop.language;
-        creationState.artists = asState(drop.artists ?? [{ type: ArtistTypes.Primary, _id: null! }]);
+        creationState.artists = asState(drop.artists ?? [{ type: zArtistTypes.enum.PRIMARY, _id: null! }]);
         creationState.primaryGenre = drop.primaryGenre;
         creationState.secondaryGenre = drop.secondaryGenre;
         creationState.compositionCopyright = drop.compositionCopyright ?? "BBN Music (via bbn.one)";
         creationState.soundRecordingCopyright = drop.soundRecordingCopyright ?? "BBN Music (via bbn.one)";
         creationState.artwork = drop.artwork;
-        creationState.artworkClientData = <AdvancedImage | undefined> (drop.artwork ? <AdvancedImage> { type: "direct", source: () => API.music.id(dropId).artwork().then(stupidErrorAlert) } : undefined);
+        creationState.artworkClientData = <AdvancedImage | undefined> (drop.artwork ? <AdvancedImage> { type: "direct", source: () => API.getArtworkByDropByMusic({ path: { dropId: dropId } }).then(stupidErrorAlert) } : undefined);
         creationState.songs = asState(drop.songs ?? []);
         creationState.comments = drop.comments;
     })
@@ -99,7 +99,7 @@ const validator = (page: number) => async () => {
 
     const data = validate();
     if (error.getValue()) return creationState.validationState = error.getValue();
-    if (data) await API.music.id(dropId).update(data);
+    if (data) await API.patchIdByDropsByMusic({ path: { id: dropId }, body: data });
     creationState.page++;
     creationState.validationState = undefined;
 };
@@ -204,7 +204,7 @@ const wizard = creationState.$page.map((page) => {
                                 .onClick(() => createFilePicker(allowedAudioFormats.join(",")).then((file) => uploadSongToDrop(creationState.$songs, creationState.artists, creationState.language, creationState.primaryGenre, creationState.secondaryGenre, creationState.$uploadingSongs, file))).setMargin("0 1rem 0 0"),
                             Button("Add an existing Song")
                                 .onPromiseClick(async () => {
-                                    songs.setValue((await API.music.songs.list().then(stupidErrorAlert)).filter((song) => creationState.songs.some((dropsong) => dropsong._id !== song._id)));
+                                    songs.setValue((await API.getSongsByMusic().then(stupidErrorAlert)).filter((song) => creationState.songs.some((dropsong) => dropsong._id !== song._id)));
                                     existingSongDialog.open();
                                 }),
                         ),
@@ -235,9 +235,9 @@ const wizard = creationState.$page.map((page) => {
                 Spacer(),
                 Button("Submit").setJustifyContent("center").onPromiseClick(async () => {
                     creationState.loaded = false;
-                    await API.music.id(dropId).update(creationState);
+                    await API.patchIdByDropsByMusic({ path: { id: dropId }, body: creationState });
 
-                    await API.music.id(dropId).type.post(DropType.UnderReview);
+                    await API.postTypeByTypeByDropByMusic({ path: { dropId: dropId, type: zDropType.enum.UNDER_REVIEW } }).then(stupidErrorAlert);
                     location.href = "/c/music";
                 }),
             ).addClass("footer"),

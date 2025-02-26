@@ -1,9 +1,9 @@
 import { delay } from "@std/async";
-import { API, StreamingUploadHandler, stupidErrorAlert } from "shared/mod.ts";
+import { StreamingUploadHandler } from "shared/mod.ts";
 import { AdvancedImage, Reference } from "webgen/mod.ts";
-import { ArtistRef, Song } from "../../spec/music.ts";
+import { API, APITools, ArtistRef, Song, stupidErrorAlert } from "../../spec/mod.ts";
 
-export function uploadSongToDrop(songs: Reference<Song[]>, artists: ArtistRef[], language: string, primaryGenre: string, secondaryGenre: string, uploadingSongs: Reference<{ [key: string]: number }[]>, file: File) {
+export function uploadSongToDrop(songs: Reference<Omit<Song, "user">[]>, artists: ArtistRef[], language: string, primaryGenre: string, secondaryGenre: string, uploadingSongs: Reference<{ [key: string]: number }[]>, file: File) {
     const uploadId = crypto.randomUUID();
     uploadingSongs.addItem({ [uploadId]: 0 });
 
@@ -34,7 +34,7 @@ export function uploadSongToDrop(songs: Reference<Song[]>, artists: ArtistRef[],
         uploadDone: () => {
             uploadingSongs.setValue(uploadingSongs.getValue().map((x) => ({ ...x, [uploadId]: 100 })));
         },
-        credentials: () => API.getToken(),
+        credentials: () => APITools.token() ?? "",
         backendResponse: async (response) => {
             uploadingSongs.setValue(uploadingSongs.getValue().filter((x) => !x[uploadId]));
             if (response.startsWith("duplicate:")) {
@@ -43,16 +43,18 @@ export function uploadSongToDrop(songs: Reference<Song[]>, artists: ArtistRef[],
                 // TODO: Open Dropover to automatically add the song using split at :
                 return;
             }
-            const song = await API.music.songs.create({
-                title: cleanedUpTitle,
-                artists,
-                language,
-                instrumental: false,
-                explicit: false,
-                primaryGenre,
-                secondaryGenre,
-                year: new Date().getFullYear(),
-                file: response,
+            const song = await API.postSongsByMusic({
+                body: {
+                    title: cleanedUpTitle,
+                    artists,
+                    language,
+                    instrumental: false,
+                    explicit: false,
+                    primaryGenre,
+                    secondaryGenre,
+                    year: new Date().getFullYear(),
+                    file: response,
+                },
             }).then(stupidErrorAlert);
             songs.setValue(songs.getValue().map((x) => x._id == uploadId ? { ...x, _id: song.id, file: response } : x));
         },
@@ -76,7 +78,7 @@ export function uploadArtwork(id: string, file: File, artworkClientData: Referen
             uploadDone: () => {
                 artworkClientData.setValue({ type: "waiting-upload", filename: file.name, blobUrl });
             },
-            credentials: () => API.getToken(),
+            credentials: () => APITools.token() ?? "", 
             backendResponse: (id) => {
                 artworkClientData.setValue({ type: "direct", source: async () => await file });
                 artwork.setValue(id);

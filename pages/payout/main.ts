@@ -1,10 +1,10 @@
 import { sortBy, sumOf } from "@std/collections";
-import { API, MenuNode, Navigation, stupidErrorAlert } from "shared/mod.ts";
+import { MenuNode, Navigation } from "shared/mod.ts";
 import { asRef, asState, Body, isMobile, Vertical, WebGen } from "webgen/mod.ts";
 import "../../assets/css/main.css";
 import "../../assets/css/music.css";
 import { DynaNavigation } from "../../components/nav.ts";
-import { Drop, Payout } from "../../spec/music.ts";
+import { API, Drop, Payout, stupidErrorAlert } from "../../spec/mod.ts";
 import { changeThemeColor, RegisterAuthRefresh, renewAccessTokenIfNeeded } from "../shared/helper.ts";
 
 await RegisterAuthRefresh();
@@ -24,7 +24,7 @@ if (!data.id) {
 
 const state = asState({
     payout: <Payout | undefined> undefined,
-    music: <Drop[] | undefined> undefined,
+    music: <Partial<Drop>[] | undefined> undefined,
 });
 
 Body(Vertical(
@@ -131,8 +131,8 @@ renewAccessTokenIfNeeded()
     .then(() => refreshState());
 
 async function refreshState() {
-    state.payout = await API.payment.payouts.id(data.id).get().then(stupidErrorAlert);
-    state.music = await API.music.drops.list(true).then(stupidErrorAlert);
+    state.payout = await API.getIdByPayoutsByPayment({path: {id: data.id}}).then(stupidErrorAlert);
+    state.music = await API.getDropsByMusic().then(stupidErrorAlert);
 }
 
 function generateStores(datalist: Payout["entries"][0]["data"]) {

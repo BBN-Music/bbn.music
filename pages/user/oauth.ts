@@ -1,13 +1,13 @@
 import { Footer } from "shared/footer.ts";
 import { activeUser, getNameInital, logOut, ProfilePicture, RegisterAuthRefresh } from "shared/helper.ts";
-import { API, LoadingSpinner, stupidErrorAlert } from "shared/mod.ts";
+import { LoadingSpinner } from "shared/mod.ts";
 import { asState, Body, Box, Button, ButtonStyle, Color, Content, FullWidthSection, Grid, Horizontal, Image, isMobile, Label, MIcon, Spacer, Vertical, WebGen } from "webgen/mod.ts";
 import "../../assets/css/main.css";
 import { dots, templateArtwork } from "../../assets/imports.ts";
 import { DynaNavigation } from "../../components/nav.ts";
-import { OAuthScopes } from "../../spec/music.ts";
 import "./oauth.css";
 import "./signin.css";
+import { API, APITools, OAuthScopes, stupidErrorAlert } from "../../spec/mod.ts";
 
 await RegisterAuthRefresh();
 
@@ -105,10 +105,10 @@ Body(
 );
 
 async function authorize() {
-    await API.oauth.authorize(params.clientId!, params.scope!, params.redirectUri!)
+    await API.postAuthorizeByOauth({ body: { id: params.clientId!, scope: params.scope!, redirect_uri: params.redirectUri! } })
         .then(stupidErrorAlert);
     const url = new URL(params.redirectUri!);
-    url.searchParams.set("code", API.getToken());
+    url.searchParams.set("code", APITools.token() ?? "");
     url.searchParams.set("state", params.state!);
     globalThis.location.href = url.toString();
 }
@@ -121,6 +121,6 @@ API.oauth.validate(params.clientId, params.scope, params.redirectUri)
             return;
         }
         state.name = e.name;
-        state.icon = e.icon ? URL.createObjectURL(await API.oauth.icon(params.clientId!).then(stupidErrorAlert)) : "";
+        state.icon = e.icon ? URL.createObjectURL(await API.getDownloadByClientByApplicationsByOauth({ path: { clientId: params.clientId! } }).then(stupidErrorAlert)) : "";
         state.loaded = true;
     });

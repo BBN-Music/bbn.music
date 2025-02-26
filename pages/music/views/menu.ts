@@ -1,15 +1,15 @@
 import { activeUser } from "shared/helper.ts";
-import { API, Chart, count, HeavyList, LoadingSpinner, Navigation, placeholder, stupidErrorAlert } from "shared/mod.ts";
+import { Chart, count, HeavyList, LoadingSpinner, Navigation, placeholder } from "shared/mod.ts";
 import { asRef, asState, Button, Component, Entry, Grid, isMobile, ref } from "webgen/mod.ts";
-import { Artist, Drop, DropType, Payout } from "../../../spec/music.ts";
+import { API, Artist, Drop, PayoutResponse, stupidErrorAlert, zDropType } from "../../../spec/mod.ts";
 import { ArtistEntry, DropEntry, musicList } from "./list.ts";
 import { createArtistSheet } from "./table.ts";
 
 export const menuState = asState({
-    published: <Drop[] | "loading"> "loading",
-    unpublished: <Drop[] | "loading"> "loading",
-    drafts: <Drop[] | "loading"> "loading",
-    payouts: <Payout[] | "loading"> "loading",
+    published: <Partial<Drop>[] | "loading"> "loading",
+    unpublished: <Partial<Drop>[] | "loading"> "loading",
+    drafts: <Partial<Drop>[] | "loading"> "loading",
+    payouts: <PayoutResponse[] | "loading"> "loading",
     artists: <Artist[] | "loading"> "loading",
 });
 
@@ -25,7 +25,7 @@ export const musicMenu = Navigation({
             // TODO: Use HeavyList
             children: menuState.$published.map((published) =>
                 published == "loading" ? [LoadingSpinner()] : [
-                    musicList(published ?? [], DropType.Published),
+                    musicList(published ?? [], zDropType.enum.PUBLISHED),
                 ]
             ),
         },
@@ -44,7 +44,7 @@ export const musicMenu = Navigation({
             // TODO: Use HeavyList
             children: menuState.$drafts.map((drafts) =>
                 drafts == "loading" ? [LoadingSpinner()] : [
-                    musicList(drafts ?? [], DropType.Unsubmitted),
+                    musicList(drafts ?? [], zDropType.enum.UNSUBMITTED),
                 ]
             ),
         },
@@ -71,7 +71,7 @@ export const musicMenu = Navigation({
                                     datasets: [
                                         {
                                             label: "Revenue by Month",
-                                            data: payouts.map((row) => row.moneythisperiod.replace("£ ", "")).reverse(),
+                                            data: payouts.map((row) => row.moneythisperiod).reverse(),
                                         },
                                     ],
                                 },
@@ -154,14 +154,14 @@ musicMenu.path.listen((path) => {
         menuButtons.setValue(
             [
                 Button("Create new Artist")
-                    .onClick(() => createArtistSheet().then(async () => menuState.artists = await API.music.artists.list().then(stupidErrorAlert))),
+                    .onClick(() => createArtistSheet().then(async () => menuState.artists = await API.getArtistsByMusic().then(stupidErrorAlert))),
             ],
         );
     } else {
         menuButtons.setValue([
             Button("Create new Drop")
                 .onPromiseClick(async () => {
-                    const { id } = await API.music.drops.create().then(stupidErrorAlert);
+                    const { id } = await API.postMusic().then(stupidErrorAlert);
                     location.href = `/c/music/new-drop?id=${id}`;
                 }),
         ]);

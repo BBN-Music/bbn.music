@@ -2,9 +2,9 @@ import { debounce } from "@std/async";
 import { sumOf } from "@std/collections";
 import loader from "https://esm.sh/@monaco-editor/loader@1.4.0";
 import { activeUser, sheetStack, showProfilePicture } from "shared/helper.ts";
-import { API, HeavyList, loadMore, Navigation, placeholder } from "shared/mod.ts";
+import { HeavyList, loadMore, Navigation, placeholder } from "shared/mod.ts";
 import { asRef, asState, Box, Button, Color, Custom, Entry, Grid, Horizontal, isMobile, lazy, ref, SheetDialog, Spacer, Table, TextInput } from "webgen/mod.ts";
-import { DropType } from "../../../spec/music.ts";
+import { API, stupidErrorAlert, zDropType } from "../../../spec/mod.ts";
 import { upload } from "../loading.ts";
 import { state } from "../state.ts";
 import { ReviewEntry } from "./entryReview.ts";
@@ -109,7 +109,7 @@ export const adminMenu = Navigation({
                     children: [
                         HeavyList(state.drops.$reviews, (it) => ReviewEntry(it))
                             .setPlaceholder(placeholder("No Drops", "Welcome! Create a server to get going. 🤖🛠️"))
-                            .enablePaging((offset, limit) => loadMore(state.drops.$reviews, () => API.admin.drops.list(DropType.UnderReview, offset, limit))),
+                            .enablePaging((offset, limit) => loadMore(state.drops.$reviews, () => API.admin.drops.list(zDropType.Enum.UNDER_REVIEW, offset, limit))),
                     ],
                 },
                 {
@@ -118,7 +118,7 @@ export const adminMenu = Navigation({
                     children: [
                         HeavyList(state.drops.$publishing, (it) => ReviewEntry(it))
                             .setPlaceholder(placeholder("No Drops", "Welcome! Create a server to get going. 🤖🛠️"))
-                            .enablePaging((offset, limit) => loadMore(state.drops.$publishing, () => API.admin.drops.list(DropType.Publishing, offset, limit))),
+                            .enablePaging((offset, limit) => loadMore(state.drops.$publishing, () => API.admin.drops.list(zDropType.enum.PUBLISHING, offset, limit))),
                     ],
                 },
             ],
@@ -149,24 +149,10 @@ export const adminMenu = Navigation({
                         await API.admin.drops.sync();
                     },
                 },
-                ...payoutsdata === "loading" || payoutsdata.status === "rejected" ? [Box()] : payoutsdata.value.map((payouts) => ({
-                    title: payouts[0].period,
-                    id: `payouts${payouts[0].period}`,
-                    subtitle: `£ ${sumOf(payouts, (payout) => sumOf(payout.entries, (entry) => sumOf(entry.data, (data) => data.revenue))).toFixed(2)}`,
-                    children: payouts.map((payout) => ({
-                        title: payout._id,
-                        subtitle: `£ ${sumOf(payout.entries, (entry) => sumOf(entry.data, (data) => data.revenue)).toFixed(2)}`,
-                        id: `payouts${payouts[0].period}${payout._id}`,
-                        children: payout.entries.map((entry) => ({
-                            title: entry.isrc,
-                            id: `payouts${payouts[0].period}${payout._id}${entry.isrc}`,
-                            subtitle: `£ ${sumOf(entry.data, (data) => data.revenue).toFixed(2)}`,
-                            children: entry.data.map((data) => ({
-                                title: data.store + " " + data.territory,
-                                subtitle: `£ ${data.revenue.toFixed(2)}`,
-                            })),
-                        })),
-                    })),
+                ...payoutsdata === "loading" ? [Box()] : payoutsdata.map((payout) => ({
+                    title: payout.period,
+                    id: `payouts${payout.period}`,
+                    subtitle: `£ ${payout.sum.toFixed(2)}`,
                 })),
             ]),
         },
@@ -240,13 +226,13 @@ const addOAuthDialog = SheetDialog(
             Button("Submit")
                 .setColor(img === "" ? Color.Disabled : Color.Grayscaled)
                 .onClick(() => {
-                    API.oauth.post(oAuthData.name, oAuthData.redirectURI, oAuthData.image)
+                    API.postApplicationsByOauth({ body: { name: oAuthData.name, redirect: oAuthData.redirectURI, icon: oAuthData.image } })
                         .then(async () => {
                             oAuthData.name = "";
                             oAuthData.redirectURI = asState([""]);
                             oAuthData.image = "";
                             addOAuthDialog.close();
-                            state.oauth = await API.oauth.list();
+                            state.oauth = await API.getApplicationsByOauth().then(stupidErrorAlert);
                         });
                 })
         ).asRefComponent(),

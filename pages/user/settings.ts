@@ -1,10 +1,11 @@
 import { logOut, RegisterAuthRefresh } from "shared/helper.ts";
-import { API, Navigation } from "shared/mod.ts";
+import { Navigation } from "shared/mod.ts";
 import { asState, Body, Box, Button, CenterV, Empty, getErrorMessage, Grid, Horizontal, isMobile, Label, Spacer, TextInput, Validate, Vertical, WebGen } from "webgen/mod.ts";
 import { zod } from "webgen/zod.ts";
 import "../../assets/css/main.css";
 import { DynaNavigation } from "../../components/nav.ts";
 import { ChangePersonal } from "./settings.personal.ts";
+import { API } from "../../spec/mod.ts";
 
 WebGen();
 
@@ -66,7 +67,7 @@ const settingsMenu = Navigation({
 
                             const data = validate();
                             if (error.getValue()) return state.validationState = error.getValue();
-                            if (data) await API.user.setMe.post({ password: data.newPassword });
+                            if (data) await API.putUserByUser({ body: { password: data.newPassword } });
                             logOut();
                             state.validationState = undefined;
                         }),

@@ -1,8 +1,8 @@
-import { API, fileCache, Permission, stupidErrorAlert } from "shared/mod.ts";
+import { fileCache } from "shared/mod.ts";
 import { asRef, asState, Box, Button, Cache, CenterV, Component, Custom, DropDownInput, Horizontal, Image, ImageComponent, Label, Reference, SheetDialog, SheetsStack, Spacer, StateHandler, Style, SupportedThemes, Vertical } from "webgen/mod.ts";
 import { templateArtwork } from "../../assets/imports.ts";
 import { loginRequired } from "../../components/pages.ts";
-import { Drop, Song } from "../../spec/music.ts";
+import { API, APITools, Drop, Permission, Song, stupidErrorAlert } from "../../spec/mod.ts";
 
 // @deno-types="https://raw.githubusercontent.com/lucsoft-DevTeam/lucsoft.de/master/custom.d.ts"
 import spotify from "../music-landing/assets/spotify.svg";
@@ -65,7 +65,7 @@ export const activeUser = asState({
 });
 
 export function permCheck(...per: Permission[]) {
-    return API.isPermited(per, activeUser.permission);
+    return APITools.isPermitted(per, activeUser.permission);
 }
 
 export function updateActiveUserData() {
@@ -126,7 +126,7 @@ export const tokens = asState({
 
 export async function forceRefreshToken() {
     try {
-        const access = await API.auth.refreshAccessToken.post(localStorage["refresh-token"]).then(stupidErrorAlert);
+        const access = await API.postRefreshAccessTokenByAuth({ headers: { "Authorization": localStorage["refresh-token"] } }).then(stupidErrorAlert);
         localStorage["access-token"] = access.token;
         tokens.accessToken = access.token;
     } catch (_) {
@@ -199,7 +199,7 @@ async function loadImage(x: Drop) {
     if (await cache.has(`image-preview-${x.artwork}`)) {
         return await cache.get(`image-preview-${x.artwork}`)!;
     }
-    const blob = await API.music.id(x._id).artwork().then(stupidErrorAlert);
+    const blob = await API.getArtworkByDropByMusic({ path: { dropId: x._id } }).then(stupidErrorAlert);
     await cache.set(`image-preview-${x.artwork}`, blob);
     return blob;
 }
@@ -244,10 +244,10 @@ export function showProfilePicture(x: ProfileData) {
                 source: async () => {
                     const blob = new Blob();
 
-                    const data = await API.user.picture(x._id);
+                    const data = await API.getPictureByUserByUser({ path: { userId: x._id } });
 
-                    if (data.status == "fulfilled") {
-                        return data.value;
+                    if (!data.error) {
+                        return data.data;
                     }
 
                     return blob;

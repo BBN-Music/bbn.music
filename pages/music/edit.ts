@@ -1,9 +1,9 @@
-import { API, createActionList, createBreadcrumb, createTagList, LoadingSpinner, Navigation, stupidErrorAlert } from "shared/mod.ts";
+import { createActionList, createBreadcrumb, createTagList, LoadingSpinner, Navigation } from "shared/mod.ts";
 import { asRef, Body, Button, ButtonStyle, Color, Empty, Grid, Horizontal, isMobile, Label, LinkButton, SheetDialog, Vertical, WebGen } from "webgen/mod.ts";
 import "../../assets/css/main.css";
 import "../../assets/css/music.css";
 import { DynaNavigation } from "../../components/nav.ts";
-import { Drop, DropType, Share } from "../../spec/music.ts";
+import { API, DropType, FullDrop, Share, stupidErrorAlert, zDropType } from "../../spec/mod.ts";
 import { changeThemeColor, permCheck, RegisterAuthRefresh, renewAccessTokenIfNeeded, saveBlob, sheetStack, showPreviewImage, streamingImages } from "../shared/helper.ts";
 import { ChangeDrop } from "./views/changeDrop.ts";
 import { ChangeSongs } from "./views/changeSongs.ts";
@@ -24,18 +24,19 @@ if (!data.id) {
     location.href = "/c/music";
 }
 
-const drop = asRef(<Drop | undefined> undefined);
+const drop = asRef(<Partial<FullDrop> | undefined> undefined);
 const services = asRef<Record<string, string> | undefined>(undefined);
 const share = asRef(<Share | undefined | { slug: undefined }> undefined);
 
+// TODO: Fix Partial
 sheetStack.setDefault(Vertical(
     DynaNavigation("Music"),
     drop.map((drop) =>
         drop
             ? Navigation({
-                title: drop.title,
+                title: drop.title ?? "No Title",
                 children: [
-                    Label(DropTypeToText(drop.type)).setTextSize("2xl"),
+                    Label(DropTypeToText(drop.type ?? zDropType.enum.PRIVATE)).setTextSize("2xl"),
                     {
                         id: "edit-drop",
                         title: "Drop",
@@ -57,7 +58,7 @@ sheetStack.setDefault(Vertical(
                         title: "Export",
                         subtitle: "Download your complete Drop with every Song",
                         clickHandler: async () => {
-                            const blob = await API.music.id(drop._id).download().then(stupidErrorAlert);
+                            const blob = await API.getDownloadByDropByDropsByMusic({ path: { dropId: drop._id! } }).then(stupidErrorAlert);
                             saveBlob(blob, `${drop.title}.tar`);
                         },
                     },
@@ -67,7 +68,7 @@ sheetStack.setDefault(Vertical(
                             title: "Cancel Review",
                             subtitle: "Need to change Something? Cancel it now",
                             clickHandler: async () => {
-                                await API.music.id(drop._id).type.post(DropType.Private);
+                                await API.postTypeByTypeByDropByMusic({ path: { dropId: drop._id!, type: zDropType.enum.PRIVATE } });
                                 location.reload();
                             },
                         }
@@ -82,7 +83,7 @@ sheetStack.setDefault(Vertical(
                                 if (releaseDate.getTime() - Date.now() < 14 * 24 * 60 * 60 * 1000 && releaseDate.getTime() - Date.now() > 0) {
                                     WarningDialog.open();
                                 } else {
-                                    await API.music.id(drop._id).type.post(DropType.UnderReview);
+                                    await API.postTypeByTypeByDropByMusic({ path: { type: zDropType.enum.UNDER_REVIEW, dropId: drop._id! } });
                                     location.reload();
                                 }
                             },
@@ -94,7 +95,7 @@ sheetStack.setDefault(Vertical(
                             title: "Takedown",
                             subtitle: "Completely Takedown your Drop",
                             clickHandler: async () => {
-                                await API.music.id(drop._id).type.post(DropType.Private);
+                                await API.postTypeByTypeByDropByMusic({ path: { type: zDropType.enum.PRIVATE, dropId: drop._id! } });
                                 location.reload();
                             },
                         }
@@ -106,7 +107,7 @@ sheetStack.setDefault(Vertical(
                             subtitle: "Navigate to your Drop on Streaming Services",
                             clickHandler: async () => {
                                 if (services.getValue() === undefined) {
-                                    services.setValue(await API.music.id(drop._id).services().then(stupidErrorAlert));
+                                    services.setValue(await API.getServicesByDropByMusic({ path: { dropId: drop._id! } }).then(stupidErrorAlert));
                                 }
                                 StreamingServiesDialog.open();
                             },
@@ -118,7 +119,7 @@ sheetStack.setDefault(Vertical(
                             title: "Sharing Link",
                             subtitle: "Show your music to all your listeners",
                             clickHandler: async () => {
-                                share.setValue(await API.music.id(drop._id).share.get().then(stupidErrorAlert));
+                                share.setValue(await API.getIdByShareByDropsByMusic({ path: { id: drop._id! } }).then(stupidErrorAlert));
                                 SharingDialog.open();
                             },
                         }
@@ -159,7 +160,7 @@ const Permissions = {
 };
 
 renewAccessTokenIfNeeded().then(async () => {
-    await API.music.id(data.id).get()
+    await API.getIdByDropsByMusic({ path: { id: data.id } })
         .then(stupidErrorAlert)
         .then((x) => drop.setValue(x));
 });
@@ -195,7 +196,7 @@ const WarningDialog = SheetDialog(
                 WarningDialog.close();
             }),
             Button("Publish Anyway").onPromiseClick(async () => {
-                await API.music.id(drop.getValue()!._id).type.post(DropType.UnderReview);
+                await API.postTypeByTypeByDropByMusic({ path: { type: zDropType.enum.UNDER_REVIEW, dropId: drop.getValue()!._id } });
                 location.reload();
                 WarningDialog.close();
             }),
@@ -225,10 +226,10 @@ const SharingDialog = SheetDialog(
                 ).setGap("1rem").setJustifyContent("start").setPadding("0 .3rem"),
                 Button(shareVal.slug ? "Disable Link Sharing" : "Enable Link Sharing").onPromiseClick(async () => {
                     if (shareVal.slug) {
-                        await API.music.id(drop.getValue()!._id).share.remove();
+                        await API.deleteIdByShareByDropsByMusic({ path: { id: drop.getValue()!._id } });
                         share.setValue({ slug: undefined });
                     } else {
-                        share.setValue(await API.music.id(drop.getValue()!._id).share.create().then(stupidErrorAlert));
+                        share.setValue(await API.getIdByShareByDropsByMusic({ path: { id: drop.getValue()!._id } }).then(stupidErrorAlert));
                     }
                 }).setMargin("1rem 0 0 0"),
             )

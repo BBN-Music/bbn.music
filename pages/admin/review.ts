@@ -1,4 +1,4 @@
-import { API, createActionList, createBreadcrumb, createTagList, LoadingSpinner, Navigation, stupidErrorAlert } from "shared/mod.ts";
+import { createActionList, createBreadcrumb, createTagList, LoadingSpinner, Navigation } from "shared/mod.ts";
 import { Body, Button, ButtonStyle, Color, Empty, Entry, Grid, Horizontal, isMobile, Label, Spacer, Vertical, WebGen } from "webgen/mod.ts";
 import "../../assets/css/main.css";
 import "../../assets/css/music.css";
@@ -10,6 +10,7 @@ import { changeThemeColor, permCheck, RegisterAuthRefresh, renewAccessTokenIfNee
 import { ApproveDialog, DeclineDialog, dialogState } from "./dialog.ts";
 import { reviewState } from "./state.ts";
 import { changeState, changeTypeDialog } from "./views/entryReview.ts";
+import { API, stupidErrorAlert } from "../../spec/mod.ts";
 
 await RegisterAuthRefresh();
 
@@ -91,7 +92,7 @@ sheetStack.setDefault(Vertical(
                             title: "Export",
                             subtitle: "Download your complete Drop with every Song",
                             clickHandler: async () => {
-                                const blob = await API.music.id(drop._id).download().then(stupidErrorAlert);
+                                const blob = await API.getDownloadByDropByDropsByMusic({ path: { dropId: drop._id! } }).then(stupidErrorAlert);
                                 saveBlob(blob, `${drop.title}.tar`);
                             },
                         },
@@ -181,6 +182,6 @@ renewAccessTokenIfNeeded()
     .then(() => refreshReviewState());
 
 async function refreshReviewState() {
-    reviewState.drop = await API.admin.drops.id(data.id).then(stupidErrorAlert);
-    reviewState.drops = await API.admin.drops.user(reviewState.drop!.user._id).then(stupidErrorAlert);
+    reviewState.drop = await API.getIdByDropsByAdmin({ path: { id: data.id } }).then(stupidErrorAlert);
+    reviewState.drops = await API.getDropsByAdmin({ path: { user: reviewState.drop!.user._id } }).then(stupidErrorAlert);
 }

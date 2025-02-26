@@ -1,7 +1,7 @@
 import { assert } from "@std/assert";
 import { Footer } from "shared/footer.ts";
 import { RegisterAuthRefresh } from "shared/helper.ts";
-import { API, LoadingSpinner } from "shared/mod.ts";
+import { LoadingSpinner } from "shared/mod.ts";
 import { Body, Box, Button, ButtonStyle, Color, Component, createElement, Custom, Grid, Horizontal, Image, isMobile, Label, LinkButton, Spacer, TextInput, Vertical, WebGen } from "webgen/mod.ts";
 import "../../assets/css/main.css";
 import { discordLogo, googleLogo } from "../../assets/imports.ts";
@@ -9,6 +9,7 @@ import { DynaNavigation } from "../../components/nav.ts";
 import { handleStateChange, loginUser, registerUser } from "./actions.ts";
 import "./signin.css";
 import { state } from "./state.ts";
+import { API, APITools } from "../../spec/mod.ts";
 
 await RegisterAuthRefresh();
 
@@ -52,16 +53,18 @@ Body(Vertical(
                             .setJustifyContent("center")
                             .onPromiseClick(async () => {
                                 try {
-                                    assert(API.getToken(), "Missing Token!");
-                                    await API.user.setMe.post({
-                                        password: state.password,
+                                    assert(APITools.token(), "Missing Token!");
+                                    await API.putUserByUser({
+                                        body: {
+                                            password: state.password,
+                                        }
                                     });
                                     state.type = "login";
                                 } catch (_) {
                                     state.error = "Failed: Please try again later";
                                 }
                             }),
-                        Label(API.getToken() ? "" : "Error: Link is invalid").addClass("error-message"),
+                        Label(APITools.token() ? "" : "Error: Link is invalid").addClass("error-message"),
                         ErrorMessage(),
                     ));
                 }
@@ -78,7 +81,7 @@ Body(Vertical(
                                 try {
                                     assert(state.email, "Email is missing");
 
-                                    await API.auth.forgotPassword.post(state.email);
+                                    await API.postResetPasswordByAuth({ body: { email: state.email } });
 
                                     alert("Email sent! Please check your Inbox/Spam folder.");
                                 } catch (_) {
@@ -102,14 +105,14 @@ Body(Vertical(
 
                 if (type == "login") {
                     return Form(Grid(
-                        LinkButton("Sign in with Google", API.auth.oauthRedirect("google"))
+                        LinkButton("Sign in with Google", APITools.oauthRedirect("google"))
                             .setJustifyContent("center")
                             .addPrefix(
                                 Image(googleLogo, "Google Logo")
                                     .addClass("prefix-logo"),
                             )
                             .setMargin("0 0 .6rem"),
-                        LinkButton("Sign in with Discord", API.auth.oauthRedirect("discord"))
+                        LinkButton("Sign in with Discord", APITools.oauthRedirect("discord"))
                             .setJustifyContent("center")
                             .addPrefix(
                                 Image(discordLogo, "Discord Logo")

@@ -1,7 +1,7 @@
-import { API, LoadingSpinner, Navigation, stupidErrorAlert } from "shared/mod.ts";
+import { LoadingSpinner, Navigation } from "shared/mod.ts";
 import { asState, Body, Button, Color, Grid, isMobile, Label, LinkButton, SheetDialog, Table, TextInput, Vertical, WebGen } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
-import { AccountType, Wallet } from "../../spec/music.ts";
+import { API, stupidErrorAlert, Wallet, zAccountType } from "../../spec/mod.ts";
 import { changeThemeColor, RegisterAuthRefresh, renewAccessTokenIfNeeded, sheetStack } from "../shared/helper.ts";
 import "./wallet.css";
 
@@ -18,7 +18,7 @@ const state = asState({
 });
 
 async function handlePayoutResponse(amount: number) {
-    const response = await API.wallet.requestPayout(amount).then(stupidErrorAlert);
+    const response = await API.putWallet({ body: { amount: amount } }).then(stupidErrorAlert);
     if (response.type === "createAccount") {
         SheetDialog(
             sheetStack,
@@ -105,7 +105,7 @@ sheetStack.setDefault(Vertical(
                                 .addClass("details-item"),
                             Grid(
                                 Grid(
-                                    Label(wallet.accountType == AccountType.Default ? "Basic" : AccountType.Subscribed ? "Premium" : "VIP")
+                                    Label(wallet.accountType == zAccountType.enum.DEFAULT ? "Basic" : zAccountType.enum.SUBSCRIBED ? "Premium" : "VIP")
                                         .setTextSize("4xl")
                                         .setFontWeight("bold"),
                                     Label("Your Subscription")
@@ -145,4 +145,4 @@ sheetStack.setDefault(Vertical(
 Body(sheetStack);
 
 renewAccessTokenIfNeeded()
-    .then(async () => state.wallet = await API.wallet.get().then(stupidErrorAlert));
+    .then(async () => state.wallet = await API.getWallet().then(stupidErrorAlert));

@@ -1,34 +1,32 @@
-import { API } from "shared/mod.ts";
-import { stupidErrorAlert } from "shared/restSpec.ts";
 import { AdvancedImage, asState, Box, Button, CenterV, createFilePicker, DropAreaInput, DropDownInput, Empty, getErrorMessage, Grid, Horizontal, IconButton, Image, Label, MIcon, Spacer, TextInput, Validate } from "webgen/mod.ts";
 import { zod } from "webgen/zod.ts";
 import { templateArtwork } from "../../../assets/imports.ts";
 import genres from "../../../data/genres.json" with { type: "json" };
 import language from "../../../data/language.json" with { type: "json" };
-import { Artist, artistref, DATE_PATTERN, Drop, song, userString } from "../../../spec/music.ts";
+import { Artist, Drop, zSong, zArtistRef, DATE_PATTERN, API, stupidErrorAlert } from "../../../spec/mod.ts";
 import { allowedImageFormats, getSecondary } from "../../shared/helper.ts";
 import { uploadArtwork } from "../data.ts";
 import { EditArtistsDialog } from "./table.ts";
 
 export function ChangeDrop(drop: Drop, artistList?: Artist[]) {
     const state = asState({
-        artworkClientData: <AdvancedImage | undefined> (drop.artwork ? <AdvancedImage> { type: "direct", source: () => API.music.id(drop._id!).artwork().then(stupidErrorAlert) } : undefined),
+        artworkClientData: <AdvancedImage | undefined> (drop.artwork ? <AdvancedImage> { type: "direct", source: () => API.getArtworkByDropByMusic({ path: { dropId: drop._id }}).then(stupidErrorAlert) } : undefined),
         validationState: <zod.ZodError | undefined> undefined,
     });
 
     const { data, error, validate } = Validate(
         asState(drop),
         zod.object({
-            title: userString,
-            artists: artistref.array().refine((x) => x.some(({ type }) => type == "PRIMARY"), { message: "At least one primary artist is required" }),
+            title: zod.string(),
+            artists: zArtistRef.array(),//.refine((x) => x.some(({ type }) => type == "PRIMARY"), { message: "At least one primary artist is required" }),
             release: zod.string().regex(DATE_PATTERN, { message: "Not a date" }),
             language: zod.string(),
             primaryGenre: zod.string(),
             secondaryGenre: zod.string(),
-            compositionCopyright: userString,
-            soundRecordingCopyright: userString,
+            compositionCopyright: zod.string(),
+            soundRecordingCopyright: zod.string(),
             artwork: zod.string(),
-            songs: song.array().min(1, { message: "At least one song is required" }),
+            songs: zSong.array().min(1, { message: "At least one song is required" }),
         }),
     );
 
@@ -63,7 +61,7 @@ export function ChangeDrop(drop: Drop, artistList?: Artist[]) {
                         validator2.validate();
                         if (error.getValue()) return state.validationState = error.getValue();
                         if (validator2.error.getValue()) return state.validationState = validator2.error.getValue();
-                        if (validation) await API.music.id(data._id!).update(validation);
+                        if (validation) await API.patchIdByDropsByMusic({ path: { id: data._id! }, body: validation });
                         location.reload(); // Handle this Smarter => Make it a Reload Event.
                     }),
             ),

@@ -1,10 +1,11 @@
 import { getSecondary, getYearList, ProfilePicture, sheetStack } from "shared/helper.ts";
-import { API, Progress, stupidErrorAlert, Table2 } from "shared/mod.ts";
+import { Progress, Table2 } from "shared/mod.ts";
 import { asRef, asState, Box, Button, Checkbox, Color, DropDownInput, Grid, Horizontal, IconButton, InlineTextInput, Label, MIcon, Reference, SheetDialog, Spacer, TextInput } from "webgen/mod.ts";
 import genres from "../../../data/genres.json" with { type: "json" };
 import language from "../../../data/language.json" with { type: "json" };
-import { Artist, ArtistRef, ArtistTypes, Song } from "../../../spec/music.ts";
+import { API, Artist, ArtistRef, ArtistTypes, Song, stupidErrorAlert, zArtistTypes, zPostArtistsByMusicResponse } from "../../../spec/mod.ts";
 import "./table.css";
+import { assert } from "@std/assert/assert";
 
 export function ManageSongs(songs: Reference<Song[]>, uploadingSongs: Reference<{ [uploadId: string]: number }[]>, primaryGenre: string, artistList?: Artist[]) {
     return new Table2(songs)
@@ -79,7 +80,9 @@ export const createArtistSheet = (name?: string) => {
             Button("Create")
                 .setJustifySelf("start")
                 .onPromiseClick(async () => {
-                    await API.music.artists.create(state);
+                    await API.postArtistsByMusic({
+                        body: state
+                    });
                     dialog.close();
                     resolve();
                 })
@@ -98,7 +101,7 @@ export const EditArtistsDialog = (artists: Reference<ArtistRef[]>, provided?: Ar
     const artistList = provided ? asRef(provided) : asRef(<Artist[]> []);
 
     if (!provided) {
-        API.music.artists.list().then(stupidErrorAlert)
+        API.getArtistsByMusic().then(stupidErrorAlert)
             .then((x) => artistList.setValue(x));
     }
 
@@ -113,18 +116,18 @@ export const EditArtistsDialog = (artists: Reference<ArtistRef[]>, provided?: Ar
                     const data = asRef(artist.type);
                     data.listen((type, oldVal) => {
                         if (oldVal != undefined) {
-                            if (type == ArtistTypes.Primary || type == ArtistTypes.Featuring) {
+                            if (type == zArtistTypes.enum.PRIMARY || type == zArtistTypes.enum.FEATURING) {
                                 artists.updateItem(artist, { type, _id: null! } as ArtistRef);
                             } else {
                                 artists.updateItem(artist, { type, name: "" } as ArtistRef);
                             }
                         }
                     });
-                    return DropDownInput("Type", Object.values(ArtistTypes))
+                    return DropDownInput("Type", Object.values(zArtistTypes.Values))
                         .ref(data);
                 })
                 .addColumn("Name", (artist) => {
-                    if ([ArtistTypes.Primary, ArtistTypes.Featuring].includes(artist.type)) {
+                    if (artist.type === zArtistTypes.enum.PRIMARY || artist.type === zArtistTypes.enum.FEATURING) {
                         const data = asRef(artist._id as string);
                         data.listen((_id, oldVal) => (oldVal !== undefined) && artists.updateItem(artist, { ...artist, _id }));
                         return DropDownInput("Select Artist", list.map((y) => y._id))
@@ -135,7 +138,7 @@ export const EditArtistsDialog = (artists: Reference<ArtistRef[]>, provided?: Ar
                             .ref(data)
                             .addAction(MIcon("add"), "Create Artist", () => {
                                 createArtistSheet().then(() => {
-                                    API.music.artists.list().then(stupidErrorAlert)
+                                    API.getArtistsByMusic().then(stupidErrorAlert)
                                         .then((x) => {
                                             artistList.setValue(x);
                                         });
@@ -152,7 +155,7 @@ export const EditArtistsDialog = (artists: Reference<ArtistRef[]>, provided?: Ar
         Horizontal(
             Spacer(),
             Button("Add Artist")
-                .onClick(() => artists.addItem({ type: ArtistTypes.Primary, _id: null! } as ArtistRef)),
+                .onClick(() => artists.addItem({ type: zArtistTypes.enum.PRIMARY, _id: null! } as ArtistRef)),
         ).setPadding("0 0 3rem 0"),
         Horizontal(
             Spacer(),

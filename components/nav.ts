@@ -1,10 +1,10 @@
 import { delay } from "@std/async";
 import { activeUser, IsLoggedIn, permCheck, showProfilePicture } from "shared/helper.ts";
-import { API } from "shared/mod.ts";
 import { BasicLabel, Box, Button, ButtonStyle, Component, createElement, Custom, Empty, Grid, Horizontal, Image, Label, LinkButton, MIcon, Spacer, Vertical } from "webgen/mod.ts";
 import { Popover } from "webgen/src/components/Popover.ts";
 import "./nav.css";
 import { activeTitle, pages } from "./pages.ts";
+import { API } from "../spec/mod.ts";
 
 const Nav = (component: Component) => {
     const nav = createElement("nav");
@@ -102,7 +102,7 @@ export function DynaNavigation(type: "Home" | "Music" | "Settings" | "Admin" | "
                     Button("Resend Verify Email")
                         .addClass("link")
                         .onPromiseClick(async () => {
-                            await API.user.mail.resendVerifyEmail.post();
+                            await API.postResendVerifyEmailByMailByUser();
                             await delay(1000);
                         }),
                 ).addClass("email-banner", type.toLowerCase())

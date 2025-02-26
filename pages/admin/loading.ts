@@ -1,17 +1,17 @@
 import { delay } from "@std/async";
-import { API, StreamingUploadHandler } from "shared/mod.ts";
+import { StreamingUploadHandler } from "shared/mod.ts";
 import { UploadFilesDialog } from "webgen/mod.ts";
-import { DropType } from "../../spec/music.ts";
+import { API, APITools, stupidErrorAlert, zDropType } from "../../spec/mod.ts";
 import { state } from "./state.ts";
 
 export async function refreshState() {
     await Promise.all([
-        (async () => state.drops.reviews = await API.admin.drops.list(DropType.UnderReview))(),
-        (async () => state.drops.publishing = await API.admin.drops.list(DropType.Publishing))(),
-        (async () => state.groups = await API.admin.groups.list())(),
-        (async () => state.payouts = await API.admin.payouts.list())(),
-        (async () => state.wallets = await API.admin.wallets.list())(),
-        (async () => state.oauth = await API.oauth.list())(),
+        (async () => state.drops.reviews = await API.getDropsByAdmin({ query: { type: zDropType.enum.UNDER_REVIEW } }).then(stupidErrorAlert))(),
+        (async () => state.drops.publishing = await API.getDropsByAdmin({ query: { type: zDropType.enum.PUBLISHING } }).then(stupidErrorAlert))(),
+        (async () => state.groups = await API.getGroupsByAdmin().then(stupidErrorAlert))(),
+        (async () => state.$payouts.setValue(await API.getPayoutsByAdmin().then(stupidErrorAlert)))(),
+        (async () => state.wallets = await API.getWalletsByAdmin().then(stupidErrorAlert))(),
+        (async () => state.oauth = await API.getApplicationsByOauth().then(stupidErrorAlert))(),
     ]);
 }
 
@@ -26,7 +26,7 @@ export function upload(type: keyof typeof urls): Promise<string> {
             StreamingUploadHandler(url, {
                 failure: () => alert("Your Upload has failed. Please try a different file or try again later"),
                 uploadDone: () => console.log("Upload done"),
-                credentials: () => API.getToken(),
+                credentials: () => APITools.token() ?? "",
                 backendResponse: (id) => resolve(id),
                 onUploadTick: async () => await delay(2),
             }, list[0].file);

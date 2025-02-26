@@ -1,8 +1,8 @@
 import { saveBlob, sheetStack } from "shared/helper.ts";
-import { API, External, fileCache, RenderItem, stupidErrorAlert } from "shared/mod.ts";
+import { fileCache } from "shared/mod.ts";
 import { asRef, Box, Button, Cache, Color, Entry, Grid, IconButton, Image, MIcon, ref, SheetDialog, TextInput } from "webgen/mod.ts";
 import { templateArtwork } from "../../../assets/imports.ts";
-import { File, OAuthApp, Transcript, Wallet } from "../../../spec/music.ts";
+import { API, File, OAuthApp, stupidErrorAlert, Wallet } from "../../../spec/mod.ts";
 import { state } from "../state.ts";
 
 export function entryWallet(wallet: Wallet) {
@@ -24,14 +24,14 @@ export function entryOAuth(app: OAuthApp) {
         title: app.name,
         subtitle: app._id,
     })
-        .addPrefix(Cache(`appicon-${app._id}`, () => API.admin.files.download(app.icon), (type, val) => {
-            const imageSource = type == "loaded" && app.icon !== "" && val && val.status == "fulfilled" ? Image({ type: "direct", source: () => Promise.resolve(val.value) }, "O-Auth Icon") : Image(templateArtwork, "A Placeholder Artwork.");
+        .addPrefix(Cache(`appicon-${app._id}`, () => API.getDownloadByFileByFilesByAdmin({ path: { fileId: app.icon } }), (type, val) => {
+            const imageSource = type == "loaded" && app.icon !== "" && val && !val.error ? Image({ type: "direct", source: () => Promise.resolve(val.data) }, "O-Auth Icon") : Image(templateArtwork, "A Placeholder Artwork.");
             return Box(imageSource)
                 .addClass("image-square");
         }))
         .addSuffix(
             IconButton(MIcon("delete"), "delete").setColor(Color.Critical).onClick(() => {
-                API.oauth.delete(app._id).then(async () => state.oauth = await API.oauth.list());
+                API.deleteIdByApplicationsByOauth({ path: { id: app._id } }).then(async () => state.oauth = await API.getApplicationsByOauth().then(stupidErrorAlert));
             }),
         )
         .addSuffix(
@@ -73,12 +73,12 @@ export function entryFile(file: File) {
             .addClass("image-square");
     })).addSuffix(
         IconButton(MIcon("download"), "download").onClick(async () => {
-            const blob = await API.admin.files.download(file._id).then(stupidErrorAlert);
+            const blob = await API.getDownloadByFileByFilesByAdmin({ path: { fileId: file._id } }).then(stupidErrorAlert);
             saveBlob(blob, file.filename);
         }),
     ).addSuffix(
         IconButton(MIcon("delete"), "delete").setColor(Color.Critical).onClick(() => {
-            API.admin.files.delete(file._id);
+            API.deleteIdByFilesByAdmin({ path: { id: file._id } });
         }),
     );
 }
@@ -86,7 +86,7 @@ export function entryFile(file: File) {
 export async function loadFilePreview(id: string) {
     const cache = await fileCache();
     if (await cache.has(`file-icon-${id}`)) return await cache.get(`file-icon-${id}`);
-    const blob = await API.admin.files.download(id).then(stupidErrorAlert);
+    const blob = await API.getDownloadByFileByFilesByAdmin({ path: { fileId: id } }).then(stupidErrorAlert);
     cache.set(`file-icon-${id}`, blob);
     return blob;
 }

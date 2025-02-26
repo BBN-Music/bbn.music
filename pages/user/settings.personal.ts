@@ -1,8 +1,9 @@
 import { delay } from "@std/async";
 import { activeUser, allowedImageFormats, forceRefreshToken, IsLoggedIn, showProfilePicture } from "shared/helper.ts";
-import { API, StreamingUploadHandler, stupidErrorAlert } from "shared/mod.ts";
+import { StreamingUploadHandler } from "shared/mod.ts";
 import { asRef, asState, Box, Button, CenterV, createFilePicker, Empty, getErrorMessage, Grid, Horizontal, IconButton, Image, Label, MIcon, Spacer, TextInput, Validate, Vertical } from "webgen/mod.ts";
 import { zod } from "webgen/zod.ts";
+import { API, APITools, stupidErrorAlert } from "../../spec/mod.ts";
 
 export function ChangePersonal() {
     const state = asState({
@@ -32,7 +33,7 @@ export function ChangePersonal() {
                             backendResponse: () => {
                                 profilePicture.setValue(Image({ type: "direct", source: async () => await file }, "Profile Picture"));
                             },
-                            credentials: () => API.getToken(),
+                            credentials: () => APITools.token() ?? "",
                             onUploadTick: async (percentage) => {
                                 profilePicture.setValue(Image({ type: "uploading", filename: file.name, blobUrl, percentage }, "Profile Picture"));
                                 await delay(2);
@@ -77,7 +78,7 @@ export function ChangePersonal() {
                 const data = validate();
                 if (error.getValue()) return state.validationState = error.getValue();
                 if (data) {
-                    await API.user.setMe.post(state)
+                    await API.putUserByUser({body: state})
                         .then(stupidErrorAlert);
                 }
                 await forceRefreshToken();

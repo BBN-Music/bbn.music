@@ -1,9 +1,8 @@
 import { asRef, asState, Box, Button, CenterV, Component, Empty, Horizontal, Label, MIcon, Refable, Reference, Vertical } from "webgen/mod.ts";
 import { LoadingSpinner } from "./components.ts";
-import { displayError, External } from "./restSpec.ts";
 
 // TODO: don't rerender the complete list on update. virtual list?
-export const HeavyList = <T>(items: Refable<External<T[]> | "loading" | T[]>, map: (val: T) => Component) =>
+export const HeavyList = <T>(items: Refable<T[]>, map: (val: T) => Component) =>
     new class extends Component {
         placeholder = Box();
         loadMore = async (_offset: number, _limit: number) => {};
@@ -13,7 +12,7 @@ export const HeavyList = <T>(items: Refable<External<T[]> | "loading" | T[]>, ma
             super();
             console.debug("HeavyList got constructed");
             const list = asRef(items);
-            list.listen((val: External<T[]> | "loading" | T[]) => {
+            list.listen((val: T[]) => {
                 this.wrapper.textContent = "";
                 if (val === "loading") {
                     this.wrapper.append(
