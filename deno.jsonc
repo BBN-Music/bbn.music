@@ -1,5 +1,6 @@
 {
     "imports": {
+        "@hey-api/client-fetch": "https://esm.sh/@hey-api/client-fetch@0.7.2",
         "@std/assert": "jsr:@std/assert@^1.0.3",
         "@std/async": "jsr:@std/async@^1.0.4",
         "@std/collections": "jsr:@std/collections@^1.0.5",
@@ -8,7 +9,8 @@
         "@std/fmt": "jsr:@std/fmt@^1.0.1",
         "shared/": "./pages/shared/",
         // "webgen/": "../WebGen/"
-        "webgen/": "https://raw.githubusercontent.com/lucsoft/WebGen/55033da/"
+        "webgen/": "https://raw.githubusercontent.com/lucsoft/WebGen/55033da/",
+        "zod/": "./spec/zod/"
     },
     "lock": false,
     "compilerOptions": {
