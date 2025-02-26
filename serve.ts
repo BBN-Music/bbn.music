@@ -2,32 +2,33 @@ import { serve } from "https://deno.land/x/esbuild_serve@1.5.0/mod.ts";
 import { exists } from "jsr:@std/fs@1.0.5";
 import { createClient, defaultPlugins } from "npm:@hey-api/openapi-ts";
 
-let url = "https://bbn.one/openapi";
-await fetch("http://localhost:8443/openapi").then(() => url = "http://localhost:8443/openapi").catch(() => {});
+if (!(Deno.args.length > 0 && Deno.args[ 0 ] === "build")) {
+    let url = "https://bbn.one/openapi";
+    await fetch("http://localhost:8443/openapi").then(() => url = "http://localhost:8443/openapi").catch(() => { });
 
-await createClient({
-    input: await exists("openapi.json") ? "openapi.json" : url,
-    output: "spec/gen",
-    plugins: [
-        ...defaultPlugins,
-        "@hey-api/client-fetch",
-        "zod",
-        {
-            name: "@hey-api/sdk",
-            validator: true,
-        },
-    ],
-});
-function fixImports(path: string) {
-    Deno.writeTextFileSync(
-        path,
-        Deno.readTextFileSync(path)
-            .replaceAll(".gen';", ".gen.ts';")
-            .replaceAll("'zod';", "'zod/mod.ts';"),
-    );
+    await createClient({
+        input: await exists("openapi.json") ? "openapi.json" : url,
+        output: "spec/gen",
+        plugins: [
+            ...defaultPlugins,
+            "@hey-api/client-fetch",
+            "zod",
+            {
+                name: "@hey-api/sdk",
+                validator: true,
+            },
+        ],
+    });
+    [ "spec/gen/sdk.gen.ts", "spec/gen/zod.gen.ts" ].forEach((path) => {
+        Deno.writeTextFileSync(
+            path,
+            Deno.readTextFileSync(path)
+                .replaceAll(".gen';", ".gen.ts';")
+                .replaceAll("'zod';", "'zod/mod.ts';"),
+        );
+    });
+    Deno.removeSync("spec/gen/index.ts");
 }
-["spec/gen/sdk.gen.ts", "spec/gen/zod.gen.ts"].forEach(fixImports);
-Deno.removeSync("spec/gen/index.ts");
 
 const title = new Map(Object.entries({
     "index": "BBN Music",
