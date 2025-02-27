@@ -389,6 +389,29 @@ export const zArtistTypes = z.enum([
     'PRODUCER'
 ]);
 
+export const zFile = z.object({
+    _id: zObjectId,
+    length: z.number(),
+    chunkSize: z.number(),
+    uploadDate: z.string(),
+    filename: z.string(),
+    metadata: z.object({
+        type: z.string()
+    })
+});
+
+export const zReviewResponse = z.enum([
+    'APPROVED',
+    'DECLINE_COPYRIGHT',
+    'DECLINE_MALICIOUS_ACTIVITY'
+]);
+
+export const zOAuthScopes = z.enum([
+    'profile',
+    'email',
+    'phone'
+]);
+
 export const zRequestPayoutResponse = z.union([
     z.object({
         type: z.literal('createAccount'),

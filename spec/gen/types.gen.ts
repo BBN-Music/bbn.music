@@ -325,6 +325,21 @@ export type PayoutResponse = {
 
 export type ArtistTypes = 'PRIMARY' | 'FEATURING' | 'SONGWRITER' | 'PRODUCER';
 
+export type File = {
+    _id: ObjectId;
+    length: number;
+    chunkSize: number;
+    uploadDate: string;
+    filename: string;
+    metadata: {
+        type: string;
+    };
+};
+
+export type ReviewResponse = 'APPROVED' | 'DECLINE_COPYRIGHT' | 'DECLINE_MALICIOUS_ACTIVITY';
+
+export type OAuthScopes = 'profile' | 'email' | 'phone';
+
 export type RequestPayoutResponse = {
     type: 'createAccount';
     url: string;
@@ -554,15 +569,16 @@ export type GetTokenByFromUserInteractionByAuthData = {
     url: '/api/@bbn/auth/from-user-interaction/{token}';
 };
 
-export type PostProviderByOauthByAuthData = {
+export type PostCodeByProviderByOauthByAuthData = {
     body?: {
         [key: string]: unknown;
     };
     path: {
         provider: string;
+        code: string;
     };
     query?: never;
-    url: '/api/@bbn/auth/oauth/{provider}';
+    url: '/api/@bbn/auth/oauth/{provider}/{code}';
 };
 
 export type GetProviderByRedirectByAuthData = {
@@ -1135,6 +1151,9 @@ export type GetStatsByPublicData = {
 export type PutPlaceholderByTasksData = {
     body?: {
         artistTypes: ArtistTypes;
+        file: File;
+        reviewResponse: ReviewResponse;
+        oAuthScopes: OAuthScopes;
     };
     path?: never;
     query?: never;
@@ -1244,7 +1263,9 @@ export type GetWalletResponses = {
 export type GetWalletResponse = GetWalletResponses[keyof GetWalletResponses];
 
 export type PutWalletData = {
-    body?: unknown;
+    body?: {
+        amount: number;
+    };
     path?: never;
     query?: never;
     url: '/api/@bbn/wallet/';
