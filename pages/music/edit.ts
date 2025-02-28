@@ -204,7 +204,7 @@ const WarningDialog = SheetDialog(
     ),
 );
 //const prefix = "bbn.music/";
-const prefix = "bbn.one/share?s=";
+const prefix = "bbn.music/share?s=";
 const SharingDialog = SheetDialog(
     sheetStack,
     "Manage Sharing Link",

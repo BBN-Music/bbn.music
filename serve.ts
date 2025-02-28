@@ -2,9 +2,9 @@ import { serve } from "https://deno.land/x/esbuild_serve@1.5.0/mod.ts";
 import { exists } from "jsr:@std/fs@1.0.5";
 import { createClient, defaultPlugins } from "npm:@hey-api/openapi-ts";
 
-if (!(Deno.args.length > 0 && Deno.args[ 0 ] === "build")) {
-    let url = "https://bbn.one/openapi";
-    await fetch("http://localhost:8443/openapi").then(() => url = "http://localhost:8443/openapi").catch(() => { });
+if (!(Deno.args.length > 0 && Deno.args[0] === "build")) {
+    let url = "https://bbn.music/openapi";
+    await fetch("http://localhost:8443/openapi").then(() => url = "http://localhost:8443/openapi").catch(() => {});
 
     await createClient({
         input: await exists("openapi.json") ? "openapi.json" : url,
@@ -19,7 +19,7 @@ if (!(Deno.args.length > 0 && Deno.args[ 0 ] === "build")) {
             },
         ],
     });
-    [ "spec/gen/sdk.gen.ts", "spec/gen/zod.gen.ts" ].forEach((path) => {
+    ["spec/gen/sdk.gen.ts", "spec/gen/zod.gen.ts"].forEach((path) => {
         Deno.writeTextFileSync(
             path,
             Deno.readTextFileSync(path)
@@ -124,7 +124,7 @@ function createTemplate(name: string, path: string) {
     <link rel="me" href="https://chaos.social/@bbn">
     <link rel="apple-touch-icon" href="/images/apple.png">
     <link rel="stylesheet" href="${name}.css">
-    <script defer data-domain="bbn.one" src="https://pl.bbn.one/js/script.js"></script>
+    <script defer data-domain="bbn.music" src="https://pl.bbn.music/js/script.js"></script>
 </head>
 
 <body>

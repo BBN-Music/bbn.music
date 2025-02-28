@@ -11,9 +11,9 @@ import { uploadArtwork, uploadSongToDrop } from "./data.ts";
 import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
 
 // Do no move this import
-import "./newDrop.css";
-import { z } from "zod/mod.ts";
 import { sumOf } from "@std/collections";
+import { z } from "zod/mod.ts";
+import "./newDrop.css";
 
 await RegisterAuthRefresh();
 
@@ -62,8 +62,8 @@ API.getIdByDropsByMusic({ path: { id: dropId } }).then(stupidErrorAlert)
         creationState.artists = asState(drop.artists ?? [{ type: zArtistTypes.enum.PRIMARY, _id: null! }]);
         creationState.primaryGenre = drop.primaryGenre;
         creationState.secondaryGenre = drop.secondaryGenre;
-        creationState.compositionCopyright = drop.compositionCopyright ?? "BBN Music (via bbn.one)";
-        creationState.soundRecordingCopyright = drop.soundRecordingCopyright ?? "BBN Music (via bbn.one)";
+        creationState.compositionCopyright = drop.compositionCopyright ?? "BBN Music (via bbn.music)";
+        creationState.soundRecordingCopyright = drop.soundRecordingCopyright ?? "BBN Music (via bbn.music)";
         creationState.artwork = drop.artwork;
         creationState.artworkClientData = <AdvancedImage | undefined> (drop.artwork ? <AdvancedImage> { type: "direct", source: () => API.getArtworkByDropByMusic({ path: { dropId: dropId } }).then(stupidErrorAlert) } : undefined);
         creationState.songs = asState(drop.songs ?? []);
@@ -248,7 +248,6 @@ const wizard = creationState.$page.map((page) => {
     return LoadingSpinner();
 }).asRefComponent();
 
-
 const pageOne = zod.object({
     title: z.string(),
     artists: zArtistRef.array().refine((x) => x.some(({ type }) => type == "PRIMARY"), { message: "At least one primary artist is required" }).refine((x) => x.some(({ type }) => type == "SONGWRITER"), { message: "At least one songwriter is required" }),
@@ -278,7 +277,7 @@ const pageTwo = zod.object({
 });
 
 const pageThree = zod.object({
-    songs: zSong.omit({user: true}).array().min(1, { message: "At least one song is required" }).refine((songs) => songs.every(({ instrumental, explicit }) => !(instrumental && explicit)), "Can't have an explicit instrumental song"),
+    songs: zSong.omit({ user: true }).array().min(1, { message: "At least one song is required" }).refine((songs) => songs.every(({ instrumental, explicit }) => !(instrumental && explicit)), "Can't have an explicit instrumental song"),
     uploadingSongs: zod.array(zod.string()).max(0, { message: "Some uploads are still in progress" }),
 });
 

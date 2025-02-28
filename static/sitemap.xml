@@ -4,31 +4,31 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     <url>
-        <loc>https://bbn.one/</loc>
+        <loc>https://bbn.music/</loc>
         <lastmod>2024-03-14T12:00:00+00:00</lastmod>
     </url>
     <url>
-        <loc>https://bbn.one/music</loc>
+        <loc>https://bbn.music/music</loc>
         <lastmod>2024-03-14T12:00:00+00:00</lastmod>
     </url>
     <url>
-        <loc>https://bbn.one/signin</loc>
+        <loc>https://bbn.music/signin</loc>
         <lastmod>2023-07-30T12:00:00+00:00</lastmod>
     </url>
     <url>
-        <loc>https://bbn.one/p/distribution-agreement</loc>
+        <loc>https://bbn.music/p/distribution-agreement</loc>
         <lastmod>2023-07-30T12:00:00+00:00</lastmod>
     </url>
     <url>
-        <loc>https://bbn.one/p/privacy-policy</loc>
+        <loc>https://bbn.music/p/privacy-policy</loc>
         <lastmod>2023-07-30T12:00:00+00:00</lastmod>
     </url>
     <url>
-        <loc>https://bbn.one/p/terms-of-use</loc>
+        <loc>https://bbn.music/p/terms-of-use</loc>
         <lastmod>2023-07-30T12:00:00+00:00</lastmod>
     </url>
     <url>
-        <loc>https://bbn.one/p/imprint</loc>
+        <loc>https://bbn.music/p/imprint</loc>
         <lastmod>2023-07-30T12:00:00+00:00</lastmod>
     </url>
 </urlset>

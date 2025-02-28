@@ -30,10 +30,10 @@ export function Footer() {
                         ]] as const,
 
                         ["Resources", [
-                            // ["Blog", "https://blog.bbn.one/"],
-                            ["Status Page", "https://status.bbn.one/"],
+                            // ["Blog", "https://blog.bbn.music/"],
+                            ["Status Page", "https://status.bbn.music/"],
                             // ["Open Source", "https://github.com/bbn-holding/"],
-                            ["Support", "mailto:support@bbn.one"],
+                            ["Support", "mailto:support@bbn.music"],
                         ]] as const,
                     ].map(([text, items]) =>
                         Grid(
@@ -67,7 +67,7 @@ export function Footer() {
                     LinkButton("Join Now", "/signin")
                         .setStyle(ButtonStyle.Secondary)
                         .addClass("round-button"),
-                    LinkButton("Contact Us", "mailto:support@bbn.one")
+                    LinkButton("Contact Us", "mailto:support@bbn.music")
                         .addClass("round-button"),
                 )
                     .addClass("icon-bar"),

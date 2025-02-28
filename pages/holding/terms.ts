@@ -26,7 +26,7 @@ Body(Box(
             "“End User Content”: means all intellectual property works (including without limitation musical works, recordings, video clips, ring-tones, real-tones, lyrics, logos, covers and photos) as to which the End User has the necessary exploitation rights, including “Neigboring Rights”.",
         ),
         Label(
-            "“Platform”: refers to the digital music distribution platform available at https://bbn.one/c/music or your designated subdomain.",
+            "“Platform”: refers to the digital music distribution platform available at https://bbn.music/c/music or your designated subdomain.",
         ),
         Label("“Service”: means the service provided by Us through the Platform, in order to make the End User Content available on Digital Music Services (here, the Digital Distribution Services)."),
         Label("Hence, these are the rights and obligations of each of us:"),

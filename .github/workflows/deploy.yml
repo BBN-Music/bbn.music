@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Update bbn.one
+    name: Update bbn.music
     runs-on: ubuntu-latest
 
     steps:
@@ -41,7 +41,7 @@ jobs:
       - name: Lint
         run: deno lint
 
-      - name: Building bbn.one
+      - name: Building bbn.music
         run: deno run -A serve.ts build
 
       - name: Login to GitHub Container Registry

@@ -1,7 +1,7 @@
 import { asRef, Body, Empty, Horizontal, Image, Label, LinkButton, Vertical, WebGen } from "webgen/mod.ts";
+import { API, stupidErrorAlert } from "../../spec/mod.ts";
 import { changeThemeColor, sheetStack, streamingImages } from "../shared/helper.ts";
 import "./share.css";
-import { API, stupidErrorAlert } from "../../spec/mod.ts";
 
 WebGen({
     events: {
@@ -14,7 +14,7 @@ const data = Object.fromEntries(params.entries());
 if (!data.s) {
     data.s = location.pathname.replace("/", "");
     if (!data.s) {
-        location.href = "https://bbn.one/";
+        location.href = "https://bbn.music/";
     }
 }
 
@@ -29,7 +29,7 @@ const share = asRef(
 
 const reqShare = await API.getSlugByShareByMusic({ path: { slug: data.s } });
 if (reqShare.error) {
-    location.href = "https://bbn.one/";
+    location.href = "https://bbn.music/";
 }
 
 share.setValue(stupidErrorAlert(reqShare));

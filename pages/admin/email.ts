@@ -17,7 +17,7 @@ export const rawTemplate = (data: string) =>
     </mj-head>
     <mj-body>
         <mj-section background-color="white">
-            <mj-column width="80%"><mj-image padding="0" src="https://bbn.one/email-header.png"></mj-image></mj-column>
+            <mj-column width="80%"><mj-image padding="0" src="https://bbn.music/email-header.png"></mj-image></mj-column>
             ${data}
         </mj-section>
     </mj-body>
