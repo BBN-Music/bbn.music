@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/x/esbuild_serve@1.5.0/mod.ts";
 import { exists } from "jsr:@std/fs@1.0.5";
 import { createClient, defaultPlugins } from "npm:@hey-api/openapi-ts";
 
-let url = "https://bbn.one/openapi";
+let url = "https://bbn.music/openapi";
 await fetch("http://localhost:8443/openapi", {
     timeout: 1000,
 }).then(() => url = "http://localhost:8443/openapi").catch(() => {});
