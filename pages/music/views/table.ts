@@ -4,7 +4,7 @@ import languages from "../../../data/language.json" with { type: "json" };
 import { API, Artist, ArtistRef, Song, stupidErrorAlert, zArtistTypes } from "../../../spec/mod.ts";
 import "./table.css";
 
-export function ManageSongs(songs: WriteSignal<Song[]>, primaryGenre: WriteSignal<string | undefined>, genres: { primary: WriteSignal<string[]>; secondary: WriteSignal<Record<string, string[]>> }, artistList?: Artist[]) {
+export function ManageSongs(songs: WriteSignal<Song[]>, primaryGenre: WriteSignal<string | undefined>, genres: { primary: WriteSignal<string[]>; secondary: WriteSignal<Record<string, string[]>> }) {
     return Grid(
         Label("Manage your Songs").setTextSize("2xl"),
         Grid(
@@ -12,7 +12,7 @@ export function ManageSongs(songs: WriteSignal<Song[]>, primaryGenre: WriteSigna
             Label("Artists"),
             Label("Year"),
             Label("Language"),
-            Label("Secondary Genre"),
+            Label("Genre"),
             Label("Instrumental"),
             Label("Explicit"),
         ).setEvenColumns(8).setGap(),
@@ -35,7 +35,7 @@ export function ManageSongs(songs: WriteSignal<Song[]>, primaryGenre: WriteSigna
                 ).setEvenColumns(8).setGap();
             })
         )),
-    );
+    ).setGap();
     // return Table(songs);
     // return new Table2(songs)
     //     .setColumnTemplate("auto max-content max-content max-content max-content max-content max-content min-content")

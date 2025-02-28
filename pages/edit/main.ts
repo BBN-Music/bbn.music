@@ -33,17 +33,16 @@ const genres = asRefRecord({
     primary: <string[]> [],
     secondary: <Record<string, string[]>> {},
 });
-
+let id: string;
 const mainRoute = createRoute({
     path: "/c/music/edit",
     search: {
         id: zObjectId,
     },
     events: {
-        onActive: async () => {
-            const id = mainRoute.search.id;
-            localStorage.setItem("temp-id", id);
-            await API.getIdByDropsByMusic({ path: { id: id } }).then(stupidErrorAlert)
+        onActive: () => {
+            id = mainRoute.search.id;
+            API.getIdByDropsByMusic({ path: { id: id } }).then(stupidErrorAlert)
                 .then(async (drop) => {
                     creationState.gtin.setValue(drop.gtin);
                     creationState.title.setValue(drop.title);
@@ -59,7 +58,7 @@ const mainRoute = createRoute({
                     creationState.songs.setValue(drop.songs ?? []);
                     creationState.comments.setValue(drop.comments);
                 });
-            await API.getGenresByMusic().then(stupidErrorAlert).then((x) => {
+            API.getGenresByMusic().then(stupidErrorAlert).then((x) => {
                 genres.primary.setValue(x.primary);
                 genres.secondary.setValue(x.secondary);
             });
@@ -76,24 +75,37 @@ appendBody(
             ),
             Grid(
                 Grid(
+                    Label("< Go Back").setTextSize("2xl").setCssStyle("cursor", "pointer").onClick(() => history.back()).setCssStyle("color", "gray"),
                     Label("Edit Drop").setTextSize("3xl").setFontWeight("bold"),
-                    creationState.artworkData.map((artwork) => showPreviewImage({ artwork: artwork, _id: localStorage.getItem("temp-id")! })).value.setRadius("large").setWidth("200px").setCssStyle("overflow", "hidden"),
-                    TextInput(creationState.title, "Title"),
                     Grid(
-                        DateInput(creationState.release, "Release Date"),
-                        DropDown(Object.keys(languages), creationState.language, "Language").setValueRender((x) => (languages as Record<string, string>)[x]),
-                    ).setEvenColumns(2),
-                    SecondaryButton("Artists").onClick(() => {
-                        sheetStack.addSheet(EditArtistsDialog(creationState.artists));
-                    }),
-                    Grid(
-                        genres.primary.map((_) => DropDown(genres.primary, creationState.primaryGenre, "Primary Genre")).value,
-                        creationState.primaryGenre.map((primaryGenre) => DropDown(primaryGenre ? genres.secondary.getValue()[primaryGenre] : [], creationState.secondaryGenre, "Secondary Genre")).value,
-                    ).setEvenColumns(2),
+                        creationState.artworkData.map((artwork) => showPreviewImage({ artwork: artwork, _id: id })).value.setRadius("large").setWidth("200px").setHeight("200px").setCssStyle("overflow", "hidden"),
+                        Grid(
+                            TextInput(creationState.title, "Title"),
+                            Grid(
+                                DateInput(creationState.release, "Release Date"),
+                                DropDown(Object.keys(languages), creationState.language, "Language").setValueRender((x) => (languages as Record<string, string>)[x]),
+                            ).setEvenColumns(2).setGap(),
+                            SecondaryButton("Artists").onClick(() => {
+                                sheetStack.addSheet(EditArtistsDialog(creationState.artists));
+                            }),
+                            Grid(
+                                genres.primary.map((_) => DropDown(genres.primary, creationState.primaryGenre, "Primary Genre")).value,
+                                creationState.primaryGenre.map((primaryGenre) => DropDown(primaryGenre ? genres.secondary.getValue()[primaryGenre] : [], creationState.secondaryGenre, "Secondary Genre")).value,
+                            ).setEvenColumns(2).setGap(),
+                        ).setGap(),
+                    ).setTemplateColumns("min-content auto").setGap("1rem"),
                 ).setGap(),
-                ManageSongs(creationState.songs, creationState.primaryGenre, genres, creationState.artists),
+                ManageSongs(creationState.songs, creationState.primaryGenre, genres),
                 TextInput(creationState.comments, "Comments"),
-            ).setGap(),
+                SecondaryButton("Save").onClick(() => {
+                    API.patchIdByDropsByMusic({
+                        path: { id: id },
+                        body: Object.fromEntries(Object.entries(creationState).map((entry) => [entry[0], entry[1].getValue()])),
+                    }).then(stupidErrorAlert).then(() => {
+                        location.reload();
+                    });
+                }),
+            ).setGap().setMargin("1rem 0rem 0rem 0rem"),
         ),
     ),
 );
