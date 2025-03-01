@@ -3,6 +3,7 @@ import { Body, Button, ButtonStyle, Color, Empty, Entry, Grid, Horizontal, isMob
 import "../../assets/css/main.css";
 import "../../assets/css/music.css";
 import { DynaNavigation } from "../../components/nav.ts";
+import { API, stupidErrorAlert } from "../../spec/mod.ts";
 import { ChangeDrop } from "../music/views/changeDrop.ts";
 import { ChangeSongs } from "../music/views/changeSongs.ts";
 import { DropTypeToText } from "../music/views/list.ts";
@@ -10,7 +11,6 @@ import { changeThemeColor, permCheck, RegisterAuthRefresh, renewAccessTokenIfNee
 import { ApproveDialog, DeclineDialog, dialogState } from "./dialog.ts";
 import { reviewState } from "./state.ts";
 import { changeState, changeTypeDialog } from "./views/entryReview.ts";
-import { API, stupidErrorAlert } from "../../spec/mod.ts";
 
 await RegisterAuthRefresh();
 
@@ -183,5 +183,5 @@ renewAccessTokenIfNeeded()
 
 async function refreshReviewState() {
     reviewState.drop = await API.getIdByDropsByAdmin({ path: { id: data.id } }).then(stupidErrorAlert);
-    reviewState.drops = await API.getDropsByAdmin({ path: { user: reviewState.drop!.user._id } }).then(stupidErrorAlert);
+    reviewState.drops = await API.getDropsByAdmin({ query: { user: reviewState.drop!.user._id } }).then(stupidErrorAlert);
 }
