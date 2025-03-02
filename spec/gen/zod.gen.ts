@@ -444,10 +444,13 @@ export const zGetIdByDropsByAdminResponse = z.object({
     comments: z.string().optional(),
     _id: zObjectId.optional(),
     user: zUser.optional(),
-    type: zDropType.optional()
+    type: zDropType.optional(),
+    events: z.unknown().optional()
 }).merge(z.object({
     artistList: z.array(zArtist)
 }));
+
+export const zGetDownloadByFileByFilesByAdminResponse = z.string();
 
 export const zGetGroupsByAdminResponse = z.array(zGroup);
 
@@ -482,6 +485,8 @@ export const zGetDropsByMusicResponse = z.array(z.object({
     user: zObjectId.optional(),
     type: zDropType.optional()
 }));
+
+export const zGetDownloadByDropByDropsByMusicResponse = z.string();
 
 export const zGetIdByDropsByMusicResponse = z.object({
     gtin: z.string().optional(),
@@ -521,6 +526,8 @@ export const zPostSongsByMusicResponse = z.object({
 });
 
 export const zGetApplicationsByOauthResponse = z.array(zOAuthApp);
+
+export const zGetDownloadByClientByApplicationsByOauthResponse = z.string();
 
 export const zGetUserinfoByOauthResponse = z.object({
     id: z.string(),

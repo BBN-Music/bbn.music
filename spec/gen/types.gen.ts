@@ -396,6 +396,7 @@ export type GetIdByDropsByAdminResponses = {
         _id?: ObjectId;
         user?: User;
         type?: DropType;
+        events?: unknown;
     } & {
         artistList: Array<Artist>;
     };
@@ -411,6 +412,15 @@ export type GetDownloadByFileByFilesByAdminData = {
     query?: never;
     url: '/api/@bbn/admin/files/{fileId}/download';
 };
+
+export type GetDownloadByFileByFilesByAdminResponses = {
+    /**
+     * Successful operation
+     */
+    200: Blob | File;
+};
+
+export type GetDownloadByFileByFilesByAdminResponse = GetDownloadByFileByFilesByAdminResponses[keyof GetDownloadByFileByFilesByAdminResponses];
 
 export type DeleteIdByFilesByAdminData = {
     body?: never;
@@ -787,6 +797,15 @@ export type GetDownloadByDropByDropsByMusicData = {
     url: '/api/@bbn/music/drops/{dropId}/download';
 };
 
+export type GetDownloadByDropByDropsByMusicResponses = {
+    /**
+     * Successful operation
+     */
+    200: Blob | File;
+};
+
+export type GetDownloadByDropByDropsByMusicResponse = GetDownloadByDropByDropsByMusicResponses[keyof GetDownloadByDropByDropsByMusicResponses];
+
 export type GetUploadByDropByDropsByMusicData = {
     body?: never;
     path: {
@@ -1040,6 +1059,15 @@ export type GetDownloadByClientByApplicationsByOauthData = {
     query?: never;
     url: '/api/@bbn/oauth/applications/{clientId}/download';
 };
+
+export type GetDownloadByClientByApplicationsByOauthResponses = {
+    /**
+     * Successful operation
+     */
+    200: Blob | File;
+};
+
+export type GetDownloadByClientByApplicationsByOauthResponse = GetDownloadByClientByApplicationsByOauthResponses[keyof GetDownloadByClientByApplicationsByOauthResponses];
 
 export type DeleteIdByApplicationsByOauthData = {
     body?: never;
