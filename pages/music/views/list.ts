@@ -1,11 +1,11 @@
 import { showPreviewImage } from "shared/helper.ts";
 import { placeholder } from "shared/list.ts";
-import { BasicEntry } from "shared/mod.ts";
 import { asRef, Box, Empty, Entry, Grid, Image, Label } from "webgen/mod.ts";
 import { templateArtwork } from "../../../assets/imports.ts";
-import { type Artist, Drop, DropType, zDropType } from "../../../spec/mod.ts";
+import { AdminDrop, type Artist, Drop, DropType, zDropType } from "../../../spec/mod.ts";
+import { BasicEntry } from "shared/components.ts";
 
-export function ReviewEntry(x: Partial<Drop>, small: boolean = false) {
+export function ReviewEntry(x: AdminDrop, small: boolean = false) {
     return Entry(
         BasicEntry(
             Box(

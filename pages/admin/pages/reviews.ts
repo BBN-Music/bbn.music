@@ -1,11 +1,14 @@
 import { RegisterAuthRefresh } from "shared/helper.ts";
-import { asRef, Content, createPage, createRoute, Spinner } from "webgen/mod.ts";
-import { AdminDrop, API, stupidErrorAlert } from "../../../spec/mod.ts";
+import { Box, Content, createCachedLoader, createIndexPaginationLoader, createPage, createRoute, Empty, TextButton } from "webgen/mod.ts";
+import { API, stupidErrorAlert } from "../../../spec/mod.ts";
 import { ReviewEntry } from "../../music/views/list.ts";
 
 await RegisterAuthRefresh();
 
-export const reviews = asRef<AdminDrop[] | "loading">("loading");
+const loader = createCachedLoader(createIndexPaginationLoader({
+    limit: 30,
+    loader: (offset, limit) => API.getDropsByAdmin({ query: { type: "UNDER_REVIEW", _offset: offset, _limit: limit } }).then(stupidErrorAlert),
+}));
 
 createPage(
     {
@@ -13,7 +16,7 @@ createPage(
             path: "/admin?list=reviews",
             events: {
                 onLazyInit: async () => {
-                    reviews.setValue(await API.getDropsByAdmin({ query: { type: "UNDER_REVIEW" } }).then(stupidErrorAlert));
+                    await loader.next();
                 },
             },
         }),
@@ -21,6 +24,13 @@ createPage(
         weight: 3,
     },
     Content(
-        reviews.map((reviews) => reviews === "loading" ? Spinner() : reviews.map((review) => ReviewEntry(review))),
+        loader.items.map((reviews) => reviews.map((review) => ReviewEntry(review, true))),
+        Box(loader.hasMore.map((hasMore) =>
+            hasMore
+                ? TextButton("Load More").onPromiseClick(async () => {
+                    await loader.next();
+                })
+                : Empty()
+        )),
     ),
 );
