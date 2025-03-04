@@ -109,7 +109,6 @@ export const adminMenu = Navigation({
                     children: [
                         HeavyList(state.drops.$reviews, (it) => ReviewEntry(it))
                             .setPlaceholder(placeholder("No Drops", "Welcome! Create a server to get going. 🤖🛠️"))
-                            .enablePaging((offset, limit) => loadMore(state.drops.$reviews, () => API.admin.drops.list(zDropType.Enum.UNDER_REVIEW, offset, limit))),
                     ],
                 },
                 {
@@ -118,7 +117,6 @@ export const adminMenu = Navigation({
                     children: [
                         HeavyList(state.drops.$publishing, (it) => ReviewEntry(it))
                             .setPlaceholder(placeholder("No Drops", "Welcome! Create a server to get going. 🤖🛠️"))
-                            .enablePaging((offset, limit) => loadMore(state.drops.$publishing, () => API.admin.drops.list(zDropType.enum.PUBLISHING, offset, limit))),
                     ],
                 },
             ],
@@ -128,7 +126,6 @@ export const adminMenu = Navigation({
             title: ref`Groups`,
             children: [
                 HeavyList(state.$groups, (val) => GroupEntry(val))
-                    .enablePaging((offset, limit) => loadMore(state.$groups, () => API.admin.groups.list(offset, limit))),
             ],
         },
         {
@@ -175,7 +172,6 @@ export const adminMenu = Navigation({
             title: ref`Wallets`,
             children: [
                 HeavyList(state.$wallets, entryWallet)
-                    .enablePaging((offset, limit) => loadMore(state.$wallets, () => API.admin.wallets.list(offset, limit))),
             ],
         },
     ],

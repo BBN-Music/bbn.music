@@ -48,8 +48,7 @@ const title = new Map(Object.entries({
 }));
 
 const description = new Map(Object.entries({
-    "default": "BBN Holding encompasses a variety of businesses, including music and hosting services. BBN Music provides music distribution, publishing, and label services, while BBN Hosting offers Minecraft hosting services.",
-    "music": "BBN Music, your gateway to unlimited music distribution at a low cost. Maximize your reach without limits. Join us and let the world hear your music.",
+    "default": "BBN Music, your gateway to unlimited music distribution at a low cost. Maximize your reach without limits. Join us and let the world hear your music.",
 }));
 
 serve({
@@ -111,7 +110,7 @@ function createTemplate(name: string, path: string) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>${title.get(path) ?? "BBN Holding"}</title>
+    <title>${title.get(path) ?? "BBN Music"}</title>
     <link rel="manifest" href="/app.webmanifest">
     <meta charset='UTF-8'>
     <meta name="description" content="${description.get(path) ?? description.get("default")}">
@@ -119,7 +118,7 @@ function createTemplate(name: string, path: string) {
     <meta name='theme-color' content='black'>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="${title.get(path) ?? "BBN Holding"}">
+    <meta name="apple-mobile-web-app-title" content="${title.get(path) ?? "BBN Music"}">
     <meta name="google" content="notranslate"/>
     <link rel="me" href="https://chaos.social/@bbn">
     <link rel="apple-touch-icon" href="/images/apple.png">
