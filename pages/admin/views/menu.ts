@@ -4,7 +4,7 @@ import loader from "https://esm.sh/@monaco-editor/loader@1.4.0";
 import { activeUser, sheetStack, showProfilePicture } from "shared/helper.ts";
 import { HeavyList, loadMore, Navigation, placeholder } from "shared/mod.ts";
 import { asRef, asState, Box, Button, Color, Custom, Entry, Grid, Horizontal, isMobile, lazy, ref, SheetDialog, Spacer, Table, TextInput } from "webgen/mod.ts";
-import { API, stupidErrorAlert, zDropType } from "../../../spec/mod.ts";
+import { API, stupidErrorAlert } from "../../../spec/mod.ts";
 import { upload } from "../loading.ts";
 import { state } from "../state.ts";
 import { ReviewEntry } from "./entryReview.ts";
@@ -108,7 +108,7 @@ export const adminMenu = Navigation({
                     title: ref`Reviews`,
                     children: [
                         HeavyList(state.drops.$reviews, (it) => ReviewEntry(it))
-                            .setPlaceholder(placeholder("No Drops", "Welcome! Create a server to get going. 🤖🛠️"))
+                            .setPlaceholder(placeholder("No Drops", "Welcome! Create a server to get going. 🤖🛠️")),
                     ],
                 },
                 {
@@ -116,7 +116,7 @@ export const adminMenu = Navigation({
                     title: ref`Publishing`,
                     children: [
                         HeavyList(state.drops.$publishing, (it) => ReviewEntry(it))
-                            .setPlaceholder(placeholder("No Drops", "Welcome! Create a server to get going. 🤖🛠️"))
+                            .setPlaceholder(placeholder("No Drops", "Welcome! Create a server to get going. 🤖🛠️")),
                     ],
                 },
             ],
@@ -125,7 +125,7 @@ export const adminMenu = Navigation({
             id: "groups",
             title: ref`Groups`,
             children: [
-                HeavyList(state.$groups, (val) => GroupEntry(val))
+                HeavyList(state.$groups, (val) => GroupEntry(val)),
             ],
         },
         {
@@ -171,7 +171,7 @@ export const adminMenu = Navigation({
             id: "wallets",
             title: ref`Wallets`,
             children: [
-                HeavyList(state.$wallets, entryWallet)
+                HeavyList(state.$wallets, entryWallet),
             ],
         },
     ],
