@@ -41,7 +41,7 @@ sheetStack.setDefault(Vertical(
             ? Horizontal(
                 Vertical(
                     Image({ type: "direct", source: () => API.getArtworkBySlugByShareByMusic({ path: { slug: data.s } }).then(stupidErrorAlert) }, "A Song Artwork")
-                        .setMinHeight("250px").setMinWidth("250px").setBorderRadius("mid"),
+                        .setMaxHeight("300px").setMaxWidth("300px").setBorderRadius("mid"),
                     Label(shareVal.title).setTextAlign("center").setTextSize("2xl").setMargin("0 10px 0 0"),
                     Label(shareVal.artistNames.join(", ")).setTextAlign("center"),
                     Vertical(
