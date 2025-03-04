@@ -17,7 +17,7 @@ jobs:
         uses: docker/setup-buildx-action@v3.7.1
 
       - name: cache deno installation and deno.land dependencies
-        uses: actions/cache@v4.1.2
+        uses: actions/cache@v4.2.2
         with:
           key: ${{ runner.os }}-deno-${{ hashFiles('**/*') }}
           restore-keys: ${{ runner.os }}-deno-
