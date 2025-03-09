@@ -1,40 +1,45 @@
-import { ProfilePicture, sheetStack } from "shared/helper.ts";
-import { asRef, asRefRecord, Box, Checkbox, DropDown, Empty, Grid, Label, MaterialIcon, PrimaryButton, SecondaryButton, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
+import { getYearList, ProfilePicture, sheetStack } from "shared/helper.ts";
+import { asRef, asRefRecord, Box, Checkbox, Component, DropDown, Empty, Grid, InlineInput, Label, MaterialIcon, PrimaryButton, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
 import languages from "../../../data/language.json" with { type: "json" };
 import { API, Artist, ArtistRef, Song, stupidErrorAlert, zArtistTypes } from "../../../spec/mod.ts";
 import "./table.css";
 
-export function ManageSongs(songs: WriteSignal<Song[]>, primaryGenre: WriteSignal<string | undefined>, genres: { primary: WriteSignal<string[]>; secondary: WriteSignal<Record<string, string[]>> }) {
+export function ManageSongs(songs: WriteSignal<Song[]>, primaryGenre: WriteSignal<string>, genres: { primary: WriteSignal<string[]>; secondary: WriteSignal<Record<string, string[]>> }) {
+    const refs = songs.map((songsval) =>
+        songsval.map((song) => {
+            const ref = asRefRecord(song);
+            Object.entries(ref).forEach(([key, value]) => {
+                value.listen((newVal, oldVal) => {
+                    if (oldVal !== undefined) {
+                        songs.setValue(songs.value.map((x) => x !== song ? x : { ...song, [key]: newVal }));
+                    }
+                });
+            });
+            return ref;
+        })
+    );
     return Grid(
         Label("Manage your Songs").setTextSize("2xl"),
         Grid(
-            Label("Title"),
-            Label("Artists"),
-            Label("Year"),
-            Label("Language"),
-            Label("Genre"),
-            Label("Instrumental"),
-            Label("Explicit"),
-        ).setEvenColumns(8).setGap(),
-        Box(songs.map((songs) =>
-            songs.map((song) => {
-                const songobj = asRefRecord({ ...song, year: song.year.toString() });
-                return Grid(
-                    TextInput(songobj.title, "Title"),
-                    Box(
-                        Empty(),
-                        ...song.artists.map((artist) => "name" in artist ? ProfilePicture(Label(""), artist.name) : ProfilePicture(Label(""), artist._id)),
-                        SecondaryButton("add"),
-                    ),
-                    TextInput(songobj.year, "Year"),
-                    DropDown(Object.keys(languages), songobj.language, "Language").setValueRender((x) => (languages as Record<string, string>)[x]),
-                    primaryGenre.map((primaryGenre) => DropDown(primaryGenre ? genres.secondary.getValue()[primaryGenre] : [], songobj.secondaryGenre, "Secondary Genre")).value,
-                    Checkbox(songobj.instrumental).setDisabled(songobj.explicit),
-                    Checkbox(songobj.explicit).setDisabled(songobj.instrumental),
-                    PrimaryButton("").addPrefix(MaterialIcon("delete")).setWidth("min-content"),
-                ).setEvenColumns(8).setGap();
-            })
-        )),
+            refs.map((refs) =>
+                Object.entries({
+                    "Title": (ref) => InlineInput(ref.title, "Title"),
+                    "Artists": (ref) => Box(ref.artists.map((artists) => Box(Empty(), ...artists.map((artist) => "name" in artist ? ProfilePicture(Label(""), artist.name) : ProfilePicture(Label(""), artist._id)), PrimaryButton("+")))),
+                    // @ts-ignore
+                    "Year": (ref) => DropDown(getYearList().map(Number), ref.year, "Year").setValueRender((x) => x.toString()),
+                    "Language": (ref) => DropDown(Object.keys(languages), ref.language, "Language").setValueRender((key) => (languages as Record<string, string>)[key]),
+                    "Genre": (ref) => DropDown(primaryGenre.map((primaryGenre) => genres.secondary.map((secondary) => secondary[primaryGenre]).value), ref.secondaryGenre, "Secondary Genre"),
+                    "Instrumental": (ref) => Checkbox(ref.instrumental ?? false),
+                    "Explicit": (ref) => Checkbox(ref.explicit ?? false),
+                    "": (ref) => PrimaryButton("").addPrefix(MaterialIcon("delete")),
+                } as Record<string, (ref: { [Key in keyof Song]: WriteSignal<Song[Key]> }) => Component>).map(([key, value]) =>
+                    Grid(
+                        Label(key),
+                        Box(Empty(), ...refs.map(value)),
+                    ).setEvenColumns(1)
+                )
+            ),
+        ).setTemplateColumns("auto max-content 6rem 10rem 10rem max-content max-content min-content").setGap(),
     ).setGap();
     // return Table(songs);
     // return new Table2(songs)

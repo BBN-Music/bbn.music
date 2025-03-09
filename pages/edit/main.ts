@@ -1,5 +1,5 @@
 import { RegisterAuthRefresh, sheetStack, showPreviewImage } from "shared/helper.ts";
-import { appendBody, asRefRecord, Content, createRoute, DateInput, DialogContainer, DropDown, FullWidthSection, Grid, Label, SecondaryButton, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { appendBody, asRefRecord, Content, createRoute, DateInput, DialogContainer, DropDown, FullWidthSection, Grid, isMobile, Label, SecondaryButton, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
 import { API, ArtistRef, DropType, Song, stupidErrorAlert, zArtistTypes, zObjectId } from "../../spec/mod.ts";
 
@@ -84,16 +84,13 @@ appendBody(
                             Grid(
                                 DateInput(creationState.release, "Release Date"),
                                 DropDown(Object.keys(languages), creationState.language, "Language").setValueRender((x) => (languages as Record<string, string>)[x]),
-                            ).setEvenColumns(2).setGap(),
+                            ).setEvenColumns(isMobile.map((val) => val ? 1 : 2)).setGap(),
                             SecondaryButton("Artists").onClick(() => {
                                 sheetStack.addSheet(EditArtistsDialog(creationState.artists));
                             }),
-                            Grid(
-                                genres.primary.map((_) => DropDown(genres.primary, creationState.primaryGenre, "Primary Genre")).value,
-                                creationState.primaryGenre.map((primaryGenre) => DropDown(primaryGenre ? genres.secondary.getValue()[primaryGenre] : [], creationState.secondaryGenre, "Secondary Genre")).value,
-                            ).setEvenColumns(2).setGap(),
+                            genres.primary.map((_) => DropDown(genres.primary, creationState.primaryGenre, "Primary Genre")).value,
                         ).setGap(),
-                    ).setTemplateColumns("min-content auto").setGap("1rem"),
+                    ).setTemplateColumns(isMobile.map((val) => val ? "auto" : "min-content auto")).setGap("1rem"),
                 ).setGap(),
                 ManageSongs(creationState.songs, creationState.primaryGenre, genres),
                 TextInput(creationState.comments, "Comments"),
@@ -106,7 +103,7 @@ appendBody(
                     });
                 }),
             ).setGap().setMargin("1rem 0rem 0rem 0rem"),
-        ),
+        ).setContentMaxWidth("1230px"),
     ),
 );
 
