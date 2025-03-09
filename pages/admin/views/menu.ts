@@ -51,7 +51,7 @@ export const adminMenu = Navigation({
                     if (!data) return;
                     state.$search.setValue("loading");
                     state.$searchQuery.setValue(data);
-                    await API.admin.search(data).then((x) => state.$search.setValue(x));
+                    await API.getQueryBySearchByAdmin({ path: { query: data } }).then((x) => state.$search.setValue(x));
                 }, 1000)),
                 HeavyList(state.$search, (it) => {
                     switch (it._index) {
