@@ -26,10 +26,10 @@ export function uploadSongToDrop(songs: Reference<Omit<Song, "user">[]>, artists
     });
 
     StreamingUploadHandler(`music/songs/upload`, {
-        failure: () => {
+        failure: (message) => {
             songs.setValue(songs.getValue().filter((x) => x._id != uploadId));
             uploadingSongs.setValue(uploadingSongs.getValue().map((x) => ({ ...x, [uploadId]: -1 })));
-            alert("Your Upload has failed. Please try a different file or try again later");
+            alert("Your Upload has failed. Please try a different file or try again later. Error: "+message);
         },
         uploadDone: () => {
             uploadingSongs.setValue(uploadingSongs.getValue().map((x) => ({ ...x, [uploadId]: 100 })));
