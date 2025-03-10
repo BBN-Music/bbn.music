@@ -14,7 +14,7 @@ export function ChangeSongs(drop: FullDrop, artistList?: Artist[]) {
     const { data, error, validate } = Validate(
         asState(drop),
         zod.object({
-            songs: zSong.array().min(1, { message: "At least one song is required" }),
+            songs: zSong.omit({ user: true }).array().min(1, { message: "At least one song is required" }),
         }),
     );
 
