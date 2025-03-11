@@ -14,7 +14,7 @@
         // "zod/": "https://deno.land/x/zod@v3.24.1/",
         "zod/": "./spec/zod/",
         // "webgen/": "../WebGen/"
-        "webgen/": "https://raw.githubusercontent.com/Schlauer-Hax/WebGen/f5797df/"
+        "webgen/": "https://raw.githubusercontent.com/Schlauer-Hax/WebGen/c2aa17c/"
     },
     "lock": false,
     "compilerOptions": {

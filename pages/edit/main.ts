@@ -1,5 +1,5 @@
 import { RegisterAuthRefresh, sheetStack, showPreviewImage } from "shared/helper.ts";
-import { appendBody, asRefRecord, Content, createRoute, DateInput, DialogContainer, DropDown, FullWidthSection, Grid, isMobile, Label, SecondaryButton, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { appendBody, asRefRecord, Content, createRoute, DateInput, DialogContainer, DropDown, FullWidthSection, Grid, isMobile, Label, RefRecord, SecondaryButton, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
 import { API, ArtistRef, DropType, Song, stupidErrorAlert, zArtistTypes, zObjectId } from "../../spec/mod.ts";
 
@@ -23,7 +23,7 @@ const creationState = asRefRecord({
     artwork: <string | undefined> undefined,
     artworkData: <string | undefined> undefined,
     uploadingSongs: <Record<string, number>[]> [],
-    songs: <Song[]> [],
+    songs: <RefRecord<Song>[]> [],
     comments: <string | undefined> undefined,
     user: <string | undefined> undefined,
     type: <DropType | undefined> undefined,
@@ -55,8 +55,9 @@ const mainRoute = createRoute({
                     creationState.soundRecordingCopyright.setValue(drop.soundRecordingCopyright ?? "BBN Music (via bbn.one)");
                     creationState.artwork.setValue(drop.artwork);
                     creationState.artworkData.setValue(drop.artwork ? await API.getArtworkByDropByMusic({ path: { dropId: id } }).then((x) => URL.createObjectURL(x.data)) : templateArtwork);
-                    creationState.songs.setValue(drop.songs ?? []);
+                    creationState.songs.setValue((drop.songs ?? []).map((song) => asRefRecord(song)));
                     creationState.comments.setValue(drop.comments);
+                    console.log(creationState.songs.value);
                 });
             API.getGenresByMusic().then(stupidErrorAlert).then((x) => {
                 genres.primary.setValue(x.primary);
