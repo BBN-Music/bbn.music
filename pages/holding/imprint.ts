@@ -12,7 +12,7 @@ Body(Box(
         Label("Imprint", "h2"),
         Grid(
             Label("Phone:"),
-            Label("+49 176 16818623"),
+            Label("+49 175 9295753"),
             Label("EMail:"),
             Label("support@bbn.music"),
             Label("Internet:"),
@@ -29,7 +29,7 @@ Body(Box(
             Label("Maximilian Arzberger\nGregor Bigalke"),
             Label("Responsible for content:"),
             Label("Maximilian Arzberger, Gregor Bigalke\nRose-Luxemburg-Str. 37\n14482 Potsdam\nGermany"),
-        ).setEvenColumns(2).setGap().setCssStyle("white-space", "pre-wrap"),
+        ).setEvenColumns(2).setGap().setCssStyle("whiteSpace", "pre-wrap"),
         Label(`Alternative dispute resolution`, "h3"),
         Label(
             `The European Commission provides a platform for the out-of-court resolution of disputes (ODR platform), which can be viewed under ec.europa.eu/odr`,

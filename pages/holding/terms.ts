@@ -168,6 +168,6 @@ Body(Box(
             "10.7 Law and Jurisdiction: This Agreement shall be governed and construed in accordance with the laws of Germany. When valid by law, any dispute, controversy or claim arising under, out of or relating to this contract and any subsequent amendments of this contract, including, without limitation, its formation, validity, binding effect, interpretation, performance, breach or termination, as well as non-contractual claims, shall be referred to and finally determined by arbitration in accordance with the WIPO Arbitration Rules. The arbitral tribunal shall consist of a sole arbitrator. The language to be used in the arbitral proceedings shall be English. However, if local regulations establish any kind of limitation based on the nature of the End User, any claims or lawsuits between the parties will be resolved by the Courts of the country of Germany.",
         ),
         Label("Last updated: 2024-11-10"),
-    ).setGap().addClass("flow-text").setCssStyle("white-space", "pre-wrap"),
+    ).setGap().addClass("flow-text").setCssStyle("whiteSpace", "pre-wrap"),
     Footer(),
 ));
