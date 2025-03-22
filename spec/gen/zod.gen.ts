@@ -149,10 +149,12 @@ export const zUser = z.object({
     authentication: z.array(z.unknown()).optional(),
     profile: z.object({
         email: z.string(),
+        phone: z.string().optional(),
         username: z.string(),
         avatar: z.unknown().optional(),
         verified: z.object({
-            email: z.boolean()
+            email: z.boolean(),
+            phone: z.boolean().optional()
         })
     }),
     permissions: z.array(z.string()),
@@ -282,13 +284,15 @@ export const zSearchReturn = z.intersection(z.union([
             authentication: z.array(z.unknown()).optional(),
             profile: z.object({
                 email: z.string(),
+                phone: z.string().optional(),
                 username: z.string(),
                 avatar: z.union([
                     zObjectId,
                     z.string()
                 ]).optional(),
                 verified: z.object({
-                    email: z.boolean()
+                    email: z.boolean(),
+                    phone: z.boolean().optional()
                 })
             }),
             permissions: z.array(z.string()),

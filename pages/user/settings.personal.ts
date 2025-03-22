@@ -9,6 +9,7 @@ export function ChangePersonal() {
     const state = asState({
         email: activeUser.email,
         name: activeUser.username,
+        phone: activeUser.phone,
         validationState: <zod.ZodError | undefined> undefined,
     });
 
@@ -46,6 +47,7 @@ export function ChangePersonal() {
                 { width: 2 },
                 Vertical(
                     TextInput("text", "Name").ref(state.$name),
+                    TextInput("text", "Phone").ref(state.$phone),
                     TextInput("email", "Email").ref(state.$email),
                 ).setGap("20px"),
             ],
@@ -71,6 +73,7 @@ export function ChangePersonal() {
                     state,
                     zod.object({
                         name: zod.string().min(2),
+                        phone: zod.string().optional(),
                         email: zod.string().email(),
                     }),
                 );
@@ -78,7 +81,7 @@ export function ChangePersonal() {
                 const data = validate();
                 if (error.getValue()) return state.validationState = error.getValue();
                 if (data) {
-                    await API.putUserByUser({body: state})
+                    await API.putUserByUser({ body: state })
                         .then(stupidErrorAlert);
                 }
                 await forceRefreshToken();

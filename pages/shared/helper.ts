@@ -20,8 +20,10 @@ export type ProfileData = {
     _id: string;
     profile: {
         email: string;
+        phone?: string;
         verified?: {
             email?: boolean;
+            phone?: boolean;
         };
         username: string;
         avatar?: string;
@@ -58,6 +60,7 @@ function rawAccessToken() {
 
 export const activeUser = asState({
     email: <string | undefined> undefined,
+    phone: <string | undefined> undefined,
     username: <string> "--",
     avatar: <string | undefined> undefined,
     permission: <Permission[]> [],
@@ -73,6 +76,7 @@ export function updateActiveUserData() {
         const user = IsLoggedIn();
         if (!user) return;
         activeUser.username = user.profile.username;
+        activeUser.phone = user.profile.phone;
         activeUser.email = user.profile.email;
         activeUser.avatar = user.profile.avatar;
         activeUser.id = user._id;
