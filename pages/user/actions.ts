@@ -1,8 +1,8 @@
 import { assert } from "@std/assert";
 import { delay } from "@std/async";
+import { API, displayError, stupidErrorAlert } from "../../spec/mod.ts";
 import { forceRefreshToken, gotoGoal } from "../shared/helper.ts";
 import { state } from "./state.ts";
-import { API, displayError, stupidErrorAlert } from "../../spec/mod.ts";
 
 export async function loginUser() {
     try {
@@ -11,7 +11,7 @@ export async function loginUser() {
             body: {
                 email: state.email,
                 password: state.password,
-            }
+            },
         });
         if (rsp.error) {
             throw rsp.error;
@@ -37,7 +37,7 @@ export async function registerUser() {
                 name,
                 email,
                 password,
-            }
+            },
         });
         if (rsp.error) {
             throw rsp.error;
@@ -75,7 +75,7 @@ export async function handleStateChange() {
     }
     if (params.type == "reset-password" && params.token) {
         const rsp = await API.getTokenByFromUserInteractionByAuth({
-            path: { token: params.token }
+            path: { token: params.token },
         });
         if (rsp.error) {
             return state.error = displayError(rsp.error);
@@ -86,6 +86,16 @@ export async function handleStateChange() {
     }
     if (params.type == "verify-email" && params.token) {
         const rsp = await API.postTokenByValidateByMailByUser({ path: { token: params.token } });
+        if (rsp.error) {
+            return state.error = displayError(rsp.error);
+        }
+        await forceRefreshToken();
+        await delay(1000);
+        gotoGoal();
+        return;
+    }
+    if (params.type == "verify-phone" && params.token) {
+        const rsp = await API.postTokenByValidateByPhoneByUser({ path: { token: params.token } });
         if (rsp.error) {
             return state.error = displayError(rsp.error);
         }
