@@ -65,7 +65,6 @@ export function Footer() {
 
                         ["Products", [
                             ["Music", "/music"],
-                            ["Hosting", "/hosting"],
                         ]] as const,
 
                         // ["Use Cases", [
