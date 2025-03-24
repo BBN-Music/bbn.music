@@ -2,7 +2,6 @@ import { Footer } from "shared/footer.ts";
 import { RegisterAuthRefresh } from "shared/helper.ts";
 import { appendBody, Content, FullWidthSection, Grid, Label, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
-import "./flowText.css";
 
 await RegisterAuthRefresh();
 

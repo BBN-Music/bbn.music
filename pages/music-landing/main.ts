@@ -30,9 +30,6 @@ import criticz from "./assets/criticz.jpg";
 // @deno-types="https://raw.githubusercontent.com/lucsoft-DevTeam/lucsoft.de/master/custom.d.ts"
 import redz from "./assets/redz.jpg";
 
-import criticz from "./assets/criticz.jpg";
-import redz from "./assets/redz.jpg";
-
 await RegisterAuthRefresh();
 
 const images = () =>
@@ -109,7 +106,7 @@ appendBody(
     WebGenTheme(
         Content(
             FullWidthSection(
-                DynaNavigation("Music-Landing"),
+                DynaNavigation("Home"),
             ),
             FullWidthSection(
                 Empty()

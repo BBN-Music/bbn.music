@@ -1,8 +1,8 @@
-import { asRef, Box, Grid, Label, PrimaryButton, Spinner, Table, WriteSignal } from "webgen/mod.ts";
+import { asRef, Grid, Label, Table } from "webgen/mod.ts";
 import { Wallet, zAccountType } from "../../spec/mod.ts";
 
 export const WalletView = (wallet: Wallet) =>
-    Box(
+    Grid(
         Grid(
             Grid(
                 Label(`${Number(wallet.balance?.unrestrained! + wallet.balance?.restrained!).toFixed(2)} £`)
@@ -65,5 +65,5 @@ export const WalletView = (wallet: Wallet) =>
                     columnWidth: "auto",
                 },
             }),
-        ),
-    );
+        ).setWidth("102%"),
+    ).setGap();

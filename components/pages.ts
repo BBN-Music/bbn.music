@@ -1,6 +1,4 @@
 // @deno-types="https://raw.githubusercontent.com/lucsoft-DevTeam/lucsoft.de/master/custom.d.ts"
-import bbnHolding from "../assets/img/bbnHolding.svg";
-// @deno-types="https://raw.githubusercontent.com/lucsoft-DevTeam/lucsoft.de/master/custom.d.ts"
 import bbnMusicLogo from "../assets/img/bbnMusic.svg";
 // @deno-types="https://raw.githubusercontent.com/lucsoft-DevTeam/lucsoft.de/master/custom.d.ts"
 import bbnHostingLogo from "../assets/img/bbnHosting.svg";
@@ -11,7 +9,7 @@ import bbnWalletLogo from "../assets/img/bbnWallet.svg";
 
 import { Permission } from "../spec/mod.ts";
 
-export type NavigationType = "Home" | "Music-Landing" | "Music" | "Settings" | "Hosting" | "Admin" | "Wallet";
+export type NavigationType = "Home" | "Music" | "Settings" | "Hosting" | "Admin" | "Wallet";
 
 // 0: no login required, 1: show only when logged in, 2: show only when logged out
 export const pages: [logo: string, perm: Array<Permission>, route: string, login: 0 | 1 | 2][] = [
@@ -31,7 +29,7 @@ export const loginRequired = [
 ];
 
 export function activeLogo(type: NavigationType) {
-    if (type == "Music" || type === "Music-Landing") {
+    if (type == "Music") {
         return bbnMusicLogo;
     }
     if (type == "Hosting") {
@@ -43,11 +41,11 @@ export function activeLogo(type: NavigationType) {
     if (type == "Admin") {
         return bbnAdminLogo;
     }
-    return bbnHolding;
+    return bbnMusicLogo;
 }
 
 export function activeTitle(type: NavigationType) {
-    if (type == "Music" || type === "Music-Landing") {
+    if (type == "Music") {
         return "BBN Music";
     }
     if (type == "Hosting") {
@@ -59,5 +57,5 @@ export function activeTitle(type: NavigationType) {
     if (type == "Admin") {
         return "BBN Admin";
     }
-    return "BBN Holding";
+    return "BBN Music";
 }

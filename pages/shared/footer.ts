@@ -103,13 +103,10 @@ export function Footer() {
                 Grid(
                     Grid(
                         ...[
-                            // ["youtube","https://www.youtube.com/@bbn6775"],
-                            // ["twitter",  "https://twitter.com/BBN_Holding"],
-                            // ["facebook",  "https://www.facebook.com/bbn.holding/"],
                             ["discord", "https://discord.gg/dJevjw2fCe"],
                             ["instagram", "https://www.instagram.com/bbn.music/"],
                             ["mastodon", "https://chaos.social/@bbn"],
-                            // ["github", "GitHub", "https://github.com/bbn-holding/"],
+                            ["github", "https://github.com/bbn-music/"],
                         ]
                             .map(([icon, link]) =>
                                 TextButton("").addPrefix(BootstrapIcon(icon).setCssStyle("scale", "1.3"))
