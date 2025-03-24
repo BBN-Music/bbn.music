@@ -1,6 +1,6 @@
 import { fail } from "@std/assert/fail";
 import { LruCache, memoize } from "@std/cache";
-import { asRef, asRefRecord, Async, Box, Component, DropDown, Empty, Grid, Image, ImageComponent, Label, PrimaryButton, SheetHeader, Sheets, Spinner, WriteSignal } from "webgen/mod.ts";
+import { asRef, asRefRecord, Async, Box, Component, DropDown, Empty, Grid, Image, ImageComponent, Label, PrimaryButton, Reference, SheetHeader, Sheets, Spinner, WriteSignal } from "webgen/mod.ts";
 import { templateArtwork } from "../../assets/imports.ts";
 import { loginRequired } from "../../components/pages.ts";
 import { API, APITools, Permission, Song, stupidErrorAlert } from "../../spec/mod.ts";
@@ -41,8 +41,8 @@ export function IsLoggedIn(): ProfileData | null {
     }
 }
 
-export function getSecondary(secondary: Record<string, string[]>, primaryGenre?: string) {
-    return primaryGenre ? secondary[primaryGenre] : null;
+export function getSecondary(secondary: Record<string, string[]>, primaryGenre?: Reference<string | undefined>) {
+    return primaryGenre ? primaryGenre.map((x) => x ? secondary[x] : null).value : null;
 }
 
 function b64DecodeUnicode(value: string) {

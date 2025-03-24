@@ -1,106 +1,58 @@
-import { getYearList, ProfilePicture, sheetStack } from "shared/helper.ts";
-import { asRef, asRefRecord, Box, Checkbox, Component, DropDown, Empty, Grid, InlineInput, Label, MaterialIcon, PrimaryButton, RefRecord, SheetHeader, TextButton, TextInput, WriteSignal } from "webgen/mod.ts";
-import languages from "../../../data/language.json" with { type: "json" };
+import { sheetStack } from "shared/helper.ts";
+import { asRef, asRefRecord, Box, DropDown, Empty, Entry, Grid, Label, List, MaterialIcon, PrimaryButton, RefRecord, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
 import { API, Artist, ArtistRef, Song, stupidErrorAlert, zArtistTypes } from "../../../spec/mod.ts";
 import "./table.css";
 
-export function ManageSongs(songs: WriteSignal<RefRecord<Song>[]>, primaryGenre: WriteSignal<string | undefined>, genres: { primary: WriteSignal<string[]>; secondary: WriteSignal<Record<string, string[]>> }) {
-    const columns = Object.entries({
-        "Title": (song) => InlineInput(song.title, "Title"),
-        "Artists": (song) => Box(song.artists.map((artists) => Box(Empty(), ...artists.map((artist) => "name" in artist ? ProfilePicture(Label(""), artist.name) : ProfilePicture(Label(""), artist._id)), PrimaryButton("+")))),
-        // @ts-ignore
-        "Year": (song) => DropDown(getYearList().map(Number), song.year, "Year").setValueRender((x) => x.toString()),
-        "Language": (song) => DropDown(Object.keys(languages), song.language, "Language").setValueRender((key) => (languages as Record<string, string>)[key]),
-        "Genre": (song) => Box(primaryGenre.map((primaryGenre) => primaryGenre ? DropDown(genres.secondary.value[primaryGenre], song.secondaryGenre, "Secondary Genre") : Empty())),
-        "Instrumental": (song) => Checkbox(song.instrumental ?? false),
-        "Explicit": (song) => Checkbox(song.explicit ?? false),
-        "": () => PrimaryButton("").addPrefix(MaterialIcon("delete")),
-    } as Record<string, (song: RefRecord<Song>) => Component>);
+const songSheet = (song: RefRecord<Song>) => {
     return Grid(
-        Label("Manage your Songs").setTextSize("2xl"),
-        TextButton("Add Song").onClick(() => {
-            songs.setValue([
-                ...songs.value,
-                asRefRecord({
-                    _id: "",
-                    user: "",
-                    title: "",
-                    artists: [],
-                    year: 0,
-                    explicit: false,
-                    instrumental: false,
-                    file: "",
-                    language: "",
-                    primaryGenre: "",
-                    secondaryGenre: "",
-                    country: "",
-                    isrc: "",
-                }),
-            ]);
-        }),
+        SheetHeader("Edit Song", sheetStack),
         Grid(
-            asRef(columns.map(([key, render]) =>
-                Box(
-                    Label(key),
-                    Box(songs.map((songs) => songs.map(render))),
-                )
-            )),
-        ).setTemplateColumns("auto max-content 6rem 10rem 10rem max-content max-content min-content").setGap(),
+            Grid(
+                Label("Title").setFontWeight("bold"),
+                TextInput(song.title, "Title"),
+            ).setTemplateColumns("max-content auto"),
+            Grid(
+                Label("Description").setFontWeight("bold"),
+                TextInput(song.isrc!, "Description"),
+            ).setTemplateColumns("max-content auto"),
+        ).setGap(),
+    );
+};
+
+export function ManageSongs(songs: WriteSignal<Song[]>) {
+    function SongEntry(song: RefRecord<Song>) {
+        return Grid(
+            Grid(
+                Label(song.title).setTextSize("3xl").setFontWeight("bold"),
+                Label("Germany - 2024"),
+            )
+                .setHeight("max-content")
+                .setAlignSelf("center"),
+            Grid(Label("-").setTextSize("4xl").setCssStyle("color", "#b91616"), Label("Delete").setCssStyle("color", "#b91616")).setJustifySelf("end").setJustifyItems("center"),
+        )
+            .setTemplateColumns("max-content auto")
+            .setPadding("1rem 0");
+    }
+    return Grid(
+        Grid(
+            Empty(),
+            Label("Manage your Songs").setFontWeight("bold").setTextSize("2xl").setJustifySelf("center"),
+            Grid(
+                PrimaryButton("Add existing Song"),
+                PrimaryButton("Upload Song"),
+            ).setTemplateColumns("auto auto").setGap(),
+        ).setTemplateColumns("1fr 1fr 1fr").setGap(),
+        List(
+            songs,
+            100,
+            //TODO: hide arrow?
+            //TODO: hand refrecord change to writesignal or song arr
+            (data, index) => {
+                const song = asRefRecord(data);
+                return Entry(SongEntry(song)).onClick(() => sheetStack.addSheet(songSheet(song)));
+            },
+        ),
     ).setGap();
-    // return Table(songs);
-    // return new Table2(songs)
-    //     .setColumnTemplate("auto max-content max-content max-content max-content max-content max-content min-content")
-    //     .addColumn("Title", (song) =>
-    //         uploadingSongs.map((x) => {
-    //             if (x.filter((y) => y[song._id] !== undefined).length > 0) {
-    //                 return Progress(x.find((y) => y[song._id] !== undefined)[song._id]);
-    //             }
-    //             const title = asRef(song.title);
-    //             title.listen((newVal, oldVal) => (oldVal != undefined) && songs.updateItem(song, { ...song, title: newVal }));
-    //             return InlineTextInput("text", "blur").addClass("low-level").ref(title);
-    //         }).asRefComponent())
-    //     .addColumn("Artists", (song) =>
-    //         Box(...song.artists.map((artist) => "name" in artist ? ProfilePicture(Label(""), artist.name) : ProfilePicture(Label(""), artist._id)), IconButton(MIcon("add"), "add"))
-    //             .addClass("artists-list")
-    //             .onClick(() => {
-    //                 const artists = asRef(song.artists);
-    //                 artists.listen((newVal, oldVal) => (oldVal != undefined) && songs.updateItem(song, { ...song, artists: newVal }));
-    //                 EditArtistsDialog(artists, artistList).open();
-    //             }))
-    //     .addColumn("Year", (song) => {
-    //         const data = asRef(song.year.toString());
-    //         data.listen((x, oldVal) => (oldVal != undefined) && songs.updateItem(song, { ...song, year: parseInt(x) }));
-    //         return DropDownInput("Year", getYearList())
-    //             .ref(data)
-    //             .addClass("low-level");
-    //     })
-    //     .addColumn("Language", (song) => {
-    //         const data = asRef(song.language);
-    //         data.listen((x, oldVal) => (oldVal != undefined) && songs.updateItem(song, { ...song, language: x }));
-    //         return DropDownInput("Language", Object.keys(language))
-    //             .setRender((key) => language[<keyof typeof language> key])
-    //             .ref(data)
-    //             .addClass("low-level");
-    //     })
-    //     .addColumn("Secondary Genre", (song) => {
-    //         const data = asRef(song.secondaryGenre);
-    //         data.listen((x, oldVal) => (oldVal != undefined) && songs.updateItem(song, { ...song, secondaryGenre: x }));
-    //         return DropDownInput("Secondary Genre", getSecondary(genres, primaryGenre) ?? [])
-    //             .ref(data)
-    //             .addClass("low-level");
-    //     })
-    //     .addColumn("Instrumental", (song) =>
-    //         Checkbox(song.instrumental ?? false)
-    //             .setColor(song.explicit ? Color.Disabled : Color.Grayscaled)
-    //             .onClick((_, value) => songs.updateItem(song, { ...song, instrumental: value }))
-    //             .addClass("low-level"))
-    //     .addColumn("Explicit", (song) =>
-    //         Checkbox(song.explicit ?? false)
-    //             .setColor(song.instrumental ? Color.Disabled : Color.Grayscaled)
-    //             .onClick((_, value) => songs.updateItem(song, { ...song, explicit: value }))
-    //             .addClass("low-level"))
-    //     .addColumn("", (song) => IconButton(MIcon("delete"), "Delete").onClick(() => songs.setValue(songs.getValue().filter((x) => x._id != song._id))))
-    //     .addClass("inverted-class");
 }
 
 export const createArtistSheet = (name?: string) => {

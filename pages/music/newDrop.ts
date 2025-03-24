@@ -1,13 +1,13 @@
-import { allowedAudioFormats, allowedImageFormats, getSecondary, RegisterAuthRefresh, sheetStack } from "shared/helper.ts";
+import { sumOf } from "@std/collections";
+import { allowedImageFormats, ErrorMessage, getSecondary, RegisterAuthRefresh, sheetStack } from "shared/helper.ts";
 import { appendBody, asRef, asRefRecord, Box, Color, Content, createFilePicker, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, Image, Label, PrimaryButton, SecondaryButton, SheetHeader, Spinner, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { z } from "zod/mod.ts";
-// import "../../assets/css/main.css";
 import { templateArtwork } from "../../assets/imports.ts";
 import { DynaNavigation } from "../../components/nav.ts";
 import genres from "../../data/genres.json" with { type: "json" };
 import language from "../../data/language.json" with { type: "json" };
-import { API, ArtistRef, Song, stupidErrorAlert, zArtistTypes } from "../../spec/mod.ts";
-import { uploadArtwork, uploadSongToDrop } from "./data.ts";
+import { API, ArtistRef, Song, stupidErrorAlert, zArtistRef, zArtistTypes, zSong } from "../../spec/mod.ts";
+import { uploadArtwork } from "./data.ts";
 import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
 
 await RegisterAuthRefresh();
@@ -43,7 +43,7 @@ export const creationState = asRefRecord({
     songs: <Song[]> [],
     comments: <string | undefined> undefined,
     page: 0,
-    validationState: <z.ZodError | undefined> undefined,
+    validationState: <string | undefined> undefined,
 });
 API.getIdByDropsByMusic({ path: { id: dropId } }).then(stupidErrorAlert)
     .then(async (drop) => {
@@ -72,11 +72,12 @@ const additionalDropInformation = Grid(
 ).setGap();
 
 const validator = (page: number) => async () => {
-    // const { error, validate } = Validate(creationState, pages[page]);
-
-    // const data = validate();
-    // if (error.getValue()) return creationState.validationState = error.getValue();
-    //TODO: Validate
+    const { error } = pages[page - 1].safeParse(Object.fromEntries(Object.entries(creationState).map(([key, state]) => [key, state.value])));
+    if (error) {
+        creationState.validationState.setValue(`${error.issues[0].path[0]}: ${error.issues[0].message}`);
+        return;
+    }
+    creationState.validationState.setValue(undefined);
     await API.patchIdByDropsByMusic({ path: { id: dropId }, body: Object.fromEntries(Object.entries(creationState).map(([key, state]) => [key, state.value])) });
     creationState.page.setValue(page + 1);
     creationState.validationState.setValue(undefined);
@@ -85,21 +86,12 @@ const validator = (page: number) => async () => {
 const footer = (page: number) =>
     Grid(
         page == 1 ? SecondaryButton("Cancel").onClick(() => location.href = "/c/music") : SecondaryButton("Back").onClick(() => creationState.page.setValue(page - 1)),
-        Empty(),
-        // Box(
-        //     creationState.validationState.map((error) =>
-        //         error
-        //             ? CenterV(
-        //                 Label(getErrorMessage(error))
-        //                     .setMargin("0 0.5rem 0 0"),
-        //             )
-        //             : Empty()
-        //     ),
-        // ),
+        //TODO: utilize setInvalid on Inputs for better UX
+        ErrorMessage(creationState.validationState).setMargin("0.4rem 0 0 0"),
         PrimaryButton("Next").onClick(validator(page)),
     )
         .setGap()
-        .setTemplateColumns("1fr auto 1fr");
+        .setTemplateColumns("auto 50% auto");
 
 creationState.primaryGenre.listen((_, old) => {
     if (old !== undefined) {
@@ -127,8 +119,8 @@ const wizard = creationState.page.map((page) => {
                 Label("Set your target Audience").setFontWeight("bold").setTextSize("xl").setJustifySelf("center"),
                 Grid(
                     DropDown(Object.keys(genres), creationState.primaryGenre, "Primary Genre"),
-                    Box(creationState.primaryGenre.map((primaryGenre) => DropDown(getSecondary(genres, primaryGenre) ?? [], creationState.secondaryGenre, "Secondary Genre") // .setColor(getSecondary(genres, primaryGenre) ? Color.Grayscaled : Color.Disabled)
-                    )),
+                    //TODO: display as disabled if no primary genre is selected (webgen blocker)
+                    DropDown(getSecondary(genres, creationState.primaryGenre) ?? [], creationState.secondaryGenre, "Secondary Genre"),
                 )
                     .setGap()
                     .setDynamicColumns(15),
@@ -149,37 +141,18 @@ const wizard = creationState.page.map((page) => {
                         PrimaryButton("Manual Upload")
                             .onClick(() => createFilePicker(allowedImageFormats.join(",")).then((file) => uploadArtwork(dropId, file, creationState.artwork, isUploading, creationState.artworkData))),
                     ).setTemplateColumns("1fr auto"),
-                    Box(isUploading.map((uploading) => uploading ? Spinner() : Image(data!, "Drop Artwork").setMaxHeight("60%").setCssStyle("aspectRatio", "1 / 1"))),
+                    Box(isUploading.map((uploading) => uploading ? Spinner() : Image(data!, "Drop Artwork"))),
                 ).setGap();
             }),
             footer(page),
         ).setGap();
     } else if (page == 3) {
-        creationState.songs.listen((songs, oldVal) => {
-            if (oldVal != undefined) {
-                creationState.songs.setValue(songs);
-            }
-        });
         const songs = asRef(<undefined | Song[]> undefined);
         // const existingSongDialog = ExistingSongDialog(creationState.songs, songs);
         return Grid(
-            Grid(
-                Grid(
-                    Label("Manage your Music"),
-                    Box(
-                        PrimaryButton("Manual Upload")
-                            .onClick(() => createFilePicker(allowedAudioFormats.join(",")).then((file) => uploadSongToDrop(creationState.songs, creationState.artists, creationState.language, creationState.primaryGenre, creationState.secondaryGenre, creationState.uploadingSongs, file))).setMargin("0 1rem 0 0"),
-                        PrimaryButton("Add an existing Song")
-                            .onPromiseClick(async () => {
-                                songs.setValue((await API.music.songs.list().then(stupidErrorAlert)).filter((song) => creationState.songs.value.some((dropsong) => dropsong._id !== song._id)));
-                                // existingSongDialog.open();
-                            }),
-                    ),
-                    ManageSongs(creationState.songs, creationState.uploadingSongs, creationState.primaryGenre!),
-                ).setGap(),
-            ),
+            ManageSongs(creationState.songs),
             footer(page),
-        );
+        ).setGap();
     } else if (page == 4) {
         return Grid(
             Grid(
@@ -215,3 +188,38 @@ appendBody(
         ),
     ).setPrimaryColor(new Color("white")),
 );
+
+const pageOne = z.object({
+    title: z.string().min(1, { message: "Title is required" }).max(100, { message: "Title is too long" }),
+    artists: zArtistRef.array().refine((x) => x.some(({ type }) => type == "PRIMARY"), { message: "At least one primary artist is required" }).refine((x) => x.some(({ type }) => type == "SONGWRITER"), { message: "At least one songwriter is required" }),
+    release: z.string().regex(/\d\d\d\d-\d\d-\d\d/, { message: "Not a date" }),
+    language: z.string(),
+    primaryGenre: z.string(),
+    secondaryGenre: z.string(),
+    gtin: z.preprocess(
+        (x) => x === "" ? undefined : x,
+        z.string().trim()
+            .min(12, { message: "UPC/EAN: Invalid length" })
+            .max(13, { message: "UPC/EAN: Invalid length" })
+            .regex(/^\d+$/, { message: "UPC/EAN: Not a number" })
+            .refine((gtin) => parseInt(gtin.slice(-1), 10) === (10 - (sumOf(gtin.slice(0, -1).split("").map((digit, index) => parseInt(digit, 10) * ((16 - gtin.length + index) % 2 === 0 ? 3 : 1)), (x) => x) % 10)) % 10, {
+                message: "UPC/EAN: Invalid checksum",
+            }).optional(),
+    ),
+    compositionCopyright: z.string().min(1, { message: "Composition Copyright is required" }).max(100, { message: "Composition Copyright is too long" }),
+    soundRecordingCopyright: z.string().min(1, { message: "Sound Recording Copyright is required" }).max(100, { message: "Sound Recording Copyright is too long" }),
+});
+
+const pageTwo = z.object({
+    artwork: z.string(),
+    // artworkClientData: z.object({
+    //     type: z.string().refine((x) => x !== "uploading", { message: "Artwork is still uploading" }),
+    // }).transform(() => undefined),
+});
+
+const pageThree = z.object({
+    songs: zSong.omit({ user: true }).array().min(1, { message: "At least one song is required" }).refine((songs) => songs.every(({ instrumental, explicit }) => !(instrumental && explicit)), "Can't have an explicit instrumental song"),
+    uploadingSongs: z.array(z.string()).max(0, { message: "Some uploads are still in progress" }),
+});
+
+export const pages = <z.AnyZodObject[]> [pageOne, pageTwo, pageThree];
