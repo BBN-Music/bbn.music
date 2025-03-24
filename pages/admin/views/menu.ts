@@ -9,7 +9,7 @@ import { upload } from "../loading.ts";
 import { state } from "../state.ts";
 import { ReviewEntry } from "./entryReview.ts";
 import { GroupEntry } from "./entryUser.ts";
-import { entryFile, entryOAuth, entryWallet } from "./list.ts";
+import { entryOAuth, entryWallet } from "./list.ts";
 
 const lazyMonaco = lazy(() => loader.init());
 
@@ -22,7 +22,7 @@ export const adminMenu = Navigation({
             children: state.$payouts.map((it) =>
                 it === "loading"
                     ? [
-                        LoadingSpinner()
+                        LoadingSpinner(),
                     ]
                     : [
                         {
