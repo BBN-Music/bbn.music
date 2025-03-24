@@ -2,7 +2,7 @@ import { debounce } from "@std/async";
 import { sumOf } from "@std/collections";
 import loader from "https://esm.sh/@monaco-editor/loader@1.4.0";
 import { activeUser, sheetStack, showProfilePicture } from "shared/helper.ts";
-import { HeavyList, loadMore, Navigation, placeholder } from "shared/mod.ts";
+import { HeavyList, LoadingSpinner, loadMore, Navigation, placeholder } from "shared/mod.ts";
 import { asRef, asState, Box, Button, Color, Custom, Entry, Grid, Horizontal, isMobile, lazy, ref, SheetDialog, Spacer, Table, TextInput } from "webgen/mod.ts";
 import { API, stupidErrorAlert } from "../../../spec/mod.ts";
 import { upload } from "../loading.ts";
@@ -20,25 +20,25 @@ export const adminMenu = Navigation({
             id: "overview",
             title: `Overview`,
             children: state.$payouts.map((it) =>
-                it === "loading" || it.status === "rejected"
+                it === "loading"
                     ? [
-                        HeavyList(state.$payouts, () => Box()),
+                        LoadingSpinner()
                     ]
                     : [
                         {
                             id: "streams",
                             title: "Total Streams",
-                            subtitle: it ? `${sumOf(it.value, (payouts) => sumOf(payouts, (payout) => sumOf(payout.entries, (entry) => sumOf(entry.data, (data) => data.quantity)))).toLocaleString()} Streams` : "Loading...",
+                            subtitle: it ? ` Streams` : "Loading...",
                         },
                         {
                             id: "revenue",
                             title: "Calculated Revenue",
-                            subtitle: it ? `£ ${sumOf(it.value, (payouts) => sumOf(payouts, (payout) => sumOf(payout.entries, (entry) => sumOf(entry.data, (data) => data.revenue)))).toFixed(2)}` : "Loading...",
+                            subtitle: it ? `£ ${sumOf(it, (payouts) => payouts.sum).toFixed(2)}` : "Loading...",
                         },
                         {
                             id: "bbnmoney",
                             title: "BBN Revenue",
-                            subtitle: state.$wallets.map((it) => it == "loading" ? `---` : it.status == "rejected" ? "(failed)" : `£ ${sumOf(Object.values(it.value.find((wallet) => wallet.user === "62ea6fa5321b3702e93ca21c")?.balance!), (e) => e).toFixed(2)}` ?? 0),
+                            subtitle: state.$wallets.map((it) => it == "loading" ? `---` : `£ ${sumOf(Object.values(it.find((wallet) => wallet.user === "62ea6fa5321b3702e93ca21c")?.balance!), (e) => e).toFixed(2)}`),
                         },
                     ]
             ),
@@ -55,13 +55,6 @@ export const adminMenu = Navigation({
                 }, 1000)),
                 HeavyList(state.$search, (it) => {
                     switch (it._index) {
-                        case "transcripts":
-                            return Entry(
-                                {
-                                    title: it._source.with,
-                                    subtitle: it._index,
-                                },
-                            );
                         case "drops":
                             return ReviewEntry(it._source);
                         case "users":
@@ -83,17 +76,6 @@ export const adminMenu = Navigation({
                                     SheetDialog(sheetStack, "User", Custom(box).setHeight("800px").setWidth("1200px")).open();
                                 })
                                 .addPrefix(showProfilePicture(it._source));
-                        case "files":
-                            return entryFile(it._source);
-                        case "user-events":
-                            return Entry({
-                                title: it._source.type,
-                                subtitle: `${it._source.userId} - ${it._source.ip}`,
-                            });
-                        case "empty":
-                            return placeholder("Start Searching", "Type in the search bar to get started");
-                        case "none":
-                            return placeholder("No Results", "Try a different search term");
                     }
                 })
                     .enablePaging((offset, limit) => loadMore(state.$search, () => API.admin.search(state.searchQuery, offset, limit))),
