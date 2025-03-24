@@ -1,17 +1,22 @@
 import { allowedAudioFormats, allowedImageFormats, getSecondary, RegisterAuthRefresh, sheetStack } from "shared/helper.ts";
-import { appendBody, asRef, asRefRecord, Box, Color, Content, createFilePicker, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, Image, Label, PrimaryButton, SecondaryButton, SheetHeader, Spinner, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { appendBody, asRef, asRefRecord, Box, Color, Content, createFilePicker, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, Image, Label, PrimaryButton, SecondaryButton, SheetHeader, Spinner, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { z } from "zod/mod.ts";
-import "../../assets/css/main.css";
+// import "../../assets/css/main.css";
 import { templateArtwork } from "../../assets/imports.ts";
 import { DynaNavigation } from "../../components/nav.ts";
 import genres from "../../data/genres.json" with { type: "json" };
 import language from "../../data/language.json" with { type: "json" };
 import { API, ArtistRef, Song, stupidErrorAlert, zArtistTypes } from "../../spec/mod.ts";
 import { uploadArtwork, uploadSongToDrop } from "./data.ts";
-import "./newDrop.css";
 import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
 
 await RegisterAuthRefresh();
+
+document.adoptedStyleSheets.push(css`
+body {
+    background: linear-gradient(139.46deg, #F19D2D 6.59%, #DB5721 101.73%) no-repeat center center fixed !important;
+}
+`);
 
 const params = new URLSearchParams(location.search);
 
@@ -79,7 +84,7 @@ const validator = (page: number) => async () => {
 
 const footer = (page: number) =>
     Grid(
-        page == 0 ? SecondaryButton("Cancel").setJustifyContent("center").onClick(() => location.href = "/c/music") : SecondaryButton("Back").setJustifyContent("center").onClick(() => creationState.page.setValue(page - 1)),
+        page == 1 ? SecondaryButton("Cancel").onClick(() => location.href = "/c/music") : SecondaryButton("Back").onClick(() => creationState.page.setValue(page - 1)),
         Empty(),
         // Box(
         //     creationState.validationState.map((error) =>
@@ -91,7 +96,7 @@ const footer = (page: number) =>
         //             : Empty()
         //     ),
         // ),
-        PrimaryButton("Next").setJustifyContent("center").onClick(validator(page)),
+        PrimaryButton("Next").onClick(validator(page)),
     )
         .setGap()
         .setTemplateColumns("1fr auto 1fr");

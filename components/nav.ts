@@ -84,7 +84,7 @@ function NavigationBar(type: NavigationType) {
         Box(
             activeUser.email.map((isLoggedIn) => {
                 if (!isLoggedIn) {
-                    if ((type === "Home" || type === "Music" || type === "Music-Landing") && !location.pathname.startsWith("/signin")) {
+                    if ((type === "Home" || type === "Music") && !location.pathname.startsWith("/signin")) {
                         return PrimaryButton("Sign in")
                             .onClick(() => location.href = "/signin")
                             .addStyle(css`

@@ -21,7 +21,7 @@ export function Navigation(actions?: Component) {
                                                 .map((active) =>
                                                     (active ? PrimaryButton(item.label) : SecondaryButton(item.label))
                                                         .onPromiseClick(async () => {
-                                                            await window.navigation.navigate(item.route.entry.patternUrl).finished;
+                                                            await navigation.navigate(item.route.entry.patternUrl).finished;
                                                         })
                                                 ),
                                         )

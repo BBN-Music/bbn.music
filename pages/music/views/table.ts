@@ -39,7 +39,7 @@ export function ManageSongs(songs: WriteSignal<RefRecord<Song>[]>, primaryGenre:
             ]);
         }),
         Grid(
-            asRef(columns.map(([ key, render ]) =>
+            asRef(columns.map(([key, render]) =>
                 Box(
                     Label(key),
                     Box(songs.map((songs) => songs.map(render))),
@@ -154,7 +154,7 @@ export const EditArtistsDialog = (artists: WriteSignal<ArtistRef[]>, provided?: 
                     Label("Name").setFontWeight("bold"),
                     Label("Action").setFontWeight("bold"),
                 ).setTemplateColumns("30% 60% 10%"),
-                Box(artists.map((x) =>
+                Grid(artists.map((x) =>
                     x.map((artist) => {
                         const refArtist = asRefRecord(artist);
                         refArtist.type.listen((val, oldVal) => {
@@ -164,7 +164,7 @@ export const EditArtistsDialog = (artists: WriteSignal<ArtistRef[]>, provided?: 
                                     name: val === zArtistTypes.enum.PRODUCER || val === zArtistTypes.enum.SONGWRITER ? artist.type === zArtistTypes.enum.PRODUCER || artist.type === zArtistTypes.enum.SONGWRITER ? artist.name : "" : undefined,
                                     _id: val === zArtistTypes.enum.PRIMARY || val === zArtistTypes.enum.FEATURING ? artist.type === zArtistTypes.enum.PRIMARY || artist.type === zArtistTypes.enum.FEATURING ? artist._id : null! : undefined,
                                 } as typeof artist;
-                                artists.setValue(x.map((x) => x !== artist ? x : newArtist));
+                                artists.setValue(x.map((x) => x === artist ? newArtist : x));
                             }
                         });
                         if (artist.type === zArtistTypes.enum.SONGWRITER || artist.type === zArtistTypes.enum.PRODUCER) {
@@ -186,9 +186,9 @@ export const EditArtistsDialog = (artists: WriteSignal<ArtistRef[]>, provided?: 
                             PrimaryButton("").addPrefix(MaterialIcon("delete")).onClick(() => {
                                 artists.setValue(x.toSpliced(x.indexOf(artist), 1));
                             }),
-                        ).setGap().setTemplateColumns("30% 60% 10%");
+                        ).setGap().setTemplateColumns("30% 60% auto");
                     })
-                )),
+                )).setGap(),
             ).setGap()
         )),
         PrimaryButton("Add Artist")
@@ -197,5 +197,6 @@ export const EditArtistsDialog = (artists: WriteSignal<ArtistRef[]>, provided?: 
         PrimaryButton("Save")
             .onClick(() => sheetStack.removeOne()),
     )
-        .setGap();
+        .setGap()
+        .setWidth("70vh");
 };

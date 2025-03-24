@@ -1357,7 +1357,3 @@ export type PostEventByWhatsappData = {
     query?: never;
     url: '/api/@bbn/whatsapp/event';
 };
-
-export type ClientOptions = {
-    baseUrl: 'https://example.one/api' | (string & {});
-};

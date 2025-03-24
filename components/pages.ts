@@ -16,7 +16,7 @@ export const pages: [logo: string, perm: Array<Permission>, route: string, login
     [bbnAdminLogo, ["/bbn/manage", "/hmsys/user"], "/admin", 1],
 ];
 
-// Moved this to the up array when we use the hmsys permission system
+// Move this to the up array when we use the hmsys permission system
 export const loginRequired = [
     "/c/music",
     "/admin",
