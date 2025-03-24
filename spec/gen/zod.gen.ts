@@ -551,3 +551,5 @@ export const zPutUserByUserResponse = z.object({});
 export const zGetWalletResponse = zWallet;
 
 export const zPutWalletResponse = zRequestPayoutResponse;
+
+export const zGetChatsByWhatsappResponse = z.array(z.unknown());
