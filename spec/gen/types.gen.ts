@@ -92,10 +92,12 @@ export type User = {
     }>;
     profile: {
         email: string;
+        phone?: string;
         username: string;
         avatar?: unknown;
         verified: {
             email: boolean;
+            phone?: boolean;
         };
     };
     permissions: Array<string>;
@@ -226,10 +228,12 @@ export type SearchReturn = ({
         }>;
         profile: {
             email: string;
+            phone?: string;
             username: string;
             avatar?: ObjectId | string;
             verified: {
                 email: boolean;
+                phone?: boolean;
             };
         };
         permissions: Array<string>;
@@ -1230,6 +1234,17 @@ export type PostTokenByValidateByMailByUserData = {
     url: '/api/@bbn/user/mail/validate/{token}';
 };
 
+export type PostTokenByValidateByPhoneByUserData = {
+    body?: {
+        [key: string]: unknown;
+    };
+    path: {
+        token: string;
+    };
+    query?: never;
+    url: '/api/@bbn/user/phone/validate/{token}';
+};
+
 export type GetUploadByAvatarBySetMeByUserData = {
     body?: never;
     path?: never;
@@ -1241,6 +1256,7 @@ export type PutUserByUserData = {
     body?: {
         name: string;
         email: string;
+        phone?: string;
         password?: string;
     };
     path?: never;
@@ -1308,11 +1324,40 @@ export type PutWalletResponses = {
 
 export type PutWalletResponse = PutWalletResponses[keyof PutWalletResponses];
 
-export type GetHealthzData = {
+export type GetChatsByWhatsappData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/@bbn/whatsapp/chats';
+};
+
+export type GetChatsByWhatsappResponses = {
+    /**
+     * Successful operation
+     */
+    200: Array<unknown>;
+};
+
+export type GetChatsByWhatsappResponse = GetChatsByWhatsappResponses[keyof GetChatsByWhatsappResponses];
+
+export type GetEventByWhatsappData = {
     body?: {
         [key: string]: unknown;
     };
     path?: never;
     query?: never;
-    url: '/healthz';
+    url: '/api/@bbn/whatsapp/event';
+};
+
+export type PostEventByWhatsappData = {
+    body?: {
+        [key: string]: unknown;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/@bbn/whatsapp/event';
+};
+
+export type ClientOptions = {
+    baseUrl: 'https://example.one/api' | (string & {});
 };

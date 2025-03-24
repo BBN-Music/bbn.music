@@ -1,3 +1,4 @@
+import "./pages/chats.ts";
 import "./pages/groups.ts";
 import "./pages/oauth.ts";
 import "./pages/overview.ts";

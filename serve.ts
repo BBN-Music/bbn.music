@@ -51,8 +51,7 @@ const title = new Map(Object.entries({
 }));
 
 const description = new Map(Object.entries({
-    "default": "BBN Holding encompasses a variety of businesses, including music and hosting services. BBN Music provides music distribution, publishing, and label services, while BBN Hosting offers Minecraft hosting services.",
-    "music": "BBN Music, your gateway to unlimited music distribution at a low cost. Maximize your reach without limits. Join us and let the world hear your music.",
+    "default": "BBN Music, your gateway to unlimited music distribution at a low cost. Maximize your reach without limits. Join us and let the world hear your music.",
 }));
 
 serve({
@@ -81,7 +80,6 @@ serve({
         "images/apple.png": "./static/images/apple.png",
     },
     pages: {
-        // "index": "./pages/holding/index.ts",
         "index": "./pages/music-landing/main.ts",
         "p/privacy-policy": "./pages/holding/privacyPolicy.ts",
         "p/terms": "./pages/holding/terms.ts",
