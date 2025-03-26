@@ -2,7 +2,7 @@ import { Footer } from "shared/footer.ts";
 import { RegisterAuthRefresh } from "shared/helper.ts";
 import { Image, MaterialIcon, mediaQueryRef, PrimaryButton, WebGenTheme } from "webgen/components/mod.ts";
 import { Box, Content, Empty, FullWidthSection, Grid, Label } from "webgen/core/mod.ts";
-import { appendBody, asRef, Color, Component, css } from "webgen/mod.ts";
+import { appendBody, asRef, Color, css } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
 
 // @deno-types="https://raw.githubusercontent.com/lucsoft-DevTeam/lucsoft.de/master/custom.d.ts"
@@ -33,7 +33,7 @@ import redz from "./assets/redz.jpg";
 await RegisterAuthRefresh();
 
 const images = () =>
-    Array.from({ length: 4 }, (): Component[] => [
+    Array.from({ length: 4 }, () => [
         Image(apple, "Apple Music"),
         Image(deezer, "Deezer"),
         Image(facebook, "Facebook"),
@@ -292,55 +292,58 @@ appendBody(
                 )
                     .setMargin("10px 0 40px"),
                 Grid(
-                    Grid(asRef(images()))
-                        .setAutoFlow("column")
-                        .setGap("38px")
-                        .addClass("icon-carousel"),
-                    Grid(asRef(images().reverse()))
-                        .setAutoFlow("column")
-                        .setGap("38px")
-                        .addClass("icon-carousel")
-                        .addClass("icon-carousel-reversed"),
-                )
-                    .setGap("35px")
-                    .addClass("icon-carousel-container"),
+                    Empty(),
+                    ...[false, true].map((reversed) =>
+                        Grid(asRef(
+                            (reversed ? images().reverse() : images()).map((x) =>
+                                x.addStyle(css`
+                                    :host {
+                                        width: 72px;
+                                        height: 72px;
+                                        filter: brightness(0) invert(1);
+                                    }
+                                    :host([theme="light"]) {
+                                        filter: brightness(0) invert(0);
+                                    }
+                                `)
+                            ),
+                        ))
+                            .setAutoFlow("column")
+                            .setGap("38px")
+                            .addStyle(css`
+                                :host {
+                                    animation: 30s infinite linear carousel;
+                                }
+                                @keyframes carousel {
+                                    0% {
+                                        /* calc (width + gap) * number of icons * -1 */
+                                        transform: translateX(calc((72px + 38px) * -8));
+                                    }
+            
+                                    100% {
+                                        /* calc (width + gap) * (number of icons-0.5) * 2 * -1 */
+                                        transform: translateX(calc(((72px + 38px) * -8.5*2)));
+                                    }
+                                }`)
+                            .addStyle(
+                                reversed
+                                    ? css`
+                                :host {
+                                    animation-direction: reverse;
+                                }`
+                                    : css``,
+                            )
+                    ),
+                ).setGap("38px").addStyle(css`
+                    :host {
+                        mask-image: linear-gradient(90deg, rgba(255, 255, 255, 0.00) 0%, #FFF 50%, rgba(255, 255, 255, 0.00) 100%);
+                        overflow: hidden;
+                    }
+                `),
             )
                 .setContentMaxWidth("850px")
                 .setAlignContent("center")
                 .setAttribute("theme", isLightMode.map((x) => x ? "light" : "dark"))
-                .addStyle(css`
-                    .icon-carousel wg-image {
-                        width: var(--carousel-size);
-                            height: var(--carousel-size);
-                            filter: brightness(0) invert(1);
-                    }
-                    :host([theme="light"]) .icon-carousel wg-image {
-                        filter: brightness(0) invert(0);
-                    }
-                    @keyframes carousel {
-                        0% {
-                            /* calc (width + gap) * number of icons * -1 */
-                            transform: translateX(calc((var(--carousel-size) + 38px) * -8));
-                        }
-
-                        100% {
-                            /* calc (width + gap) * (number of icons-0.5) * 2 * -1 */
-                            transform: translateX(calc(((var(--carousel-size) + 38px) * -8.5*2)));
-                        }
-                    }
-                    .icon-carousel {
-                        --carousel-size: 72px;
-                        animation: 30s infinite linear carousel;
-                    }
-                    .icon-carousel-reversed {
-                        animation-direction: reverse;
-                    }
-
-                    .icon-carousel-container {
-                        mask-image: linear-gradient(90deg, rgba(255, 255, 255, 0.00) 0%, #FFF 50%, rgba(255, 255, 255, 0.00) 100%);
-                        overflow: hidden;
-                    }
-                `)
                 .setHeight("380px"),
             Grid(
                 Label("Make it. Drop it.")

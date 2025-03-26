@@ -57,6 +57,17 @@ navMenuPopover
             opacity: 0.7;
             cursor: pointer;
         }
+        :host {
+            position-anchor: --nav-menu-popover;
+            margin: unset;
+            top: anchor(bottom);
+            left: anchor(left);
+            border: none;
+            overflow: hidden;
+            padding: 5px 10px;
+            border-radius: var(--wg-radius-large);
+            box-shadow: var(--wg-shadow-5);
+        }
     `);
 
 function NavigationBar(type: NavigationType) {
@@ -74,7 +85,13 @@ function NavigationBar(type: NavigationType) {
             .setTemplateColumns("max-content max-content")
             .setAlignItems("center")
             .setJustifyContent("center")
-            .addClass("nav-menu")
+            .addStyle(css`
+                :host {
+                    anchor-name: --nav-menu-popover;
+                    cursor: pointer;
+                    user-select: none;
+                }
+            `)
             .onClick(() => {
                 if (!navMenuPopover.isOpen()) {
                     navMenuPopover.showPopover();
@@ -166,25 +183,7 @@ export function DynaNavigation(type: NavigationType) {
                     .setMargin("0.5rem auto")
                     .setWidth("100%"),
             )
-                .setContentMaxWidth("1230px")
-                .addStyle(css`
-                    .nav-menu {
-                        anchor-name: --nav-menu-popover;
-                        cursor: pointer;
-                        user-select: none;
-                    }
-                    .nav-menu-popover {
-                        position-anchor: --nav-menu-popover;
-                        margin: unset;
-                        top: anchor(bottom);
-                        left: anchor(left);
-                        border: none;
-                        overflow: hidden;
-                        padding: 5px 10px;
-                        border-radius: var(--wg-radius-large);
-                        box-shadow: var(--wg-shadow-5);
-                    }
-                `),
+                .setContentMaxWidth("1230px"),
         ),
     )
         .setAttribute("type", type)
