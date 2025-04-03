@@ -408,24 +408,6 @@ export type GetIdByDropsByAdminResponses = {
 
 export type GetIdByDropsByAdminResponse = GetIdByDropsByAdminResponses[keyof GetIdByDropsByAdminResponses];
 
-export type GetDownloadByFileByFilesByAdminData = {
-    body?: never;
-    path: {
-        fileId: string;
-    };
-    query?: never;
-    url: '/api/@bbn/admin/files/{fileId}/download';
-};
-
-export type GetDownloadByFileByFilesByAdminResponses = {
-    /**
-     * Successful operation
-     */
-    200: Blob | File;
-};
-
-export type GetDownloadByFileByFilesByAdminResponse = GetDownloadByFileByFilesByAdminResponses[keyof GetDownloadByFileByFilesByAdminResponses];
-
 export type DeleteIdByFilesByAdminData = {
     body?: never;
     path: {
@@ -434,6 +416,24 @@ export type DeleteIdByFilesByAdminData = {
     query?: never;
     url: '/api/@bbn/admin/files/{id}';
 };
+
+export type GetIdByDownloadByFilesByAdminData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/@bbn/admin/files/download/{id}';
+};
+
+export type GetIdByDownloadByFilesByAdminResponses = {
+    /**
+     * Successful operation
+     */
+    200: Blob | File;
+};
+
+export type GetIdByDownloadByFilesByAdminResponse = GetIdByDownloadByFilesByAdminResponses[keyof GetIdByDownloadByFilesByAdminResponses];
 
 export type GetGroupsByAdminData = {
     body?: never;
@@ -792,23 +792,24 @@ export type GetDropsByMusicResponses = {
 
 export type GetDropsByMusicResponse = GetDropsByMusicResponses[keyof GetDropsByMusicResponses];
 
-export type GetDownloadByDropByDropsByMusicData = {
+export type GetIdByDownloadByDropByDropsByMusicData = {
     body?: never;
     path: {
         dropId: string;
+        id: string;
     };
     query?: never;
-    url: '/api/@bbn/music/drops/{dropId}/download';
+    url: '/api/@bbn/music/drops/{dropId}/download/{id}';
 };
 
-export type GetDownloadByDropByDropsByMusicResponses = {
+export type GetIdByDownloadByDropByDropsByMusicResponses = {
     /**
      * Successful operation
      */
     200: Blob | File;
 };
 
-export type GetDownloadByDropByDropsByMusicResponse = GetDownloadByDropByDropsByMusicResponses[keyof GetDownloadByDropByDropsByMusicResponses];
+export type GetIdByDownloadByDropByDropsByMusicResponse = GetIdByDownloadByDropByDropsByMusicResponses[keyof GetIdByDownloadByDropByDropsByMusicResponses];
 
 export type GetUploadByDropByDropsByMusicData = {
     body?: never;
@@ -1014,6 +1015,24 @@ export type PostSongsByMusicResponses = {
 
 export type PostSongsByMusicResponse = PostSongsByMusicResponses[keyof PostSongsByMusicResponses];
 
+export type GetIdByDownloadBySongsByMusicData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/@bbn/music/songs/download/{id}';
+};
+
+export type GetIdByDownloadBySongsByMusicResponses = {
+    /**
+     * Successful operation
+     */
+    200: Blob | File;
+};
+
+export type GetIdByDownloadBySongsByMusicResponse = GetIdByDownloadBySongsByMusicResponses[keyof GetIdByDownloadBySongsByMusicResponses];
+
 export type GetUploadBySongsByMusicData = {
     body?: never;
     path?: never;
@@ -1055,23 +1074,24 @@ export type PostApplicationsByOauthResponses = {
     200: unknown;
 };
 
-export type GetDownloadByClientByApplicationsByOauthData = {
+export type GetIdByDownloadByClientByApplicationsByOauthData = {
     body?: never;
     path: {
         clientId: string;
+        id: string;
     };
     query?: never;
-    url: '/api/@bbn/oauth/applications/{clientId}/download';
+    url: '/api/@bbn/oauth/applications/{clientId}/download/{id}';
 };
 
-export type GetDownloadByClientByApplicationsByOauthResponses = {
+export type GetIdByDownloadByClientByApplicationsByOauthResponses = {
     /**
      * Successful operation
      */
     200: Blob | File;
 };
 
-export type GetDownloadByClientByApplicationsByOauthResponse = GetDownloadByClientByApplicationsByOauthResponses[keyof GetDownloadByClientByApplicationsByOauthResponses];
+export type GetIdByDownloadByClientByApplicationsByOauthResponse = GetIdByDownloadByClientByApplicationsByOauthResponses[keyof GetIdByDownloadByClientByApplicationsByOauthResponses];
 
 export type DeleteIdByApplicationsByOauthData = {
     body?: never;
@@ -1356,4 +1376,8 @@ export type PostEventByWhatsappData = {
     path?: never;
     query?: never;
     url: '/api/@bbn/whatsapp/event';
+};
+
+export type ClientOptions = {
+    baseUrl: 'https://example.one/api' | (string & {});
 };

@@ -1,5 +1,6 @@
+import { Audio } from "shared/audio.ts";
 import { sheetStack } from "shared/helper.ts";
-import { asRef, asRefRecord, Box, Checkbox, DropDown, Empty, Entry, Grid, Label, List, MaterialIcon, PrimaryButton, RefRecord, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
+import { asRef, asRefRecord, Box, Checkbox, DropDown, Empty, Entry, Grid, Label, List, MaterialIcon, PrimaryButton, RefRecord, SheetHeader, Spinner, TextInput, WriteSignal } from "webgen/mod.ts";
 import countries from "../../../data/countries.json" with { type: "json" };
 import genres from "../../../data/genres.json" with { type: "json" };
 import languages from "../../../data/language.json" with { type: "json" };
@@ -12,6 +13,8 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void)
     if (!song.country) {
         song.country = asRef("DE");
     }
+    const blobRef = asRef<Blob | undefined>(undefined);
+    API.getIdByDownloadBySongsByMusic({ path: { id: song._id.value } }).then(stupidErrorAlert).then((blob) => blobRef.setValue(blob));
     return Grid(
         SheetHeader("Edit Song", sheetStack),
         Grid(
@@ -31,6 +34,8 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void)
             Checkbox(song.instrumental),
             Label("ISRC (optional)").setFontWeight("bold"),
             TextInput(song.isrc!, "ISRC"),
+            Label("Listen").setFontWeight("bold"),
+            Box(blobRef.map((blob) => blob ? Audio(blobRef as WriteSignal<Blob>) : Spinner())),
         ).setGap().setTemplateColumns("auto max-content"),
         PrimaryButton("Save").onClick(() => {
             save(song);
