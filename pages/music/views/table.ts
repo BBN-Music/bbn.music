@@ -14,7 +14,7 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void)
         song.country = asRef("DE");
     }
     const blobRef = asRef<Blob | undefined>(undefined);
-    API.getIdByDownloadBySongsByMusic({ path: { id: song._id.value } }).then(stupidErrorAlert).then((blob) => blobRef.setValue(blob));
+    API.getDownloadBySongBySongsByMusic({ path: { songId: song._id.value } }).then(stupidErrorAlert).then((blob) => blobRef.setValue(blob));
     return Grid(
         SheetHeader("Edit Song", sheetStack),
         Grid(

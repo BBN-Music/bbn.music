@@ -408,6 +408,24 @@ export type GetIdByDropsByAdminResponses = {
 
 export type GetIdByDropsByAdminResponse = GetIdByDropsByAdminResponses[keyof GetIdByDropsByAdminResponses];
 
+export type GetDownloadByFileByFilesByAdminData = {
+    body?: never;
+    path: {
+        fileId: string;
+    };
+    query?: never;
+    url: '/api/@bbn/admin/files/{fileId}/download';
+};
+
+export type GetDownloadByFileByFilesByAdminResponses = {
+    /**
+     * Successful operation
+     */
+    200: Blob | File;
+};
+
+export type GetDownloadByFileByFilesByAdminResponse = GetDownloadByFileByFilesByAdminResponses[keyof GetDownloadByFileByFilesByAdminResponses];
+
 export type DeleteIdByFilesByAdminData = {
     body?: never;
     path: {
@@ -416,24 +434,6 @@ export type DeleteIdByFilesByAdminData = {
     query?: never;
     url: '/api/@bbn/admin/files/{id}';
 };
-
-export type GetIdByDownloadByFilesByAdminData = {
-    body?: never;
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/@bbn/admin/files/download/{id}';
-};
-
-export type GetIdByDownloadByFilesByAdminResponses = {
-    /**
-     * Successful operation
-     */
-    200: Blob | File;
-};
-
-export type GetIdByDownloadByFilesByAdminResponse = GetIdByDownloadByFilesByAdminResponses[keyof GetIdByDownloadByFilesByAdminResponses];
 
 export type GetGroupsByAdminData = {
     body?: never;
@@ -792,24 +792,23 @@ export type GetDropsByMusicResponses = {
 
 export type GetDropsByMusicResponse = GetDropsByMusicResponses[keyof GetDropsByMusicResponses];
 
-export type GetIdByDownloadByDropByDropsByMusicData = {
+export type GetDownloadByDropByDropsByMusicData = {
     body?: never;
     path: {
         dropId: string;
-        id: string;
     };
     query?: never;
-    url: '/api/@bbn/music/drops/{dropId}/download/{id}';
+    url: '/api/@bbn/music/drops/{dropId}/download';
 };
 
-export type GetIdByDownloadByDropByDropsByMusicResponses = {
+export type GetDownloadByDropByDropsByMusicResponses = {
     /**
      * Successful operation
      */
     200: Blob | File;
 };
 
-export type GetIdByDownloadByDropByDropsByMusicResponse = GetIdByDownloadByDropByDropsByMusicResponses[keyof GetIdByDownloadByDropByDropsByMusicResponses];
+export type GetDownloadByDropByDropsByMusicResponse = GetDownloadByDropByDropsByMusicResponses[keyof GetDownloadByDropByDropsByMusicResponses];
 
 export type GetUploadByDropByDropsByMusicData = {
     body?: never;
@@ -1015,23 +1014,23 @@ export type PostSongsByMusicResponses = {
 
 export type PostSongsByMusicResponse = PostSongsByMusicResponses[keyof PostSongsByMusicResponses];
 
-export type GetIdByDownloadBySongsByMusicData = {
+export type GetDownloadBySongBySongsByMusicData = {
     body?: never;
     path: {
-        id: string;
+        songId: string;
     };
     query?: never;
-    url: '/api/@bbn/music/songs/download/{id}';
+    url: '/api/@bbn/music/songs/{songId}/download';
 };
 
-export type GetIdByDownloadBySongsByMusicResponses = {
+export type GetDownloadBySongBySongsByMusicResponses = {
     /**
      * Successful operation
      */
     200: Blob | File;
 };
 
-export type GetIdByDownloadBySongsByMusicResponse = GetIdByDownloadBySongsByMusicResponses[keyof GetIdByDownloadBySongsByMusicResponses];
+export type GetDownloadBySongBySongsByMusicResponse = GetDownloadBySongBySongsByMusicResponses[keyof GetDownloadBySongBySongsByMusicResponses];
 
 export type GetUploadBySongsByMusicData = {
     body?: never;
@@ -1074,24 +1073,23 @@ export type PostApplicationsByOauthResponses = {
     200: unknown;
 };
 
-export type GetIdByDownloadByClientByApplicationsByOauthData = {
+export type GetDownloadByClientByApplicationsByOauthData = {
     body?: never;
     path: {
         clientId: string;
-        id: string;
     };
     query?: never;
-    url: '/api/@bbn/oauth/applications/{clientId}/download/{id}';
+    url: '/api/@bbn/oauth/applications/{clientId}/download';
 };
 
-export type GetIdByDownloadByClientByApplicationsByOauthResponses = {
+export type GetDownloadByClientByApplicationsByOauthResponses = {
     /**
      * Successful operation
      */
     200: Blob | File;
 };
 
-export type GetIdByDownloadByClientByApplicationsByOauthResponse = GetIdByDownloadByClientByApplicationsByOauthResponses[keyof GetIdByDownloadByClientByApplicationsByOauthResponses];
+export type GetDownloadByClientByApplicationsByOauthResponse = GetDownloadByClientByApplicationsByOauthResponses[keyof GetDownloadByClientByApplicationsByOauthResponses];
 
 export type DeleteIdByApplicationsByOauthData = {
     body?: never;
