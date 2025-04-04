@@ -137,18 +137,23 @@ const wizard = creationState.page.map((page) => {
                 const isUploading = asRef(false);
                 return Grid(
                     Grid(
+                        Empty(),
                         Label("Upload your Cover").setFontWeight("bold").setTextSize("xl").setJustifySelf("center"),
-                        PrimaryButton("Manual Upload")
+                        PrimaryButton("Manual Upload").setMaxWidth("max-content").setJustifySelf("end")
                             .onClick(() => createFilePicker(allowedImageFormats.join(",")).then((file) => uploadArtwork(dropId, file, creationState.artwork, isUploading, creationState.artworkData))),
-                    ).setTemplateColumns("1fr auto"),
-                    Box(isUploading.map((uploading) => uploading ? Spinner() : Image(data!, "Drop Artwork"))),
+                    ).setTemplateColumns("1fr auto 1fr"),
+                    Box(isUploading.map((uploading) =>
+                        uploading ? Spinner() : Image(data!, "Drop Artwork").addStyle(css`
+                        img {
+                            width: 60%;
+                            margin: 0 auto;
+                        }`)
+                    )),
                 ).setGap();
             }),
             footer(page),
         ).setGap();
     } else if (page == 3) {
-        const songs = asRef(<undefined | Song[]> undefined);
-        // const existingSongDialog = ExistingSongDialog(creationState.songs, songs);
         return Grid(
             ManageSongs(creationState.songs),
             footer(page),
@@ -184,7 +189,7 @@ appendBody(
             FullWidthSection(
                 DynaNavigation("Music"),
             ),
-            Box(wizard),
+            Box(wizard).setPadding("10% 5%"),
         ),
     ).setPrimaryColor(new Color("white")),
 );
