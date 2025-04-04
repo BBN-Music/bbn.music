@@ -3,6 +3,23 @@ import { StreamingUploadHandler } from "shared/mod.ts";
 import { Reference, WriteSignal } from "webgen/mod.ts";
 import { API, APITools, ArtistRef, Song, stupidErrorAlert } from "../../spec/mod.ts";
 
+export function uploadSong(file: File, songs: WriteSignal<Song[]>) {
+    songs.setValue([...songs.value, { title: file.name, country: "0%" } as Song]);
+    StreamingUploadHandler(`music/songs/upload`, {
+        failure: (msg) => {
+            alert(`Your Upload has failed. Please try a different file or try again later Error: ${msg}`);
+        },
+        uploadDone: () => {
+        },
+        credentials: () => APITools.token()!,
+        backendResponse: (id) => {
+        },
+        onUploadTick: async (percentage) => {
+            await delay(2);
+        },
+    }, file);
+}
+
 export function uploadSongToDrop(songs: Reference<Song[]>, artists: ArtistRef[], language: string, primaryGenre: string, secondaryGenre: string, uploadingSongs: Reference<{ [key: string]: number }[]>, file: File) {
     const uploadId = crypto.randomUUID();
     uploadingSongs.addItem({ [uploadId]: 0 });
@@ -70,23 +87,21 @@ export function uploadArtwork(id: string, file: File, artwork: WriteSignal<strin
     isUploading.setValue(true);
     data.setValue(blobUrl);
 
-    setTimeout(() => {
-        //check if drop specific is needed
-        StreamingUploadHandler(`music/drops/${id}/upload`, {
-            failure: () => {
-                isUploading.setValue(false);
-                alert("Your Upload has failed. Please try a different file or try again later");
-            },
-            uploadDone: () => {
-            },
-            credentials: () => APITools.token()!,
-            backendResponse: (id) => {
-                isUploading.setValue(false);
-                artwork.setValue(id);
-            },
-            onUploadTick: async () => {
-                await delay(2);
-            },
-        }, file);
-    });
+    //check if drop specific is needed
+    StreamingUploadHandler(`music/drops/${id}/upload`, {
+        failure: () => {
+            isUploading.setValue(false);
+            alert("Your Upload has failed. Please try a different file or try again later");
+        },
+        uploadDone: () => {
+        },
+        credentials: () => APITools.token()!,
+        backendResponse: (id) => {
+            isUploading.setValue(false);
+            artwork.setValue(id);
+        },
+        onUploadTick: async () => {
+            await delay(2);
+        },
+    }, file);
 }

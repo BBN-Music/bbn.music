@@ -1,10 +1,10 @@
-import { Audio } from "shared/audio.ts";
-import { sheetStack } from "shared/helper.ts";
-import { asRef, asRefRecord, Box, Checkbox, DropDown, Empty, Entry, Grid, Label, List, MaterialIcon, PrimaryButton, RefRecord, SheetHeader, Spinner, TextInput, WriteSignal } from "webgen/mod.ts";
+import { allowedAudioFormats, sheetStack } from "shared/helper.ts";
+import { asRef, asRefRecord, Box, Checkbox, createFilePicker, DropDown, Empty, Entry, Grid, Label, List, MaterialIcon, PrimaryButton, RefRecord, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
 import countries from "../../../data/countries.json" with { type: "json" };
 import genres from "../../../data/genres.json" with { type: "json" };
 import languages from "../../../data/language.json" with { type: "json" };
 import { API, Artist, ArtistRef, Song, stupidErrorAlert, zArtistTypes } from "../../../spec/mod.ts";
+import { uploadSong } from "../data.ts";
 import "./table.css";
 
 const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void) => {
@@ -13,35 +13,39 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void)
     if (!song.country) {
         song.country = asRef("DE");
     }
-    const blobRef = asRef<Blob | undefined>(undefined);
-    API.getDownloadBySongBySongsByMusic({ path: { songId: song._id.value } }).then(stupidErrorAlert).then((blob) => blobRef.setValue(blob));
+    //const blobRef = asRef<Blob | undefined>(undefined);
+    //API.getDownloadBySongBySongsByMusic({ path: { songId: song._id.value } }).then(stupidErrorAlert).then((blob) => blobRef.setValue(blob));
     return Grid(
         SheetHeader("Edit Song", sheetStack),
         Grid(
-            Label("Title").setFontWeight("bold"),
-            TextInput(song.title, "Title"),
-            Label("Genre").setFontWeight("bold"),
-            DropDown(genres[song.primaryGenre.value as keyof typeof genres], song.secondaryGenre, "Genre"),
-            Label("Year").setFontWeight("bold"),
-            DropDown(Array.from({ length: 28 }).map((_, i) => (i + new Date().getFullYear() - 25).toString()).toReversed(), yearRef, "Year"),
-            Label("Country").setFontWeight("bold"),
-            DropDown(Object.keys(countries), song.country, "Country").setValueRender((key) => countries[key as keyof typeof countries]),
-            Label("Language").setFontWeight("bold"),
-            DropDown(Object.keys(languages), song.language, "Language").setValueRender((key) => languages[key as keyof typeof languages]),
-            Label("Explicit").setFontWeight("bold"),
-            Checkbox(song.explicit),
-            Label("Instrumental").setFontWeight("bold"),
-            Checkbox(song.instrumental),
-            Label("ISRC (optional)").setFontWeight("bold"),
-            TextInput(song.isrc!, "ISRC"),
-            Label("Listen").setFontWeight("bold"),
-            Box(blobRef.map((blob) => blob ? Audio(blobRef as WriteSignal<Blob>) : Spinner())),
-        ).setGap().setTemplateColumns("auto max-content"),
+            TextInput(song.title, "Title").setMinWidth("30rem"),
+            PrimaryButton("Artists")
+                .onClick(() => sheetStack.addSheet(EditArtistsDialog(song.artists))),
+            Grid(
+                DropDown(genres[song.primaryGenre.value as keyof typeof genres], song.secondaryGenre, "Genre"),
+                DropDown(Array.from({ length: 28 }).map((_, i) => (i + new Date().getFullYear() - 25).toString()).toReversed(), yearRef, "Year"),
+            ).setGap().setDynamicColumns(15),
+            Grid(
+                DropDown(Object.keys(countries), song.country, "Country").setValueRender((key) => countries[key as keyof typeof countries]),
+                DropDown(Object.keys(languages), song.language, "Language").setValueRender((key) => languages[key as keyof typeof languages]),
+            ).setGap().setDynamicColumns(15),
+            Grid(
+                Grid(
+                    Label("Explicit").setFontWeight("bold"),
+                    Label("Instrumental").setFontWeight("bold"),
+                    Checkbox(song.explicit),
+                    Checkbox(song.instrumental),
+                ).setTemplateColumns("max-content max-content").setGap().setJustifyItems("center"),
+                TextInput(song.isrc!, "ISRC (optional)"),
+            ).setGap().setDynamicColumns(15),
+            // Label("Listen").setFontWeight("bold"),
+            // Box(blobRef.map((blob) => blob ? Audio(blobRef as WriteSignal<Blob>) : Spinner())),
+        ).setGap(),
         PrimaryButton("Save").onClick(() => {
             save(song);
             sheetStack.removeOne();
         }),
-    );
+    ).setGap();
 };
 
 export function ManageSongs(songs: WriteSignal<Song[]>) {
@@ -64,7 +68,8 @@ export function ManageSongs(songs: WriteSignal<Song[]>) {
             Label("Manage your Songs").setFontWeight("bold").setTextSize("2xl").setJustifySelf("center"),
             Grid(
                 PrimaryButton("Add Song"),
-                PrimaryButton("Upload Song"),
+                PrimaryButton("Upload Song")
+                    .onClick(() => createFilePicker(allowedAudioFormats.join(",")).then((file) => uploadSong(file, songs))),
             ).setTemplateColumns("auto auto").setGap(),
         ).setTemplateColumns("1fr 1fr 1fr").setGap(),
         List(
@@ -72,7 +77,7 @@ export function ManageSongs(songs: WriteSignal<Song[]>) {
             100,
             //TODO: hide arrow?
             //TODO: hand refrecord change to writesignal or song arr
-            (data, index) => {
+            (data) => {
                 const songref = asRefRecord(data);
                 return Entry(SongEntry(songref)).onClick(() =>
                     sheetStack.addSheet(songSheet(songref, (x) => {
