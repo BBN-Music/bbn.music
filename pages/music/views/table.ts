@@ -57,10 +57,10 @@ export function ManageSongs(songs: WriteSignal<Song[]>, id: string) {
             )
                 .setHeight("max-content")
                 .setAlignSelf("center"),
-            Grid(MaterialIcon("delete").setCssStyle("color", "#b91616"), Label("Delete").setCssStyle("color", "#b91616")).setJustifySelf("end").setJustifyItems("center").onClick((x) => {
+            Grid(MaterialIcon("delete").setCssStyle("color", "#b91616")).setJustifySelf("end").setJustifyItems("center").onClick((x) => {
                 x.stopPropagation();
                 songs.setValue(songs.getValue().filter((s) => s._id !== song._id.value));
-            }).setCssStyle("backgroundColor", "#844a4a52").setPadding("0.2rem 0.4rem").setCssStyle("borderRadius", "0.5rem"),
+            }).setCssStyle("backgroundColor", "#844a4a52").setPadding("1em").setCssStyle("borderRadius", "0.5rem"),
         )
             .setTemplateColumns("max-content auto")
             .setPadding("1rem 0");

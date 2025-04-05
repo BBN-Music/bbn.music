@@ -1,5 +1,5 @@
 import { RegisterAuthRefresh, sheetStack, showPreviewImage } from "shared/helper.ts";
-import { appendBody, asRefRecord, Content, createRoute, DateInput, DialogContainer, DropDown, FullWidthSection, Grid, isMobile, Label, SecondaryButton, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { appendBody, asRefRecord, Content, createRoute, css, DateInput, DialogContainer, DropDown, FullWidthSection, Grid, isMobile, Label, SecondaryButton, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
 import { API, ArtistRef, DropType, Song, stupidErrorAlert, zArtistTypes, zObjectId } from "../../spec/mod.ts";
 
@@ -123,7 +123,11 @@ appendBody(
                 }),
             ).setGap().setMargin("1rem 0rem 0rem 0rem"),
         ).setContentMaxWidth("1230px"),
-    ),
+    ).addStyle(css`
+        :host {
+            --wg-primary: rgb(255, 171, 82);
+        }
+    `),
 );
 
 StartRouting();
