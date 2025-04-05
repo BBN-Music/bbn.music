@@ -269,7 +269,7 @@ export const ExistingSongDialog = (dropSongs: WriteSignal<Song[]>, songs: Song[]
         PrimaryButton("Add").setMargin("1rem 0 0 0").onClick(() => {
             const selectedSong = selected.getValue();
             if (selectedSong) {
-                dropSongs.push(selectedSong);
+                dropSongs.setValue(dropSongs.value.concat(songs.find((x) => x._id == selectedSong)!));
             }
             sheetStack.removeOne();
             selected.setValue(undefined);

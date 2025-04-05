@@ -24,7 +24,7 @@ export function uploadSong(file: File, songs: WriteSignal<Song[]>, dropId: strin
             console.log(res);
             if (res.startsWith("duplicate:")) {
                 songs.setValue(songs.getValue().filter((x) => x._id != id));
-                alert(`You already uploaded this song. Please use the add existing song button instead.`);
+                alert(`You already uploaded this song. Please use the "Add Song" button instead.`);
                 // TODO: Open Dropover to automatically add the song using split at :
                 return;
             }

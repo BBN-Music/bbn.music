@@ -1,4 +1,4 @@
-import { allowedAudioFormats, sheetStack } from "shared/helper.ts";
+import { allowedAudioFormats, ExistingSongDialog, sheetStack } from "shared/helper.ts";
 import { asRef, asRefRecord, Box, Checkbox, createFilePicker, DropDown, Empty, Entry, Grid, Label, List, MaterialIcon, PrimaryButton, ref, RefRecord, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
 import countries from "../../../data/countries.json" with { type: "json" };
 import genres from "../../../data/genres.json" with { type: "json" };
@@ -70,7 +70,10 @@ export function ManageSongs(songs: WriteSignal<Song[]>, id: string) {
             Empty(),
             Label("Manage your Songs").setFontWeight("bold").setTextSize("2xl").setJustifySelf("center"),
             Grid(
-                PrimaryButton("Add Song"),
+                PrimaryButton("Add Song").onPromiseClick(async () => {
+                    const userSongs = await API.getSongsByMusic().then(stupidErrorAlert);
+                    sheetStack.addSheet(ExistingSongDialog(songs, userSongs));
+                }),
                 PrimaryButton("Upload Song")
                     .onClick(() => createFilePicker(allowedAudioFormats.join(",")).then((file) => uploadSong(file, songs, id))),
             ).setTemplateColumns("auto auto").setGap(),
