@@ -88,7 +88,7 @@ serve({
         "music": "./pages/music-landing/main.ts",
         "c/music": "./pages/music/main.ts",
         "c/music/new-drop": "./pages/music/newDrop.ts",
-        "c/music/edit": "./pages/edit/main.ts",
+        "c/music/edit": "./pages/music/edit.ts",
         // "c/music/payout": "./pages/payout/main.ts",
         "settings": "./pages/user/settings.ts",
         "admin": "./pages/admin/main.ts",

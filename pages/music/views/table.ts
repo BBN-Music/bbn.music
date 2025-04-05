@@ -1,5 +1,5 @@
 import { allowedAudioFormats, sheetStack } from "shared/helper.ts";
-import { asRef, asRefRecord, Box, Checkbox, createFilePicker, DropDown, Empty, Entry, Grid, Label, List, MaterialIcon, PrimaryButton, RefRecord, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
+import { asRef, asRefRecord, Box, Checkbox, createFilePicker, DropDown, Empty, Entry, Grid, Label, List, MaterialIcon, PrimaryButton, ref, RefRecord, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
 import countries from "../../../data/countries.json" with { type: "json" };
 import genres from "../../../data/genres.json" with { type: "json" };
 import languages from "../../../data/language.json" with { type: "json" };
@@ -48,16 +48,19 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void)
     ).setGap();
 };
 
-export function ManageSongs(songs: WriteSignal<Song[]>) {
+export function ManageSongs(songs: WriteSignal<Song[]>, id: string) {
     function SongEntry(song: RefRecord<Song>) {
         return Grid(
             Grid(
                 Label(song.title).setTextSize("3xl").setFontWeight("bold"),
-                Label("Germany - 2024"),
+                Label(ref`${song.country} - ${song.year}`),
             )
                 .setHeight("max-content")
                 .setAlignSelf("center"),
-            Grid(Label("-").setTextSize("4xl").setCssStyle("color", "#b91616"), Label("Delete").setCssStyle("color", "#b91616")).setJustifySelf("end").setJustifyItems("center"),
+            Grid(MaterialIcon("delete").setCssStyle("color", "#b91616"), Label("Delete").setCssStyle("color", "#b91616")).setJustifySelf("end").setJustifyItems("center").onClick((x) => {
+                x.stopPropagation();
+                songs.setValue(songs.getValue().filter((s) => s._id !== song._id.value));
+            }).setCssStyle("backgroundColor", "#844a4a52").setPadding("0.2rem 0.4rem").setCssStyle("borderRadius", "0.5rem"),
         )
             .setTemplateColumns("max-content auto")
             .setPadding("1rem 0");
@@ -69,7 +72,7 @@ export function ManageSongs(songs: WriteSignal<Song[]>) {
             Grid(
                 PrimaryButton("Add Song"),
                 PrimaryButton("Upload Song")
-                    .onClick(() => createFilePicker(allowedAudioFormats.join(",")).then((file) => uploadSong(file, songs))),
+                    .onClick(() => createFilePicker(allowedAudioFormats.join(",")).then((file) => uploadSong(file, songs, id))),
             ).setTemplateColumns("auto auto").setGap(),
         ).setTemplateColumns("1fr 1fr 1fr").setGap(),
         List(
@@ -86,7 +89,7 @@ export function ManageSongs(songs: WriteSignal<Song[]>) {
                     }))
                 );
             },
-        ),
+        ).setGap(10),
     ).setGap();
 }
 

@@ -490,6 +490,8 @@ export const zGetDropsByMusicResponse = z.array(z.object({
     type: zDropType.optional()
 }));
 
+export const zPostDropByDropsByMusicResponse = zSong;
+
 export const zGetDownloadByDropByDropsByMusicResponse = z.string();
 
 export const zGetIdByDropsByMusicResponse = z.object({
@@ -524,10 +526,6 @@ export const zGetGenresByMusicResponse = z.object({
 });
 
 export const zGetSongsByMusicResponse = z.array(zSong);
-
-export const zPostSongsByMusicResponse = z.object({
-    id: zObjectId
-});
 
 export const zGetDownloadBySongBySongsByMusicResponse = z.string();
 

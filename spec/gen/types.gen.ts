@@ -792,6 +792,27 @@ export type GetDropsByMusicResponses = {
 
 export type GetDropsByMusicResponse = GetDropsByMusicResponses[keyof GetDropsByMusicResponses];
 
+export type PostDropByDropsByMusicData = {
+    body?: {
+        file: string;
+        filename: string;
+    };
+    path: {
+        dropId: string;
+    };
+    query?: never;
+    url: '/api/@bbn/music/drops/{dropId}';
+};
+
+export type PostDropByDropsByMusicResponses = {
+    /**
+     * Successful operation
+     */
+    200: Song;
+};
+
+export type PostDropByDropsByMusicResponse = PostDropByDropsByMusicResponses[keyof PostDropByDropsByMusicResponses];
+
 export type GetDownloadByDropByDropsByMusicData = {
     body?: never;
     path: {
@@ -983,36 +1004,6 @@ export type GetSongsByMusicResponses = {
 };
 
 export type GetSongsByMusicResponse = GetSongsByMusicResponses[keyof GetSongsByMusicResponses];
-
-export type PostSongsByMusicData = {
-    body?: {
-        isrc?: string;
-        title: string;
-        artists: Array<ArtistRef>;
-        primaryGenre: string;
-        secondaryGenre: string;
-        year: number;
-        country?: string;
-        language: string;
-        explicit: boolean;
-        instrumental: boolean;
-        file: ObjectId;
-    };
-    path?: never;
-    query?: never;
-    url: '/api/@bbn/music/songs';
-};
-
-export type PostSongsByMusicResponses = {
-    /**
-     * Successful operation
-     */
-    200: {
-        id: ObjectId;
-    };
-};
-
-export type PostSongsByMusicResponse = PostSongsByMusicResponses[keyof PostSongsByMusicResponses];
 
 export type GetDownloadBySongBySongsByMusicData = {
     body?: never;

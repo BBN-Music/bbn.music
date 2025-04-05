@@ -155,7 +155,7 @@ const wizard = creationState.page.map((page) => {
         ).setGap();
     } else if (page == 3) {
         return Grid(
-            ManageSongs(creationState.songs),
+            ManageSongs(creationState.songs, dropId),
             footer(page),
         ).setGap();
     } else if (page == 4) {
