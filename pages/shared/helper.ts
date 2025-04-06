@@ -184,15 +184,14 @@ export function saveBlob(blob: Blob, fileName: string) {
 }
 
 export function showPreviewImage(x: { artwork?: string; _id?: string } | undefined) {
-    return x && x.artwork
-        ? Async(
-            (async () => {
-                const image = await API.getArtworkByDropByMusic({ path: { dropId: x._id! } }).then(stupidErrorAlert) as Blob;
-                return Image(URL.createObjectURL(image), "Drop Artwork");
-            })(),
-            Spinner(),
-        ).setCssStyle("overflow", "hidden")
-        : Image(templateArtwork, "A Placeholder Artwork.");
+    return x && x.artwork ? showImage(API.getArtworkByDropByMusic({ path: { dropId: x._id! } }).then(stupidErrorAlert) as Promise<Blob>, "Drop Artwork") : Image(templateArtwork, "A Placeholder Artwork.");
+}
+
+export function showImage(blob: Promise<Blob>, alt: string) {
+    return Async(
+        blob.then((blob) => Image(URL.createObjectURL(blob), alt)),
+        Spinner(),
+    ).setCssStyle("overflow", "hidden");
 }
 
 export function stringToColor(str: string) {
@@ -243,22 +242,16 @@ const getPicture = memoize(async (id: string) => {
 
 export function showProfilePicture(x: ProfileData) {
     return ProfilePicture(
-        Async(
-            (async () => {
-                const image = await getPicture(x._id);
-                return Image(URL.createObjectURL(image), "Profile picture");
-            })(),
-            Spinner(),
-        ),
+        showImage(getPicture(x._id), "Profile picture"),
         x.profile.username,
     );
 }
 
-export const streamingImages: Record<string, ImageComponent> = {
-    spotify: Image(spotify, "Spotify").draw(),
-    deezer: Image(deezer, "Deezer").draw(),
-    tidal: Image(tidal, "Tidal").draw(),
-    apple: Image(apple, "Apple Music").draw(),
+export const streamingImages = {
+    spotify: Image(spotify, "Spotify"),
+    deezer: Image(deezer, "Deezer"),
+    tidal: Image(tidal, "Tidal"),
+    apple: Image(apple, "Apple Music"),
 };
 
 export const ExistingSongDialog = (dropSongs: WriteSignal<Song[]>, songs: Song[]) => {
