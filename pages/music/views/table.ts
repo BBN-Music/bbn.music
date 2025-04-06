@@ -1,5 +1,6 @@
+import { Audio } from "shared/audio.ts";
 import { allowedAudioFormats, ExistingSongDialog, sheetStack } from "shared/helper.ts";
-import { asRef, asRefRecord, Box, Checkbox, createFilePicker, DropDown, Empty, Entry, Grid, Label, List, MaterialIcon, PrimaryButton, ref, RefRecord, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
+import { asRef, asRefRecord, Box, Checkbox, createFilePicker, DropDown, Empty, Entry, Grid, Label, List, MaterialIcon, PrimaryButton, ref, RefRecord, SecondaryButton, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
 import countries from "../../../data/countries.json" with { type: "json" };
 import genres from "../../../data/genres.json" with { type: "json" };
 import languages from "../../../data/language.json" with { type: "json" };
@@ -13,8 +14,7 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void)
     if (!song.country) {
         song.country = asRef("DE");
     }
-    //const blobRef = asRef<Blob | undefined>(undefined);
-    //API.getDownloadBySongBySongsByMusic({ path: { songId: song._id.value } }).then(stupidErrorAlert).then((blob) => blobRef.setValue(blob));
+    const blobRef = asRef<Blob | undefined>(undefined);
     return Grid(
         SheetHeader("Edit Song", sheetStack),
         Grid(
@@ -38,8 +38,13 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void)
                 ).setTemplateColumns("max-content max-content").setGap().setJustifyItems("center"),
                 TextInput(song.isrc!, "ISRC (optional)"),
             ).setGap().setDynamicColumns(15),
-            // Label("Listen").setFontWeight("bold"),
-            // Box(blobRef.map((blob) => blob ? Audio(blobRef as WriteSignal<Blob>) : Spinner())),
+            Box(blobRef.map((blob) =>
+                blob === undefined
+                    ? SecondaryButton("Listen to Song").onPromiseClick(async () => {
+                        await API.getDownloadBySongBySongsByMusic({ path: { songId: song._id.value } }).then(stupidErrorAlert).then((blob) => blobRef.setValue(blob));
+                    })
+                    : Audio(blob).setAutoplay()
+            )),
         ).setGap(),
         PrimaryButton("Save").onClick(() => {
             save(song);

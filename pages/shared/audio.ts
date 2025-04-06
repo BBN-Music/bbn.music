@@ -1,20 +1,30 @@
-import { asWebGenComponent, HTMLComponent, Reference } from "webgen/mod.ts";
+import { asWebGenComponent, HTMLComponent } from "webgen/mod.ts";
 
 @asWebGenComponent("audio")
 export class AudioComponent extends HTMLComponent {
-    constructor(blob: Reference<Blob>) {
+    audioElement: HTMLAudioElement;
+    constructor(blob: Blob) {
         super();
-        const audioElement = document.createElement("audio");
-        audioElement.controls = true;
-        this.shadowRoot!.append(audioElement);
+        this.audioElement = document.createElement("audio");
+        this.audioElement.controls = true;
+        this.shadowRoot!.append(this.audioElement);
 
-        blob.listen((blob) => {
-            const url = globalThis.URL.createObjectURL(blob);
-            audioElement.src = url;
-        });
+        const url = globalThis.URL.createObjectURL(blob);
+        this.audioElement.src = url;
+    }
+
+    override make() {
+        const obj = {
+            ...super.make(),
+            setAutoplay: () => {
+                this.audioElement.autoplay = true;
+                return obj;
+            }
+        }
+        return obj;
     }
 }
 
-export function Audio(blob: Reference<Blob>) {
+export function Audio(blob: Blob) {
     return new AudioComponent(blob).make();
 }
