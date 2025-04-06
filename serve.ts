@@ -123,7 +123,7 @@ function createTemplate(name: string, path: string) {
     <link rel="me" href="https://chaos.social/@bbn">
     <link rel="apple-touch-icon" href="/images/apple.png">
     <link rel="stylesheet" href="${name}.css">
-    <script defer data-domain="bbn.one" src="https://pl.bbn.one/js/script.js"></script>
+    <script async data-domain="bbn.one" src="https://pl.bbn.one/js/script.js"></script>
 </head>
 
 <body>
