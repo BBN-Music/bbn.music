@@ -94,7 +94,13 @@ appendBody(
             ),
             Grid(
                 Grid(
-                    Label("< Go Back").setTextSize("2xl").setCssStyle("cursor", "pointer").onClick(() => history.back()).setCssStyle("color", "gray"),
+                    Label("< Go Back").setTextSize("2xl").setCssStyle("cursor", "pointer").onClick(() => {
+                        try {
+                            history.back()
+                        } catch (e) {
+                            location.href = "/c/music";
+                        }
+                    }).setCssStyle("color", "gray"),
                     Label("Edit Drop").setTextSize("3xl").setFontWeight("bold"),
                     Grid(
                         creationState.artworkData.map((artwork) => showPreviewImage({ artwork: artwork, _id: id })).value.setRadius("large").setWidth("200px").setHeight("200px").setCssStyle("overflow", "hidden"),
