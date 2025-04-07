@@ -896,9 +896,7 @@ export type PostShareByDropsByMusicResponses = {
     /**
      * Successful operation
      */
-    200: {
-        slug: string;
-    };
+    200: Share;
 };
 
 export type PostShareByDropsByMusicResponse = PostShareByDropsByMusicResponses[keyof PostShareByDropsByMusicResponses];

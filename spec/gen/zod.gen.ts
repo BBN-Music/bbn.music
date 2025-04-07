@@ -512,9 +512,7 @@ export const zGetIdByDropsByMusicResponse = z.object({
     type: zDropType.optional()
 });
 
-export const zPostShareByDropsByMusicResponse = z.object({
-    slug: z.string()
-});
+export const zPostShareByDropsByMusicResponse = zShare;
 
 export const zGetIdByShareByDropsByMusicResponse = zShare;
 
