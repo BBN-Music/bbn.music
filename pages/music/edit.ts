@@ -1,7 +1,7 @@
-import { RegisterAuthRefresh, sheetStack, showPreviewImage } from "shared/helper.ts";
-import { appendBody, asRefRecord, Content, createRoute, css, DateInput, DialogContainer, DropDown, FullWidthSection, Grid, isMobile, Label, SecondaryButton, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { RegisterAuthRefresh, sheetStack, showPreviewImage, streamingImages } from "shared/helper.ts";
+import { appendBody, asRef, asRefRecord, Box, Content, createRoute, css, DateInput, DialogContainer, DropDown, FullWidthSection, Grid, isMobile, Label, PrimaryButton, SecondaryButton, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
-import { API, ArtistRef, DropType, Song, stupidErrorAlert, zArtistTypes, zObjectId } from "../../spec/mod.ts";
+import { API, ArtistRef, DropType, Share, Song, stupidErrorAlert, zArtistTypes, zObjectId } from "../../spec/mod.ts";
 
 import { templateArtwork } from "../../assets/imports.ts";
 import languages from "../../data/language.json" with { type: "json" };
@@ -10,7 +10,6 @@ import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
 await RegisterAuthRefresh();
 
 const creationState = asRefRecord({
-    _id: <string | undefined> undefined,
     gtin: <string | undefined> undefined,
     title: <string | undefined> undefined,
     release: <string | undefined> undefined,
@@ -33,6 +32,9 @@ const genres = asRefRecord({
     primary: <string[]> [],
     secondary: <Record<string, string[]>> {},
 });
+
+const share = asRef(<undefined | Share> undefined);
+
 let id: string;
 const mainRoute = createRoute({
     path: "/c/music/edit",
@@ -62,6 +64,10 @@ const mainRoute = createRoute({
                 genres.primary.setValue(x.primary);
                 genres.secondary.setValue(x.secondary);
             });
+            try {
+                API.getIdByShareByDropsByMusic({ path: { id: id } }).then((req) => stupidErrorAlert(req, false)).then((val) => share.setValue(val));
+            } catch (_) {
+            }
         },
     },
 });
@@ -85,6 +91,34 @@ creationState.songs.listen((val) => {
     }
 });
 
+const prefix = "bbn.music/share?s=";
+const SharingDialog = Box(share.map((shareVal) =>
+    Grid(
+        Label("Your Link:").setTextSize("xl").setCssStyle("color", shareVal ? "" : "gray"),
+        SecondaryButton(prefix + (shareVal?.slug ?? "xxx")).setDisabled(!shareVal)
+            .addClass("link"),
+        Label("Services Found:").setTextSize("xl").setCssStyle("color", shareVal ? "" : "gray"),
+        Grid(
+            asRef(
+                Object.keys(shareVal ? shareVal.services : { spotify: "", deezer: "", tidal: "", apple: "" }).map((img) =>
+                    streamingImages[img]
+                        .setHeight("1.5rem")
+                        .setWidth("1.5rem")
+                        .setCssStyle("filter", shareVal ? "brightness(0) invert(1)" : "brightness(0) invert(1) brightness(0.1)")
+                ),
+            ),
+        ).setEvenColumns(shareVal ? Object.keys(shareVal.services).length : 4).setGap("1rem").setJustifyContent("start").setPadding("0 .3rem"),
+        PrimaryButton(shareVal ? "Disable Link Sharing" : "Enable Link Sharing").onPromiseClick(async () => {
+            if (shareVal) {
+                await API.deleteIdByShareByDropsByMusic({ path: { id: id } });
+                share.setValue(undefined);
+            } else {
+                share.setValue(await API.postShareByDropsByMusic({ body: { id: id } }).then(stupidErrorAlert) as Share);
+            }
+        }).setMargin("1rem 0 0 0"),
+    )
+));
+
 appendBody(
     WebGenTheme(
         DialogContainer(sheetStack.visible(), sheetStack),
@@ -96,14 +130,17 @@ appendBody(
                 Grid(
                     Label("< Go Back").setTextSize("2xl").setCssStyle("cursor", "pointer").onClick(() => {
                         try {
-                            history.back()
+                            history.back();
                         } catch (e) {
                             location.href = "/c/music";
                         }
                     }).setCssStyle("color", "gray"),
                     Label("Edit Drop").setTextSize("3xl").setFontWeight("bold"),
                     Grid(
-                        creationState.artworkData.map((artwork) => showPreviewImage({ artwork: artwork, _id: id })).value.setRadius("large").setWidth("200px").setHeight("200px").setCssStyle("overflow", "hidden"),
+                        Grid(
+                            creationState.artworkData.map((artwork) => showPreviewImage({ artwork: artwork, _id: id })).value.setRadius("large").setWidth("200px").setHeight("200px").setCssStyle("overflow", "hidden"),
+                            SecondaryButton("Sharing Enabled").onClick(() => sheetStack.addSheet(SharingDialog)),
+                        ).setGap(),
                         Grid(
                             TextInput(creationState.title, "Title"),
                             Grid(

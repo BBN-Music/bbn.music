@@ -30,9 +30,9 @@ client.setConfig({
     baseUrl: APITools.baseUrl(),
 });
 
-export function stupidErrorAlert<T>(input: { data?: T; error?: unknown }) {
+export function stupidErrorAlert<T>(input: { data?: T; error?: unknown }, show = true) {
     if (input.error) {
-        alert(displayError(input.error));
+        show && alert(displayError(input.error));
         throw input.error;
     }
     return input.data!;
@@ -60,6 +60,9 @@ export function displayError(data: unknown) {
         } catch (_e) {
             //
         }
+    }
+    if (data && typeof data === "object" && "message" in data && "stack" in data) {
+        return `Error: ${data.message}\n\n${data.stack}`;
     }
     return `Error: ${defaultError}`;
 }
