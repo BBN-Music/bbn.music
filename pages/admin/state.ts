@@ -17,6 +17,6 @@ export const state = asState({
 
 export const reviewState = asState({
     // deno-lint-ignore no-explicit-any
-    drop: <Partial<Drop> & { user: ProfileData; events: any[]; artistList: Artist[] } | undefined> undefined,
+    drop: <Partial<Drop> & { userInfo: ProfileData; events: any[]; artistList: Artist[] } | undefined> undefined,
     drops: <Partial<Drop>[] | undefined> undefined,
 });

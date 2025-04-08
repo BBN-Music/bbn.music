@@ -58,6 +58,27 @@ export type DropType = 'PUBLISHED' | 'PUBLISHING' | 'PRIVATE' | 'UNDER_REVIEW' |
 
 export type AccountType = 'DEFAULT' | 'SUBSCRIBED' | 'VIP';
 
+export type SingleAdminDrop = {
+    gtin?: string;
+    title?: string;
+    artists?: Array<ArtistRef>;
+    release?: string;
+    language?: string;
+    primaryGenre?: string;
+    secondaryGenre?: string;
+    compositionCopyright?: string;
+    soundRecordingCopyright?: string;
+    artwork?: ObjectId;
+    songs?: Array<Song>;
+    comments?: string;
+    _id?: ObjectId;
+    user?: ObjectId;
+    type?: DropType;
+    userInfo?: User;
+    events?: unknown;
+    artistList?: Array<Artist>;
+};
+
 export type Song = {
     _id: ObjectId;
     user: ObjectId;
@@ -384,26 +405,7 @@ export type GetIdByDropsByAdminResponses = {
     /**
      * Successful operation
      */
-    200: {
-        gtin?: string;
-        title?: string;
-        artists?: Array<ArtistRef>;
-        release?: string;
-        language?: string;
-        primaryGenre?: string;
-        secondaryGenre?: string;
-        compositionCopyright?: string;
-        soundRecordingCopyright?: string;
-        artwork?: ObjectId;
-        songs?: Array<Song>;
-        comments?: string;
-        _id?: ObjectId;
-        user?: User;
-        type?: DropType;
-        events?: unknown;
-    } & {
-        artistList: Array<Artist>;
-    };
+    200: SingleAdminDrop;
 };
 
 export type GetIdByDropsByAdminResponse = GetIdByDropsByAdminResponses[keyof GetIdByDropsByAdminResponses];
@@ -792,6 +794,27 @@ export type GetDropsByMusicResponses = {
 
 export type GetDropsByMusicResponse = GetDropsByMusicResponses[keyof GetDropsByMusicResponses];
 
+export type PostDropByDropsByMusicData = {
+    body?: {
+        file: string;
+        filename: string;
+    };
+    path: {
+        dropId: string;
+    };
+    query?: never;
+    url: '/api/@bbn/music/drops/{dropId}';
+};
+
+export type PostDropByDropsByMusicResponses = {
+    /**
+     * Successful operation
+     */
+    200: Song;
+};
+
+export type PostDropByDropsByMusicResponse = PostDropByDropsByMusicResponses[keyof PostDropByDropsByMusicResponses];
+
 export type GetDownloadByDropByDropsByMusicData = {
     body?: never;
     path: {
@@ -876,7 +899,11 @@ export type PostShareByDropsByMusicResponses = {
      * Successful operation
      */
     200: {
+        drop: ObjectId;
         slug: string;
+        services: {
+            [key: string]: string;
+        };
     };
 };
 
@@ -1013,6 +1040,24 @@ export type PostSongsByMusicResponses = {
 };
 
 export type PostSongsByMusicResponse = PostSongsByMusicResponses[keyof PostSongsByMusicResponses];
+
+export type GetDownloadBySongBySongsByMusicData = {
+    body?: never;
+    path: {
+        songId: string;
+    };
+    query?: never;
+    url: '/api/@bbn/music/songs/{songId}/download';
+};
+
+export type GetDownloadBySongBySongsByMusicResponses = {
+    /**
+     * Successful operation
+     */
+    200: Blob | File;
+};
+
+export type GetDownloadBySongBySongsByMusicResponse = GetDownloadBySongBySongsByMusicResponses[keyof GetDownloadBySongBySongsByMusicResponses];
 
 export type GetUploadBySongsByMusicData = {
     body?: never;

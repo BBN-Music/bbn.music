@@ -44,10 +44,10 @@ sheetStack.setDefault(Vertical(
             reviewState.$drop.map((drop) =>
                 drop
                     ? Vertical(
-                        showProfilePicture(drop.user),
-                        Label(`Username: ${drop.user.profile.username}`),
-                        Label(`Email: ${drop.user.profile.email}`),
-                        Label(`ID: ${drop.user._id}`),
+                        showProfilePicture(drop.userInfo),
+                        Label(`Username: ${drop.userInfo.profile.username}`),
+                        Label(`Email: ${drop.userInfo.profile.email}`),
+                        Label(`ID: ${drop.userInfo._id}`),
                     ).setGap()
                     : LoadingSpinner()
             ).asRefComponent(),
