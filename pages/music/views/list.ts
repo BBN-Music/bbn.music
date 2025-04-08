@@ -1,9 +1,9 @@
+import { BasicEntry } from "shared/components.ts";
 import { showPreviewImage } from "shared/helper.ts";
 import { placeholder } from "shared/list.ts";
 import { asRef, Box, Empty, Entry, Grid, Image, Label } from "webgen/mod.ts";
 import { templateArtwork } from "../../../assets/imports.ts";
 import { AdminDrop, type Artist, Drop, DropType, zDropType } from "../../../spec/mod.ts";
-import { BasicEntry } from "shared/components.ts";
 
 export function ReviewEntry(x: AdminDrop, small: boolean = false) {
     return Entry(
@@ -19,25 +19,39 @@ export function ReviewEntry(x: AdminDrop, small: boolean = false) {
     );
 }
 
-export function DropEntry(x: Partial<Drop>) {
+export function PillSuffix(text: string) {
+    return Label(text)
+        .setCssStyle("backgroundColor", "#3b3a3a")
+        .setCssStyle("borderRadius", "var(--wg-entry-radius, var(--wg-radius-large))")
+        .setPadding("0.75rem")
+        .setMargin("0 1rem 0 0")
+        .setHeight("max-content")
+        .setAlignSelf("center");
+}
+
+export function DropEntry(x: Partial<Drop>, showAll: boolean = false) {
     return Entry(
         BasicEntry(x.title ?? "(no drop name)", x.release ?? "(no release date)")
             .addPrefix(showPreviewImage(x).setWidth("100px").setRadius("large"))
             .addSuffix((() => {
                 if (x.type == zDropType.enum.UNDER_REVIEW) {
-                    return Label("Under Review")
-                        .setCssStyle("backgroundColor", "#BCBCBC")
-                        .setCssStyle("borderRadius", "10rem")
-                        .setHeight("max-content")
-                        .setAlignSelf("center");
+                    return PillSuffix("Under Review");
                 }
 
                 if (x.type == zDropType.enum.REVIEW_DECLINED) {
-                    return Label("Declined")
-                        .setCssStyle("backgroundColor", "#BCBCBC")
-                        .setCssStyle("borderRadius", "10rem")
-                        .setHeight("max-content")
-                        .setAlignSelf("center");
+                    return PillSuffix("Declined");
+                }
+
+                if (showAll && x.type == zDropType.enum.PUBLISHED) {
+                    return PillSuffix("Published");
+                }
+
+                if (showAll && x.type == zDropType.enum.PRIVATE) {
+                    return PillSuffix("Private");
+                }
+
+                if (showAll && x.type == zDropType.enum.UNSUBMITTED) {
+                    return PillSuffix("Draft");
                 }
 
                 return Empty();

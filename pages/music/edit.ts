@@ -1,13 +1,19 @@
-import { RegisterAuthRefresh, sheetStack, showPreviewImage, streamingImages } from "shared/helper.ts";
-import { appendBody, asRef, asRefRecord, Box, Content, createRoute, css, DateInput, DialogContainer, DropDown, FullWidthSection, Grid, isMobile, Label, PrimaryButton, SecondaryButton, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { dateFromObjectId, permCheck, RegisterAuthRefresh, sheetStack, showPreviewImage, streamingImages } from "shared/helper.ts";
+import { appendBody, asRef, asRefRecord, Box, Content, createRoute, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, isMobile, Label, PrimaryButton, SecondaryButton, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
-import { API, ArtistRef, DropType, Share, Song, stupidErrorAlert, zArtistTypes, zObjectId } from "../../spec/mod.ts";
+import { AdminDrop, API, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, zArtistTypes, zObjectId } from "../../spec/mod.ts";
 
 import { templateArtwork } from "../../assets/imports.ts";
 import languages from "../../data/language.json" with { type: "json" };
+import { DropEntry } from "./views/list.ts";
 import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
 
 await RegisterAuthRefresh();
+
+const isAdmin = permCheck(
+    "/hmsys/user/manage",
+    "/bbn/manage",
+);
 
 const creationState = asRefRecord({
     gtin: <string | undefined> undefined,
@@ -35,6 +41,10 @@ const genres = asRefRecord({
 
 const share = asRef(<undefined | Share> undefined);
 
+const drops = asRef(<undefined | AdminDrop[]> undefined);
+
+const events = asRef(<any[]> []);
+
 let id: string;
 const mainRoute = createRoute({
     path: "/c/music/edit",
@@ -42,24 +52,25 @@ const mainRoute = createRoute({
         id: zObjectId,
     },
     events: {
-        onActive: () => {
+        onActive: async () => {
             id = mainRoute.search.id;
-            API.getIdByDropsByMusic({ path: { id: id } }).then(stupidErrorAlert)
-                .then(async (drop) => {
-                    creationState.gtin.setValue(drop.gtin);
-                    creationState.title.setValue(drop.title);
-                    creationState.release.setValue(drop.release);
-                    creationState.language.setValue(drop.language);
-                    creationState.artists.setValue(drop.artists ?? [{ type: zArtistTypes.enum.PRIMARY, _id: null! }]);
-                    creationState.primaryGenre.setValue(drop.primaryGenre);
-                    creationState.secondaryGenre.setValue(drop.secondaryGenre);
-                    creationState.compositionCopyright.setValue(drop.compositionCopyright ?? "BBN Music (via bbn.one)");
-                    creationState.soundRecordingCopyright.setValue(drop.soundRecordingCopyright ?? "BBN Music (via bbn.one)");
-                    creationState.artwork.setValue(drop.artwork);
-                    creationState.artworkData.setValue(drop.artwork ? await API.getArtworkByDropByMusic({ path: { dropId: id } }).then((x) => URL.createObjectURL(x.data)) : templateArtwork);
-                    creationState.songs.setValue(drop.songs ?? []);
-                    creationState.comments.setValue(drop.comments);
-                });
+            const adminDrop = isAdmin ? await API.getIdByDropsByAdmin({ path: { id: id } }).then(stupidErrorAlert) : undefined;
+            const drop = isAdmin ? adminDrop as Partial<FullDrop> : await API.getIdByDropsByMusic({ path: { id: id } }).then(stupidErrorAlert);
+
+            creationState.gtin.setValue(drop.gtin);
+            creationState.title.setValue(drop.title);
+            creationState.release.setValue(drop.release);
+            creationState.language.setValue(drop.language);
+            creationState.artists.setValue(drop.artists ?? [{ type: zArtistTypes.enum.PRIMARY, _id: null! }]);
+            creationState.primaryGenre.setValue(drop.primaryGenre);
+            creationState.secondaryGenre.setValue(drop.secondaryGenre);
+            creationState.compositionCopyright.setValue(drop.compositionCopyright ?? "BBN Music (via bbn.one)");
+            creationState.soundRecordingCopyright.setValue(drop.soundRecordingCopyright ?? "BBN Music (via bbn.one)");
+            creationState.artwork.setValue(drop.artwork);
+            creationState.artworkData.setValue(drop.artwork ? await API.getArtworkByDropByMusic({ path: { dropId: id } }).then((x) => URL.createObjectURL(x.data)) : templateArtwork);
+            creationState.songs.setValue(drop.songs ?? []);
+            creationState.comments.setValue(drop.comments);
+
             API.getGenresByMusic().then(stupidErrorAlert).then((x) => {
                 genres.primary.setValue(x.primary);
                 genres.secondary.setValue(x.secondary);
@@ -67,6 +78,12 @@ const mainRoute = createRoute({
             try {
                 API.getIdByShareByDropsByMusic({ path: { id: id } }).then((req) => stupidErrorAlert(req, false)).then((val) => share.setValue(val));
             } catch (_) {
+            }
+            if (isAdmin) {
+                events.setValue(adminDrop?.events as any[] ?? []);
+                API.getDropsByAdmin({ query: { user: drop.user! } }).then(stupidErrorAlert).then((val) => {
+                    drops.setValue(val);
+                });
             }
         },
     },
@@ -164,6 +181,19 @@ appendBody(
                         location.reload();
                     });
                 }),
+                isAdmin
+                    ? Grid(
+                        Grid(
+                            PrimaryButton("Reject"),
+                            SecondaryButton("Change Droptype"),
+                            PrimaryButton("Accept"),
+                        ).setEvenColumns(3).setGap(),
+                        Grid(
+                            Grid(drops.map((val) => val!.map((x) => DropEntry(x, true)))),
+                            Grid(events.map((val) => val!.map((x) => Label(`${dateFromObjectId(x._id).toDateString()} ${x.meta.action} ${x.meta.type} from userid ${x.userId}`)))).setHeight("min-content"),
+                        ).setEvenColumns(2).setGap(),
+                    )
+                    : Empty(),
             ).setGap().setMargin("1rem 0rem 0rem 0rem"),
         ).setContentMaxWidth("1230px"),
     ).addStyle(css`

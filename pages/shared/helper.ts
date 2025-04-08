@@ -3,7 +3,7 @@ import { LruCache, memoize } from "@std/cache";
 import { asRef, asRefRecord, Async, Box, Component, DropDown, Empty, Grid, Image, ImageComponent, Label, PrimaryButton, Reference, SheetHeader, Sheets, Spinner, WriteSignal } from "webgen/mod.ts";
 import { templateArtwork } from "../../assets/imports.ts";
 import { loginRequired } from "../../components/pages.ts";
-import { API, APITools, Permission, Song, stupidErrorAlert } from "../../spec/mod.ts";
+import { API, APITools, ObjectId, Permission, Song, stupidErrorAlert } from "../../spec/mod.ts";
 
 // @deno-types="https://raw.githubusercontent.com/lucsoft-DevTeam/lucsoft.de/master/custom.d.ts"
 import spotify from "../music-landing/assets/spotify.svg";
@@ -122,6 +122,10 @@ export const tokens = asRefRecord({
     accessToken: localStorage["access-token"],
     refreshToken: localStorage["refresh-token"],
 });
+
+export function dateFromObjectId(objectId: ObjectId) {
+	return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
+};
 
 export async function forceRefreshToken() {
     try {
