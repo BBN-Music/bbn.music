@@ -128,6 +128,64 @@ export const zAccountType = z.enum([
     'VIP'
 ]);
 
+export const zSingleAdminDrop = z.object({
+    gtin: z.string().optional(),
+    title: z.string().optional(),
+    artists: z.array(zArtistRef).optional(),
+    release: z.string().date().optional(),
+    language: z.string().optional(),
+    primaryGenre: z.string().optional(),
+    secondaryGenre: z.string().optional(),
+    compositionCopyright: z.string().optional(),
+    soundRecordingCopyright: z.string().optional(),
+    artwork: zObjectId.optional(),
+    songs: z.array(z.object({
+        _id: zObjectId,
+        user: zObjectId,
+        isrc: z.string().optional(),
+        title: z.string(),
+        artists: z.array(zArtistRef),
+        primaryGenre: z.string(),
+        secondaryGenre: z.string(),
+        year: z.number(),
+        country: z.string().optional(),
+        language: z.string(),
+        explicit: z.boolean(),
+        instrumental: z.boolean(),
+        file: zObjectId
+    })).optional(),
+    comments: z.string().optional(),
+    _id: zObjectId.optional(),
+    user: zObjectId.optional(),
+    type: zDropType.optional(),
+    userInfo: z.object({
+        _id: z.unknown(),
+        authentication: z.array(z.unknown()).optional(),
+        profile: z.object({
+            email: z.string(),
+            phone: z.string().optional(),
+            username: z.string(),
+            avatar: z.unknown().optional(),
+            verified: z.object({
+                email: z.boolean(),
+                phone: z.boolean().optional()
+            })
+        }),
+        permissions: z.array(z.string()),
+        groups: z.array(z.string())
+    }).optional(),
+    events: z.unknown().optional()
+}).merge(z.object({
+    artistList: z.array(z.object({
+        _id: zObjectId,
+        name: z.string(),
+        users: z.array(zObjectId),
+        avatar: zObjectId.optional(),
+        spotify: z.string().optional(),
+        apple: z.string().optional()
+    }))
+}));
+
 export const zSong = z.object({
     _id: zObjectId,
     user: zObjectId,
@@ -433,26 +491,7 @@ export const zRequestPayoutResponse = z.union([
 
 export const zGetDropsByAdminResponse = z.array(zAdminDrop);
 
-export const zGetIdByDropsByAdminResponse = z.object({
-    gtin: z.string().optional(),
-    title: z.string().optional(),
-    artists: z.array(zArtistRef).optional(),
-    release: z.string().date().optional(),
-    language: z.string().optional(),
-    primaryGenre: z.string().optional(),
-    secondaryGenre: z.string().optional(),
-    compositionCopyright: z.string().optional(),
-    soundRecordingCopyright: z.string().optional(),
-    artwork: zObjectId.optional(),
-    songs: z.array(zSong).optional(),
-    comments: z.string().optional(),
-    _id: zObjectId.optional(),
-    user: zUser.optional(),
-    type: zDropType.optional(),
-    events: z.unknown().optional()
-}).merge(z.object({
-    artistList: z.array(zArtist)
-}));
+export const zGetIdByDropsByAdminResponse = zSingleAdminDrop;
 
 export const zGetDownloadByFileByFilesByAdminResponse = z.string();
 
@@ -512,7 +551,11 @@ export const zGetIdByDropsByMusicResponse = z.object({
     type: zDropType.optional()
 });
 
-export const zPostShareByDropsByMusicResponse = zShare;
+export const zPostShareByDropsByMusicResponse = z.object({
+    drop: zObjectId,
+    slug: z.string(),
+    services: z.object({})
+});
 
 export const zGetIdByShareByDropsByMusicResponse = zShare;
 
@@ -524,6 +567,10 @@ export const zGetGenresByMusicResponse = z.object({
 });
 
 export const zGetSongsByMusicResponse = z.array(zSong);
+
+export const zPostSongsByMusicResponse = z.object({
+    id: zObjectId
+});
 
 export const zGetDownloadBySongBySongsByMusicResponse = z.string();
 
