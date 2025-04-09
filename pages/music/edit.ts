@@ -1,7 +1,7 @@
-import { dateFromObjectId, permCheck, RegisterAuthRefresh, sheetStack, showPreviewImage, streamingImages } from "shared/helper.ts";
-import { appendBody, asRef, asRefRecord, Box, Content, createRoute, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, isMobile, Label, PrimaryButton, SecondaryButton, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { dateFromObjectId, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showPreviewImage, showProfilePicture, streamingImages } from "shared/helper.ts";
+import { appendBody, asRef, asRefRecord, Box, Content, createRoute, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, isMobile, Label, PrimaryButton, SecondaryButton, Spinner, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
-import { AdminDrop, API, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, zArtistTypes, zObjectId } from "../../spec/mod.ts";
+import { AdminDrop, API, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, User, zArtistTypes, zDropType, zObjectId } from "../../spec/mod.ts";
 
 import { templateArtwork } from "../../assets/imports.ts";
 import languages from "../../data/language.json" with { type: "json" };
@@ -44,6 +44,7 @@ const share = asRef(<undefined | Share> undefined);
 const drops = asRef(<undefined | AdminDrop[]> undefined);
 
 const events = asRef(<any[]> []);
+const userProfile = asRef(<User | undefined> undefined);
 
 let id: string;
 const mainRoute = createRoute({
@@ -70,6 +71,7 @@ const mainRoute = createRoute({
             creationState.artworkData.setValue(drop.artwork ? await API.getArtworkByDropByMusic({ path: { dropId: id } }).then((x) => URL.createObjectURL(x.data)) : templateArtwork);
             creationState.songs.setValue(drop.songs ?? []);
             creationState.comments.setValue(drop.comments);
+            creationState.type.setValue(drop.type);
 
             API.getGenresByMusic().then(stupidErrorAlert).then((x) => {
                 genres.primary.setValue(x.primary);
@@ -81,6 +83,7 @@ const mainRoute = createRoute({
             }
             if (isAdmin) {
                 events.setValue(adminDrop?.events as any[] ?? []);
+                userProfile.setValue(adminDrop?.userInfo);
                 API.getDropsByAdmin({ query: { user: drop.user! } }).then(stupidErrorAlert).then((val) => {
                     drops.setValue(val);
                 });
@@ -184,13 +187,31 @@ appendBody(
                 isAdmin
                     ? Grid(
                         Grid(
-                            PrimaryButton("Reject"),
-                            SecondaryButton("Change Droptype"),
-                            PrimaryButton("Accept"),
+                            PrimaryButton("Reject").onClick(() => {
+                                
+                            }),
+                            SecondaryButton("Change Droptype").onClick(() => {
+                                sheetStack.addSheet(
+                                    Grid(
+                                        DropDown(Object.values(zDropType.Values), creationState.type, "Change Type"),
+                                    ).setGap().setMargin("0rem 0rem 0rem 0rem"),
+                                );
+                            }),
+                            PrimaryButton("Accept").onClick(() => {
+
+                            }),
                         ).setEvenColumns(3).setGap(),
                         Grid(
                             Grid(drops.map((val) => val!.map((x) => DropEntry(x, true)))),
-                            Grid(events.map((val) => val!.map((x) => Label(`${dateFromObjectId(x._id).toDateString()} ${x.meta.action} ${x.meta.type} from userid ${x.userId}`)))).setHeight("min-content"),
+                            Grid(
+                                Grid(
+                                    userProfile.map((user) => user ? showProfilePicture(user as unknown as ProfileData) : Spinner()),
+                                    Box(userProfile.map((user) => user ? Label(user.profile.username) : Spinner())),
+                                    Box(userProfile.map((user) => user ? Label(user.profile.email) : Spinner())),
+                                    Box(userProfile.map((user) => user ? Label(user._id as string) : Spinner())),
+                                ).setGap(),
+                                Box(events.map((val) => val!.map((x) => Label(`${dateFromObjectId(x._id).toDateString()} ${x.meta.action} to ${x.meta.type} from ${x.userId}`)))),
+                            ).setHeight("min-content"),
                         ).setEvenColumns(2).setGap(),
                     )
                     : Empty(),
