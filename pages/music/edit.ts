@@ -1,5 +1,5 @@
-import { dateFromObjectId, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showPreviewImage, showProfilePicture, streamingImages } from "shared/helper.ts";
-import { appendBody, asRef, asRefRecord, Box, Content, createRoute, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, isMobile, Label, PrimaryButton, SecondaryButton, Spinner, StartRouting, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { activeUser, dateFromObjectId, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showPreviewImage, showProfilePicture, streamingImages } from "shared/helper.ts";
+import { appendBody, asRef, asRefRecord, Box, Content, createRoute, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, isMobile, Label, PrimaryButton, SecondaryButton, Spinner, StartRouting, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
 import { AdminDrop, API, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, User, zArtistTypes, zDropType, zObjectId } from "../../spec/mod.ts";
 
@@ -139,6 +139,38 @@ const SharingDialog = Box(share.map((shareVal) =>
     )
 ));
 
+const responseText = asRef("");
+const selectedTemplate = asRef("");
+const templates = () =>
+    ({
+        "Copyright bad": `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop and our Systems detected Copyright Issues with your Drop.\nCould you please send over proof that you own the rights to the Music?\nYou must own 100% of the legal rights to the music you are distributing.\nThis includes all types of samples or remixes.\nI have marked your Drop as rejected for now, until you send over the proof.\n\nBest regards,\n${activeUser.username.value}`,
+        "Accepted": `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop and I am happy to inform you that it has been accepted.\nYou can now start distributing your music.\n\nBest regards,\n${activeUser.username.value}`,
+    }) as Record<string, string>;
+const action = asRef("");
+selectedTemplate.listen((val) => {
+    if (val) {
+        responseText.setValue(templates()[val]);
+    }
+});
+const ResponseDialog = Grid(
+    DropDown(Object.keys(templates()), selectedTemplate),
+    TextAreaInput(responseText).setHeight("30rem").setWidth("30rem").addStyle(css`
+        textarea.input {
+            height: 100%;
+        }
+    `),
+    Box(action.map((val) =>
+        PrimaryButton(val).onClick(() => {
+            if (action.value === "REJECT") {
+                console.log("Reject with Email:", responseText.value);
+            }
+            if (action.value === "ACCEPT") {
+                console.log("Accept with Email:", responseText.value);
+            }
+        })
+    )),
+);
+
 appendBody(
     WebGenTheme(
         DialogContainer(sheetStack.visible(), sheetStack),
@@ -159,7 +191,7 @@ appendBody(
                     Grid(
                         Grid(
                             creationState.artworkData.map((artwork) => showPreviewImage({ artwork: artwork, _id: id })).value.setRadius("large").setWidth("200px").setHeight("200px").setCssStyle("overflow", "hidden"),
-                            SecondaryButton("Sharing Enabled").onClick(() => sheetStack.addSheet(SharingDialog)),
+                            SecondaryButton(share.map((x) => x ? "Sharing Enabled" : "Sharing Disabled")).onClick(() => sheetStack.addSheet(SharingDialog)),
                         ).setGap(),
                         Grid(
                             TextInput(creationState.title, "Title"),
@@ -188,7 +220,9 @@ appendBody(
                     ? Grid(
                         Grid(
                             PrimaryButton("Reject").onClick(() => {
-                                
+                                action.setValue("REJECT");
+                                selectedTemplate.setValue("Copyright bad");
+                                sheetStack.addSheet(ResponseDialog);
                             }),
                             SecondaryButton("Change Droptype").onClick(() => {
                                 sheetStack.addSheet(
@@ -198,7 +232,9 @@ appendBody(
                                 );
                             }),
                             PrimaryButton("Accept").onClick(() => {
-
+                                action.setValue("ACCEPT");
+                                selectedTemplate.setValue("Accepted");
+                                sheetStack.addSheet(ResponseDialog);
                             }),
                         ).setEvenColumns(3).setGap(),
                         Grid(
