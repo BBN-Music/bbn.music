@@ -174,8 +174,7 @@ export const zSingleAdminDrop = z.object({
         permissions: z.array(z.string()),
         groups: z.array(z.string())
     }).optional(),
-    events: z.unknown().optional()
-}).merge(z.object({
+    events: z.unknown().optional(),
     artistList: z.array(z.object({
         _id: zObjectId,
         name: z.string(),
@@ -183,8 +182,8 @@ export const zSingleAdminDrop = z.object({
         avatar: zObjectId.optional(),
         spotify: z.string().optional(),
         apple: z.string().optional()
-    }))
-}));
+    })).optional()
+});
 
 export const zSong = z.object({
     _id: zObjectId,

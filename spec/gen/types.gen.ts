@@ -76,8 +76,7 @@ export type SingleAdminDrop = {
     type?: DropType;
     userInfo?: User;
     events?: unknown;
-} & {
-    artistList: Array<Artist>;
+    artistList?: Array<Artist>;
 };
 
 export type Song = {
