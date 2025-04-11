@@ -1,5 +1,6 @@
 import { Audio } from "shared/audio.ts";
 import { allowedAudioFormats, ExistingSongDialog, sheetStack } from "shared/helper.ts";
+import { placeholder } from "shared/list.ts";
 import { asRef, asRefRecord, Box, Checkbox, createFilePicker, DropDown, Empty, Entry, Grid, Label, List, MaterialIcon, PrimaryButton, ref, RefRecord, SecondaryButton, SheetHeader, TextInput, WriteSignal } from "webgen/mod.ts";
 import countries from "../../../data/countries.json" with { type: "json" };
 import genres from "../../../data/genres.json" with { type: "json" };
@@ -83,21 +84,23 @@ export function ManageSongs(songs: WriteSignal<Song[]>, id: string) {
                     .onClick(() => createFilePicker(allowedAudioFormats.join(",")).then((file) => uploadSong(file, songs, id))),
             ).setTemplateColumns("auto auto").setGap(),
         ).setTemplateColumns("1fr 1fr 1fr").setGap(),
-        List(
-            songs,
-            100,
-            //TODO: hide arrow?
-            //TODO: hand refrecord change to writesignal or song arr
-            (data) => {
-                const songref = asRefRecord(data);
-                return Entry(SongEntry(songref)).onClick(() =>
-                    sheetStack.addSheet(songSheet(songref, (x) => {
-                        const songobj = Object.fromEntries(Object.entries(x).map((entry) => [entry[0], entry[1].getValue()])) as Song;
-                        songs.setValue(songs.getValue().map((song) => song._id === songobj._id ? songobj : song));
-                    }))
-                );
-            },
-        ).setGap(10),
+        Box(songs.map((x) =>
+            x.length === 0 ? placeholder("No Songs yet", "Upload/Add your first song to get started") : List(
+                songs,
+                100,
+                //TODO: hide arrow?
+                //TODO: hand refrecord change to writesignal or song arr
+                (data) => {
+                    const songref = asRefRecord(data);
+                    return Entry(SongEntry(songref)).onClick(() =>
+                        sheetStack.addSheet(songSheet(songref, (x) => {
+                            const songobj = Object.fromEntries(Object.entries(x).map((entry) => [entry[0], entry[1].getValue()])) as Song;
+                            songs.setValue(songs.getValue().map((song) => song._id === songobj._id ? songobj : song));
+                        }))
+                    );
+                },
+            ).setGap(10)
+        )),
     ).setGap();
 }
 

@@ -571,6 +571,8 @@ export const zPostSongsByMusicResponse = z.object({
     id: zObjectId
 });
 
+export const zGetIdBySongsByMusicResponse = zSong;
+
 export const zGetDownloadBySongBySongsByMusicResponse = z.string();
 
 export const zGetApplicationsByOauthResponse = z.array(zOAuthApp);

@@ -1,6 +1,6 @@
 import { sumOf } from "@std/collections";
 import { allowedImageFormats, ErrorMessage, getSecondary, RegisterAuthRefresh, sheetStack } from "shared/helper.ts";
-import { appendBody, asRef, asRefRecord, Box, Color, Content, createFilePicker, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, Image, Label, PrimaryButton, SecondaryButton, SheetHeader, Spinner, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { appendBody, asRefRecord, Box, Color, Content, createFilePicker, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, Image, Label, PrimaryButton, SecondaryButton, SheetHeader, Spinner, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { z } from "zod/mod.ts";
 import { templateArtwork } from "../../assets/imports.ts";
 import { DynaNavigation } from "../../components/nav.ts";
@@ -88,7 +88,7 @@ const footer = (page: number) =>
         page == 1 ? SecondaryButton("Cancel").onClick(() => location.href = "/c/music") : SecondaryButton("Back").onClick(() => creationState.page.setValue(page - 1)),
         //TODO: utilize setInvalid on Inputs for better UX
         ErrorMessage(creationState.validationState).setMargin("0.4rem 0 0 0"),
-        PrimaryButton("Next").onClick(validator(page)),
+        PrimaryButton("Next").onPromiseClick(validator(page)),
     )
         .setGap()
         .setTemplateColumns("auto 50% auto");
@@ -133,24 +133,21 @@ const wizard = creationState.page.map((page) => {
         ).setGap();
     } else if (page == 2) {
         return Grid(
-            creationState.artworkData.map((data) => {
-                const isUploading = asRef(false);
-                return Grid(
+            creationState.artworkData.map((data) =>
+                Grid(
                     Grid(
                         Empty(),
                         Label("Upload your Cover").setFontWeight("bold").setTextSize("xl").setJustifySelf("center"),
                         PrimaryButton("Manual Upload").setMaxWidth("max-content").setJustifySelf("end")
-                            .onClick(() => createFilePicker(allowedImageFormats.join(",")).then((file) => uploadArtwork(dropId, file, creationState.artwork, isUploading, creationState.artworkData))),
+                            .onClick(() => createFilePicker(allowedImageFormats.join(",")).then((file) => uploadArtwork(dropId, file, creationState.artwork, creationState.artworkData))),
                     ).setTemplateColumns("1fr auto 1fr"),
-                    Box(isUploading.map((uploading) =>
-                        uploading ? Spinner() : Image(data!, "Drop Artwork").addStyle(css`
-                        img {
-                            width: 60%;
-                            margin: 0 auto;
-                        }`)
-                    )),
-                ).setGap();
-            }),
+                    data === "loading" ? Spinner() : Image(data!, "Drop Artwork").addStyle(css`
+                    img {
+                        width: 60%;
+                        margin: 0 auto;
+                    }`),
+                ).setGap()
+            ),
             footer(page),
         ).setGap();
     } else if (page == 3) {
@@ -169,10 +166,15 @@ const wizard = creationState.page.map((page) => {
             Grid(
                 SecondaryButton("Back").setJustifyContent("center").onClick(() => creationState.page.setValue(3)),
                 PrimaryButton("Submit").onPromiseClick(async () => {
-                    creationState.page.setValue(0);
-                    await API.music.id(dropId).update(creationState);
+                    validator(page);
 
-                    await API.music.id(dropId).type.post(DropType.UnderReview);
+                    await API.postTypeByTypeByDropByMusic({
+                        path: {
+                            dropId,
+                            type: "UNDER_REVIEW",
+                        },
+                    });
+
                     location.href = "/c/music";
                 }).setJustifyContent("center"),
             ).setGap()

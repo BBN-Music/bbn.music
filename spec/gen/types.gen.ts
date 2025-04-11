@@ -1041,6 +1041,24 @@ export type PostSongsByMusicResponses = {
 
 export type PostSongsByMusicResponse = PostSongsByMusicResponses[keyof PostSongsByMusicResponses];
 
+export type GetIdBySongsByMusicData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/@bbn/music/songs/{id}';
+};
+
+export type GetIdBySongsByMusicResponses = {
+    /**
+     * Successful operation
+     */
+    200: Song;
+};
+
+export type GetIdBySongsByMusicResponse = GetIdBySongsByMusicResponses[keyof GetIdBySongsByMusicResponses];
+
 export type GetDownloadBySongBySongsByMusicData = {
     body?: never;
     path: {
