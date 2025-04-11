@@ -14,7 +14,7 @@ export function ReviewEntry(x: AdminDrop, small: boolean = false) {
             ),
             `user: ${x.user} - gtin: ${x.gtin ?? "(no GTIN)"} - id: ${x._id}`,
         )
-            .onClick(() => location.href = `/admin/review?id=${x._id}`)
+            .onClick(() => location.href = `/c/music/edit?id=${x._id}`)
             .addPrefix(showPreviewImage(x).setWidth(small ? "50px" : "100px").setRadius("large")),
     );
 }
