@@ -50,6 +50,7 @@ appendBody(WebGenTheme(
     ),
 ));
 
+// deno-lint-ignore no-explicit-any
 export function getErrorMessage(state: z.SafeParseReturnType<any, any>): string {
     if (!(state && state.success !== true)) return "";
     const selc = state.error.errors.find((x) => x.code == "custom" && x.message != "Invalid input") ?? state.error.errors.find((x) => x.message != "Required") ?? state.error.errors[0];

@@ -10,6 +10,7 @@ globalThis.onerror = (e) => {
     report(typeof e == "string" ? e : (<ErrorEvent> e).error);
 };
 
+// deno-lint-ignore no-explicit-any
 function report(msg: any) {
     if (["ResizeObserver loop completed with undelivered notifications.", "ResizeObserver loop limit exceeded", "Uncaught aborting javascript here"].includes(msg)) return;
 
@@ -22,7 +23,7 @@ function report(msg: any) {
             errorStack: msg.stack ?? msg,
             browser: browser.name,
             // null safe version of getting the error
-            userId: localStorage["access-token"]?.split(".").filter((_: string, i: number) => i <= 1).map((x: string) => JSON.parse(atob(x))).filter((_: string, i: number) => i == 1).map((it: any) => it.userId).join(),
+            userId: localStorage["access-token"]?.split(".").filter((_: string, i: number) => i <= 1).map((x: string) => JSON.parse(atob(x))).filter((_: string, i: number) => i == 1).map((it: { userId: string }) => it.userId).join(),
             browserVersion: browser.version,
             location: location.toString(),
         },

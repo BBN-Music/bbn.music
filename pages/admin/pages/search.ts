@@ -69,7 +69,6 @@ const walletSheet = (walletref: WriteSignal<Wallet>) => {
         await API.patchIdByWalletsByAdmin({ path: { id: walletref.getValue()._id }, body: { ...walletref.getValue(), cut: Number(c) } }).then(stupidErrorAlert);
         walletref.setValue({ ...walletref.getValue(), cut: Number(c) });
     });
-    walletref.listen((c) => console.log("Updated in walletSheet"));
     return Grid(
         SheetHeader("Wallet", sheetStack),
         Grid(
@@ -87,7 +86,6 @@ const addTransactionSheet = (wallet: WriteSignal<Wallet>) => {
     const timestamp = asRef(new Date().toISOString());
     const description = asRef("PayPal Payout");
     const counterParty = asRef("PayPal");
-    wallet.listen((c) => console.log("Updated in addTransactionSheet"));
     return Grid(
         DateInput(timestamp, "Date"),
         TextInput(amount, "Amount"),

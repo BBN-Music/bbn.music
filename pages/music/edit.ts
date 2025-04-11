@@ -43,7 +43,7 @@ const share = asRef(<undefined | Share> undefined);
 
 const drops = asRef(<undefined | AdminDrop[]> undefined);
 
-const events = asRef(<any[]> []);
+const events = asRef(<object[]> []);
 const userProfile = asRef(<User | undefined> undefined);
 
 let id: string;
@@ -79,10 +79,10 @@ const mainRoute = createRoute({
             });
             try {
                 API.getIdByShareByDropsByMusic({ path: { id: id } }).then((req) => stupidErrorAlert(req, false)).then((val) => share.setValue(val));
-            } catch (_) {
-            }
+                // deno-lint-ignore no-empty
+            } catch (_) {}
             if (isAdmin) {
-                events.setValue(adminDrop?.events as any[] ?? []);
+                events.setValue(adminDrop?.events as object[] ?? []);
                 userProfile.setValue(adminDrop?.userInfo);
                 API.getDropsByAdmin({ query: { user: drop.user! } }).then(stupidErrorAlert).then((val) => {
                     drops.setValue(val);
@@ -183,7 +183,7 @@ appendBody(
                     Label("< Go Back").setTextSize("2xl").setCssStyle("cursor", "pointer").onClick(() => {
                         try {
                             history.back();
-                        } catch (e) {
+                        } catch (_) {
                             location.href = "/c/music";
                         }
                     }).setCssStyle("color", "gray"),

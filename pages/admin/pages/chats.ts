@@ -5,7 +5,7 @@ import { API, stupidErrorAlert } from "../../../spec/mod.ts";
 
 await RegisterAuthRefresh();
 
-const chats = asRef<any[] | "loading">("loading");
+const chats = asRef<object[] | "loading">("loading");
 
 createPage(
     {
@@ -13,7 +13,7 @@ createPage(
             path: "/admin?list=chats",
             events: {
                 onLazyInit: async () => {
-                    chats.setValue(await API.getChatsByWhatsapp().then(stupidErrorAlert));
+                    chats.setValue(await API.getChatsByWhatsapp().then(stupidErrorAlert) as object[]);
                 },
             },
         }),

@@ -1,7 +1,7 @@
-import { asRef, Box, Content, createPage, createRoute, Entry, Grid, Label, Spinner } from "webgen/mod.ts";
+import { placeholder } from "shared/list.ts";
+import { asRef, Box, Content, createPage, createRoute, Grid, Spinner } from "webgen/mod.ts";
 import { API, Artist, stupidErrorAlert } from "../../../spec/mod.ts";
 import { ArtistEntry } from "../views/list.ts";
-import { placeholder } from "shared/list.ts";
 
 const data = asRef<"loading" | Artist[]>("loading");
 
