@@ -1,7 +1,7 @@
 import { RegisterAuthRefresh, renewAccessTokenIfNeeded, sheetStack } from "shared/helper.ts";
-import { appendBody, asRef, Box, Color, Content, DialogContainer, FullWidthSection, Grid, Label, PrimaryButton, Spinner, Table, WebGenTheme, WriteSignal } from "webgen/mod.ts";
+import { appendBody, asRef, Box, Color, Content, DialogContainer, FullWidthSection, Grid, Label, PrimaryButton, Spinner, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
-import { API, stupidErrorAlert, Wallet, zAccountType } from "../../spec/mod.ts";
+import { API, stupidErrorAlert, Wallet } from "../../spec/mod.ts";
 import { WalletView } from "./component.ts";
 
 await RegisterAuthRefresh();
@@ -21,15 +21,15 @@ appendBody(
                         Grid(
                             Label("Your Wallet").setFontWeight("bold").setTextSize("3xl"),
                             PrimaryButton("Request Payout").onClick(() => {
-                                alert("Please email support@bbn.one and include your PayPal Address");
+                                alert("Please email support@bbn.music and include your PayPal Address");
                             }),
                         ).setGap().setTemplateColumns("1fr auto"),
-                        WalletView(wallet)
+                        WalletView(wallet),
                     )
-                    .setGap()
-                    .setMargin("5rem 0 2rem")
+                        .setGap()
+                        .setMargin("5rem 0 2rem")
                     : Spinner()
-            ))
+            )),
         ),
     ).setPrimaryColor(new Color("#eb8c2d")),
 );

@@ -74,8 +74,8 @@ export function Footer() {
                         // ]] as const,
 
                         ["Resources", [
-                            ["Status Page", "https://status.bbn.one/"],
-                            ["Support", "mailto:support@bbn.one"],
+                            ["Status Page", "https://status.bbn.music/"],
+                            ["Support", "mailto:support@bbn.music"],
                         ]] as const,
                     ].map(([text, items]) =>
                         Grid(
@@ -129,7 +129,7 @@ export function Footer() {
                     SecondaryButton("Join Now")
                         .onClick(() => location.href = "/signin"),
                     PrimaryButton("Contact Us")
-                        .onClick(() => location.href = "mailto:support@bbn.one"),
+                        .onClick(() => location.href = "mailto:support@bbn.music"),
                 )
                     .setGap()
                     .setTemplateColumns(mediaQueryRef("(max-width: 630px)").map((small) => small ? "max-content" : "auto max-content max-content"))

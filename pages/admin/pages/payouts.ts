@@ -1,4 +1,3 @@
-import { sumOf } from "@std/collections";
 import { BasicEntry } from "shared/components.ts";
 import { RegisterAuthRefresh } from "shared/helper.ts";
 import { asRef, Content, createPage, createRoute, Empty, Entry } from "webgen/mod.ts";
@@ -22,10 +21,6 @@ createPage(
         weight: 5,
     },
     Content(
-        payouts.map((payoutsdata) =>
-            payoutsdata === "loading" ? [Empty()] : payoutsdata.map((payouts) =>
-                Entry(BasicEntry(payouts.period, `£ ${payouts.sum}`))
-            )
-        ),
+        payouts.map((payoutsdata) => payoutsdata === "loading" ? [Empty()] : payoutsdata.map((payouts) => Entry(BasicEntry(payouts.period, `£ ${payouts.sum}`)))),
     ),
 );

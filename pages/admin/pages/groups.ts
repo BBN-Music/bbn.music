@@ -21,6 +21,6 @@ createPage(
         weight: 4,
     },
     Content(
-        groups.map((groups) => groups === "loading" ? Label("Loading...") : groups.map((group) => Entry(BasicEntry(group.displayName, "Permissions: "+group.permission.join(", "))))),
+        groups.map((groups) => groups === "loading" ? Label("Loading...") : groups.map((group) => Entry(BasicEntry(group.displayName, "Permissions: " + group.permission.join(", "))))),
     ),
 );

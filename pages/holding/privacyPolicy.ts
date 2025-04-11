@@ -110,7 +110,7 @@ appendBody(
                     Label(`direct a company not to sell your data, but, since BBN does not sell personal information, this does not apply.`),
                 ),
                 Label(
-                    `If you are a California resident not covered by the exclusions mentioned above and you would like to exercise your rights, you should contact BBN by emailing us at support@bbn.one. Please provide your name, a way for BBN to contact you (such as an email address or telephone number) so that we can respond to your request, information about the nature of your relationship with us (for example, are you a visitor to our website or a shareowner), and details about the action that you would like us to take.\xA0 Based on your request, we will investigate to determine if we have any of your personal information. If we do have your personal information (other than that provided in your request), we will seek to verify your identity based on the personal information that we already have; the data we will request will depend on the nature of the personal information we have about you. Once we verify your identity, we will provide you with a response, indicating how we will satisfy your request or why we cannot comply with your request.`,
+                    `If you are a California resident not covered by the exclusions mentioned above and you would like to exercise your rights, you should contact BBN by emailing us at support@bbn.music. Please provide your name, a way for BBN to contact you (such as an email address or telephone number) so that we can respond to your request, information about the nature of your relationship with us (for example, are you a visitor to our website or a shareowner), and details about the action that you would like us to take.\xA0 Based on your request, we will investigate to determine if we have any of your personal information. If we do have your personal information (other than that provided in your request), we will seek to verify your identity based on the personal information that we already have; the data we will request will depend on the nature of the personal information we have about you. Once we verify your identity, we will provide you with a response, indicating how we will satisfy your request or why we cannot comply with your request.`,
                 ),
                 Label(`Users from the European Union and other countries with privacy laws:`).setFontWeight("semibold"),
                 Label(
@@ -118,7 +118,7 @@ appendBody(
                 ),
                 Label(`Users from the United States:`).setFontWeight("semibold"),
                 Label(
-                    `BBN does not collect Social Security Numbers through www.bbn.one. BBN does, however, collect Social Security Numbers where required by law, such as tax and payroll purposes for its employees. When BBN collects and/or uses Social Security Numbers, BBN will take proper care by protecting confidentiality, limiting collection, ensuring access on a need-to-know basis, implementing appropriate technical safeguards and ensuring proper disposal.`,
+                    `BBN does not collect Social Security Numbers through bbn.music. BBN does, however, collect Social Security Numbers where required by law, such as tax and payroll purposes for its employees. When BBN collects and/or uses Social Security Numbers, BBN will take proper care by protecting confidentiality, limiting collection, ensuring access on a need-to-know basis, implementing appropriate technical safeguards and ensuring proper disposal.`,
                 ),
                 Label(`How might BBN change this policy?`).setTextSize("xl").setFontWeight("bold"),
                 Label(
@@ -126,7 +126,7 @@ appendBody(
                 ),
                 Label(`How can you contact BBN?`).setTextSize("xl").setFontWeight("bold"),
                 Label(
-                    `If you have any comments or questions, or if there are other things we can do to maximize the value of this website to you, please email support@bbn.one. If you wish to access, correct or update your personal information, or if you have questions about BBN’s privacy practices in general or a complaint, please email support@bbn.one.`,
+                    `If you have any comments or questions, or if there are other things we can do to maximize the value of this website to you, please email support@bbn.music. If you wish to access, correct or update your personal information, or if you have questions about BBN’s privacy practices in general or a complaint, please email support@bbn.music.`,
                 ),
                 Label(`In the event that you are located in a country that will be governed by the General Data Protection Regulation and would like to contact the local Data Protection Officer, please note that in your email, and your inquiry will be directed to the appropriate person.`),
                 Label(`Last updated: November 10, 2024`),

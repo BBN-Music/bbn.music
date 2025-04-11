@@ -1,7 +1,7 @@
-import { RegisterAuthRefresh } from "shared/helper.ts";
-import { asRef, Content, createPage, createRoute, Entry, Label, TextButton } from "webgen/mod.ts";
-import { API, OAuthApp, stupidErrorAlert } from "../../../spec/mod.ts";
 import { BasicEntry } from "shared/components.ts";
+import { RegisterAuthRefresh } from "shared/helper.ts";
+import { asRef, Content, createPage, createRoute, Entry, Label } from "webgen/mod.ts";
+import { API, OAuthApp, stupidErrorAlert } from "../../../spec/mod.ts";
 
 await RegisterAuthRefresh();
 

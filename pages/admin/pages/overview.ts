@@ -1,7 +1,7 @@
 import { RegisterAuthRefresh } from "shared/helper.ts";
 import { BasicEntry } from "shared/mod.ts";
 import { asRef, Box, Content, createPage, createRoute, Entry } from "webgen/mod.ts";
-import { AdminWallet, API, Payout, stupidErrorAlert } from "../../../spec/mod.ts";
+import { AdminWallet, API, stupidErrorAlert } from "../../../spec/mod.ts";
 
 await RegisterAuthRefresh();
 
