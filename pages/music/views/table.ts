@@ -9,7 +9,7 @@ import { API, Artist, ArtistRef, Song, stupidErrorAlert, zArtistTypes } from "..
 import { uploadSong } from "../data.ts";
 import "./table.css";
 
-const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void) => {
+const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void, provided: WriteSignal<Artist[] | undefined>) => {
     const yearRef = asRef(song.year.value.toString());
     yearRef.listen((val) => song.year.setValue(parseInt(val)));
     if (!song.country) {
@@ -21,7 +21,7 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void)
         Grid(
             TextInput(song.title, "Title").setMinWidth("30rem"),
             PrimaryButton("Artists")
-                .onClick(() => sheetStack.addSheet(EditArtistsDialog(song.artists))),
+                .onClick(() => sheetStack.addSheet(EditArtistsDialog(song.artists, provided.value))),
             Grid(
                 DropDown(genres[song.primaryGenre.value as keyof typeof genres], song.secondaryGenre, "Genre"),
                 DropDown(Array.from({ length: 28 }).map((_, i) => (i + new Date().getFullYear() - 25).toString()).toReversed(), yearRef, "Year"),
@@ -54,7 +54,7 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void)
     ).setGap();
 };
 
-export function ManageSongs(songs: WriteSignal<Song[]>, id: string) {
+export function ManageSongs(songs: WriteSignal<Song[]>, id: string, provided: WriteSignal<Artist[] | undefined>) {
     function SongEntry(song: RefRecord<Song>) {
         return Grid(
             Grid(
@@ -96,7 +96,7 @@ export function ManageSongs(songs: WriteSignal<Song[]>, id: string) {
                         sheetStack.addSheet(songSheet(songref, (x) => {
                             const songobj = Object.fromEntries(Object.entries(x).map((entry) => [entry[0], entry[1].getValue()])) as Song;
                             songs.setValue(songs.getValue().map((song) => song._id === songobj._id ? songobj : song));
-                        }))
+                        }, provided))
                     );
                 },
             ).setGap(10)

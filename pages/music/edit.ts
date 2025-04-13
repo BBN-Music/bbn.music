@@ -1,7 +1,7 @@
 import { activeUser, dateFromObjectId, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showPreviewImage, showProfilePicture, streamingImages } from "shared/helper.ts";
 import { appendBody, asRef, asRefRecord, Box, Content, createRoute, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, isMobile, Label, PrimaryButton, SecondaryButton, Spinner, StartRouting, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
-import { AdminDrop, API, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, User, zArtistTypes, zDropType, zObjectId } from "../../spec/mod.ts";
+import { AdminDrop, API, Artist, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, User, zArtistTypes, zDropType, zObjectId } from "../../spec/mod.ts";
 
 import languages from "../../data/language.json" with { type: "json" };
 import { DropEntry } from "./views/list.ts";
@@ -42,7 +42,8 @@ const share = asRef(<undefined | Share> undefined);
 const drops = asRef(<undefined | AdminDrop[]> undefined);
 
 const events = asRef(<object[]> []);
-const userProfile = asRef(<User | undefined> undefined);
+const userProfile = asRef(<User | undefined>undefined);
+const userArtists = asRef(<Artist[] | undefined>undefined);
 
 let id: string;
 const mainRoute = createRoute({
@@ -81,6 +82,7 @@ const mainRoute = createRoute({
             if (isAdmin) {
                 events.setValue(adminDrop?.events as object[] ?? []);
                 userProfile.setValue(adminDrop?.userInfo);
+                userArtists.setValue(adminDrop?.artistList);
                 API.getDropsByAdmin({ query: { user: drop.user! } }).then(stupidErrorAlert).then((val) => {
                     drops.setValue(val);
                 });
@@ -197,13 +199,13 @@ appendBody(
                                 DropDown(Object.keys(languages), creationState.language, "Language").setValueRender((x) => (languages as Record<string, string>)[x]),
                             ).setEvenColumns(isMobile.map((val) => val ? 1 : 2)).setGap(),
                             SecondaryButton("Artists").onClick(() => {
-                                sheetStack.addSheet(EditArtistsDialog(creationState.artists));
+                                sheetStack.addSheet(EditArtistsDialog(creationState.artists, userArtists.value));
                             }),
                             genres.primary.map((_) => DropDown(genres.primary, creationState.primaryGenre, "Primary Genre")).value,
                         ).setGap(),
                     ).setTemplateColumns(isMobile.map((val) => val ? "auto" : "min-content auto")).setGap("1rem"),
                 ).setGap(),
-                ManageSongs(creationState.songs, id),
+                ManageSongs(creationState.songs, id, userArtists),
                 TextInput(creationState.comments, "Comments"),
                 SecondaryButton("Save").onClick(() => {
                     API.patchIdByDropsByMusic({
