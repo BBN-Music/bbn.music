@@ -9,7 +9,7 @@ import { API, Artist, ArtistRef, Song, stupidErrorAlert, zArtistTypes } from "..
 import { uploadSong } from "../data.ts";
 import "./table.css";
 
-const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void, provided: WriteSignal<Artist[] | undefined>) => {
+const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void, provided: WriteSignal<Artist[] | undefined>, disabled: WriteSignal<boolean>) => {
     const yearRef = asRef(song.year.value.toString());
     yearRef.listen((val) => song.year.setValue(parseInt(val)));
     if (!song.country) {
@@ -19,25 +19,25 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void,
     return Grid(
         SheetHeader("Edit Song", sheetStack),
         Grid(
-            TextInput(song.title, "Title").setMinWidth("30rem"),
+            TextInput(song.title, "Title").setDisabled(disabled).setMinWidth("30rem"),
             PrimaryButton("Artists")
-                .onClick(() => sheetStack.addSheet(EditArtistsDialog(song.artists, provided.value))),
+                .onClick(() => sheetStack.addSheet(EditArtistsDialog(song.artists, provided.value, disabled))),
             Grid(
-                DropDown(genres[song.primaryGenre.value as keyof typeof genres], song.secondaryGenre, "Genre"),
-                DropDown(Array.from({ length: 28 }).map((_, i) => (i + new Date().getFullYear() - 25).toString()).toReversed(), yearRef, "Year"),
+                DropDown(genres[song.primaryGenre.value as keyof typeof genres], song.secondaryGenre, "Genre").setDisabled(disabled),
+                DropDown(Array.from({ length: 28 }).map((_, i) => (i + new Date().getFullYear() - 25).toString()).toReversed(), yearRef, "Year").setDisabled(disabled),
             ).setGap().setDynamicColumns(15),
             Grid(
-                DropDown(Object.keys(countries), song.country, "Country").setValueRender((key) => countries[key as keyof typeof countries]),
-                DropDown(Object.keys(languages), song.language, "Language").setValueRender((key) => languages[key as keyof typeof languages]),
+                DropDown(Object.keys(countries), song.country, "Country").setDisabled(disabled).setValueRender((key) => countries[key as keyof typeof countries]),
+                DropDown(Object.keys(languages), song.language, "Language").setDisabled(disabled).setValueRender((key) => languages[key as keyof typeof languages]),
             ).setGap().setDynamicColumns(15),
             Grid(
                 Grid(
                     Label("Explicit").setFontWeight("bold"),
                     Label("Instrumental").setFontWeight("bold"),
-                    Checkbox(song.explicit),
-                    Checkbox(song.instrumental),
+                    Checkbox(song.explicit).setDisabled(disabled),
+                    Checkbox(song.instrumental).setDisabled(disabled),
                 ).setTemplateColumns("max-content max-content").setGap().setJustifyItems("center"),
-                TextInput(song.isrc!, "ISRC (optional)"),
+                TextInput(song.isrc ?? asRef(""), "ISRC (optional)").setDisabled(disabled),
             ).setGap().setDynamicColumns(15),
             Box(blobRef.map((blob) =>
                 blob === undefined
@@ -47,14 +47,14 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void,
                     : Audio(blob).setAutoplay()
             )),
         ).setGap(),
-        PrimaryButton("Save").onClick(() => {
+        PrimaryButton("Save").setDisabled(disabled).onClick(() => {
             save(song);
             sheetStack.removeOne();
         }),
     ).setGap();
 };
 
-export function ManageSongs(songs: WriteSignal<Song[]>, id: string, provided: WriteSignal<Artist[] | undefined>) {
+export function ManageSongs(songs: WriteSignal<Song[]>, id: string, provided: WriteSignal<Artist[] | undefined>, disabled: WriteSignal<boolean>) {
     function SongEntry(song: RefRecord<Song>) {
         return Grid(
             Grid(
@@ -63,10 +63,10 @@ export function ManageSongs(songs: WriteSignal<Song[]>, id: string, provided: Wr
             )
                 .setHeight("max-content")
                 .setAlignSelf("center"),
-            Grid(MaterialIcon("delete").setCssStyle("color", "#b91616")).setJustifySelf("end").setJustifyItems("center").onClick((x) => {
+            Grid(MaterialIcon("delete").setCssStyle("color", disabled.map((val) => val ? "gray" : "#b91616"))).setJustifySelf("end").setJustifyItems("center").onClick((x) => {
                 x.stopPropagation();
                 songs.setValue(songs.getValue().filter((s) => s._id !== song._id.value));
-            }).setCssStyle("backgroundColor", "#844a4a52").setPadding("1em").setCssStyle("borderRadius", "0.5rem"),
+            }).setCssStyle("backgroundColor", disabled.map((val) => val ? "darkgray" : "#844a4a52")).setPadding("1em").setCssStyle("borderRadius", "0.5rem"),
         )
             .setTemplateColumns("max-content auto")
             .setPadding("1rem 0");
@@ -76,11 +76,11 @@ export function ManageSongs(songs: WriteSignal<Song[]>, id: string, provided: Wr
             Empty(),
             Label("Manage your Songs").setFontWeight("bold").setTextSize("2xl").setJustifySelf("center"),
             Grid(
-                PrimaryButton("Add Song").onPromiseClick(async () => {
+                PrimaryButton("Add Song").setDisabled(disabled).onPromiseClick(async () => {
                     const userSongs = await API.getSongsByMusic().then(stupidErrorAlert);
                     sheetStack.addSheet(ExistingSongDialog(songs, userSongs));
                 }),
-                PrimaryButton("Upload Song")
+                PrimaryButton("Upload Song").setDisabled(disabled)
                     .onClick(() => createFilePicker(allowedAudioFormats.join(",")).then((file) => uploadSong(file, songs, id))),
             ).setTemplateColumns("auto auto").setGap(),
         ).setTemplateColumns("1fr 1fr 1fr").setGap(),
@@ -139,7 +139,7 @@ export const createArtistSheet = (name?: string) => {
     return promise.promise;
 };
 
-export const EditArtistsDialog = (artists: WriteSignal<ArtistRef[]>, provided?: Artist[]) => {
+export const EditArtistsDialog = (artists: WriteSignal<ArtistRef[]>, provided?: Artist[], disabled: WriteSignal<boolean>) => {
     const artistList = provided ? asRef(provided) : asRef<Artist[]>([]);
 
     if (!provided) {
@@ -182,9 +182,9 @@ export const EditArtistsDialog = (artists: WriteSignal<ArtistRef[]>, provided?: 
                             });
                         }
                         return Grid(
-                            DropDown(Object.values(zArtistTypes.enum), refArtist.type, "Type"),
-                            artist.type == zArtistTypes.enum.PRIMARY || artist.type == zArtistTypes.enum.FEATURING ? DropDown(list.map((x) => x._id), (refArtist as typeof refArtist & { _id: WriteSignal<string> })._id, "Name").setValueRender((id) => id == null ? "Select Artist" : artistList.get().find((a) => a._id === id)?.name ?? "Artist not found") : TextInput((refArtist as typeof refArtist & { name: WriteSignal<string> }).name, "Name", "change"),
-                            PrimaryButton("").addPrefix(MaterialIcon("delete")).onClick(() => {
+                            DropDown(Object.values(zArtistTypes.enum), refArtist.type, "Type").setDisabled(disabled),
+                            artist.type == zArtistTypes.enum.PRIMARY || artist.type == zArtistTypes.enum.FEATURING ? DropDown(list.map((x) => x._id), (refArtist as typeof refArtist & { _id: WriteSignal<string> })._id, "Name").setValueRender((id) => id == null ? "Select Artist" : artistList.get().find((a) => a._id === id)?.name ?? "Artist not found").setDisabled(disabled) : TextInput((refArtist as typeof refArtist & { name: WriteSignal<string> }).name, "Name", "change").setDisabled(disabled),
+                            PrimaryButton("").setDisabled(disabled).addPrefix(MaterialIcon("delete")).onClick(() => {
                                 artists.setValue(x.toSpliced(x.indexOf(artist), 1));
                             }),
                         ).setGap().setTemplateColumns("30% 60% auto");
@@ -193,9 +193,10 @@ export const EditArtistsDialog = (artists: WriteSignal<ArtistRef[]>, provided?: 
             ).setGap()
         )),
         PrimaryButton("Add Artist")
+            .setDisabled(disabled)
             .setJustifySelf("end")
             .onClick(() => artists.setValue([...artists.value, { type: zArtistTypes.enum.PRIMARY, _id: null! }])),
-        PrimaryButton("Save")
+        PrimaryButton("Save").setDisabled(disabled)
             .onClick(() => sheetStack.removeOne()),
     )
         .setGap()

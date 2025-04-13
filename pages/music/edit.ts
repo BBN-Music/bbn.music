@@ -71,6 +71,8 @@ const mainRoute = createRoute({
             creationState.comments.setValue(drop.comments);
             creationState.type.setValue(drop.type);
 
+            disabled.setValue(drop.type !== "PRIVATE" && drop.type !== "UNSUBMITTED");
+
             API.getGenresByMusic().then(stupidErrorAlert).then((x) => {
                 genres.primary.setValue(x.primary);
                 genres.secondary.setValue(x.secondary);
@@ -184,6 +186,17 @@ const ResponseDialog = Grid(
     )),
 );
 
+function save() {
+    API.patchIdByDropsByMusic({
+        path: { id },
+        body: Object.fromEntries(Object.entries(creationState).map((entry) => [entry[0], entry[1].getValue()])),
+    }).then(stupidErrorAlert).then(() => {
+        location.reload();
+    });
+}
+
+const disabled = asRef(false);
+
 appendBody(
     WebGenTheme(
         DialogContainer(sheetStack.visible(), sheetStack),
@@ -207,28 +220,38 @@ appendBody(
                             SecondaryButton(share.map((x) => x ? "Sharing Enabled" : "Sharing Disabled")).onClick(() => sheetStack.addSheet(SharingDialog)),
                         ).setGap(),
                         Grid(
-                            TextInput(creationState.title, "Title"),
+                            TextInput(creationState.title, "Title").setDisabled(disabled),
                             Grid(
-                                DateInput(creationState.release, "Release Date"),
-                                DropDown(Object.keys(languages), creationState.language, "Language").setValueRender((x) => (languages as Record<string, string>)[x]),
+                                DateInput(creationState.release, "Release Date").setDisabled(disabled),
+                                DropDown(Object.keys(languages), creationState.language, "Language").setDisabled(disabled).setValueRender((x) => (languages as Record<string, string>)[x]),
                             ).setEvenColumns(isMobile.map((val) => val ? 1 : 2)).setGap(),
                             SecondaryButton("Artists").onClick(() => {
-                                sheetStack.addSheet(EditArtistsDialog(creationState.artists, userArtists.value));
+                                sheetStack.addSheet(EditArtistsDialog(creationState.artists, userArtists.value, disabled));
                             }),
-                            genres.primary.map((_) => DropDown(genres.primary, creationState.primaryGenre, "Primary Genre")).value,
+                            genres.primary.map((_) => DropDown(genres.primary, creationState.primaryGenre, "Primary Genre").setDisabled(disabled)).value,
                         ).setGap(),
                     ).setTemplateColumns(isMobile.map((val) => val ? "auto" : "min-content auto")).setGap("1rem"),
                 ).setGap(),
-                ManageSongs(creationState.songs, id, userArtists),
-                TextInput(creationState.comments, "Comments"),
-                SecondaryButton("Save").onClick(() => {
-                    API.patchIdByDropsByMusic({
-                        path: { id },
-                        body: Object.fromEntries(Object.entries(creationState).map((entry) => [entry[0], entry[1].getValue()])),
-                    }).then(stupidErrorAlert).then(() => {
-                        location.reload();
-                    });
+                ManageSongs(creationState.songs, id, userArtists, disabled),
+                TextInput(creationState.comments, "Comments").setDisabled(disabled),
+                SecondaryButton("Save").setDisabled(disabled).onClick(() => {
+                    save();
                 }),
+                Box(creationState.type.map((val) => {
+                    if (val === "PRIVATE") {
+                        return PrimaryButton("Submit for Review").onClick(() => {
+                            creationState.type.setValue("UNDER_REVIEW");
+                            save();
+                        });
+                    }
+                    if (val === "UNDER_REVIEW") {
+                        return SecondaryButton("Cancel Review").onClick(() => {
+                            creationState.type.setValue("PRIVATE");
+                            save();
+                        });
+                    }
+                    return Empty();
+                })),
                 isAdmin
                     ? Grid(
                         Grid(
