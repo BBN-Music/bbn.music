@@ -42,8 +42,8 @@ const share = asRef(<undefined | Share> undefined);
 const drops = asRef(<undefined | AdminDrop[]> undefined);
 
 const events = asRef(<object[]> []);
-const userProfile = asRef(<User | undefined>undefined);
-const userArtists = asRef(<Artist[] | undefined>undefined);
+const userProfile = asRef(<User | undefined> undefined);
+const userArtists = asRef(<Artist[] | undefined> undefined);
 
 let id: string;
 const mainRoute = createRoute({
@@ -144,7 +144,10 @@ const selectedTemplate = asRef("");
 const denyEdits = asRef(false);
 const templates = () =>
     ({
-        "Copyright bad": [`Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and our Systems detected Copyright Issues with your Drop.\nCould you please send over proof that you own the rights to the Music?\nYou must own 100% of the legal rights to the music you are distributing.\nThis includes all types of samples or remixes.\nI have marked your Drop as rejected for now, until you send over the proof.\n\nBest regards,\n${activeUser.username.value}`],
+        "Copyright bad": [
+            `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and our Systems detected Copyright Issues with your Drop.\nCould you please send over proof that you own the rights to the Music?\nYou must own 100% of the legal rights to the music you are distributing.\nThis includes all types of samples or remixes.\nI have marked your Drop as rejected for now, until you send over the proof.\n\nBest regards,\n${activeUser.username.value}`,
+        ],
         "Full Songwriter Name": [`Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed missing Metadata. \nYour Drop is missing the Producers Full Name.\nPlease send over the Full Name of the Producer or add it in the Metadata.\n\nBest regards,\n${activeUser.username.value}`],
         "Full Producer Name": [`Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed missing Metadata. \nYour Drop is missing the Songwriters Full Name.\nPlease send over the Full Name of the Songwriter or add it in the Metadata.\n\nBest regards,\n${activeUser.username.value}`],
         "Full Songwriter and Producer Name": [`Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed missing Metadata. \nYour Drop is missing the Songwriters and Producers Full Name.\nPlease send over the Full Name of the Songwriter and Producer or add it in the Metadata.\n\nBest regards,\n${activeUser.username.value}`],
@@ -169,13 +172,14 @@ const ResponseDialog = Grid(
     Box(action.map((val) =>
         PrimaryButton(val).onPromiseClick(async () => {
             await API.postReviewByDropByMusic({
-                path: { dropId: id }, body: {
+                path: { dropId: id },
+                body: {
                     title: titleText.value,
                     action: action.value,
-                    body: responseText.value,
-                    denyEdits: denyEdits.value
-                }
-            }).then(stupidErrorAlert)
+                    body: responseText.value.replaceAll("\n", "<br>"),
+                    denyEdits: denyEdits.value,
+                },
+            }).then(stupidErrorAlert);
         })
     )),
 );
