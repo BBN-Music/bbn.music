@@ -3,7 +3,6 @@ import { appendBody, asRef, asRefRecord, Box, Content, createRoute, css, DateInp
 import { DynaNavigation } from "../../components/nav.ts";
 import { AdminDrop, API, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, User, zArtistTypes, zDropType, zObjectId } from "../../spec/mod.ts";
 
-import { templateArtwork } from "../../assets/imports.ts";
 import languages from "../../data/language.json" with { type: "json" };
 import { DropEntry } from "./views/list.ts";
 import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
@@ -26,7 +25,6 @@ const creationState = asRefRecord({
     compositionCopyright: <string | undefined> undefined,
     soundRecordingCopyright: <string | undefined> undefined,
     artwork: <string | undefined> undefined,
-    artworkData: <string | undefined> undefined,
     uploadingSongs: <Record<string, number>[]> [],
     songs: <Song[]> [],
     comments: <string | undefined> undefined,
@@ -68,7 +66,6 @@ const mainRoute = createRoute({
             creationState.compositionCopyright.setValue(drop.compositionCopyright ?? "BBN Music (via bbn.music)");
             creationState.soundRecordingCopyright.setValue(drop.soundRecordingCopyright ?? "BBN Music (via bbn.music)");
             creationState.artwork.setValue(drop.artwork);
-            creationState.artworkData.setValue(drop.artwork ? await API.getArtworkByDropByMusic({ path: { dropId: id } }).then((x) => URL.createObjectURL(x.data)) : templateArtwork);
             creationState.songs.setValue(drop.songs ?? []);
             creationState.comments.setValue(drop.comments);
             creationState.type.setValue(drop.type);
@@ -190,7 +187,7 @@ appendBody(
                     Label("Edit Drop").setTextSize("3xl").setFontWeight("bold"),
                     Grid(
                         Grid(
-                            creationState.artworkData.map((artwork) => showPreviewImage({ artwork: artwork, _id: id })).value.setRadius("large").setWidth("200px").setHeight("200px").setCssStyle("overflow", "hidden"),
+                            creationState.artwork.map((artwork) => showPreviewImage({ artwork: artwork, _id: id }).setRadius("large").setWidth("200px").setHeight("200px").setCssStyle("overflow", "hidden")),
                             SecondaryButton(share.map((x) => x ? "Sharing Enabled" : "Sharing Disabled")).onClick(() => sheetStack.addSheet(SharingDialog)),
                         ).setGap(),
                         Grid(
