@@ -177,7 +177,10 @@ const ResponseDialog = Grid(
             height: 100%;
         }
     `),
-    Checkbox(denyEdits),
+    Grid(
+        Checkbox(denyEdits),
+        Label("Deny Edits"),
+    ).setTemplateColumns("min-content auto").setGap(),
     Box(action.map((val) =>
         PrimaryButton(val).onPromiseClick(async () => {
             await API.postReviewByDropByMusic({
@@ -191,7 +194,7 @@ const ResponseDialog = Grid(
             }).then(stupidErrorAlert);
         })
     )),
-);
+).setGap();
 
 function save() {
     API.patchIdByDropsByMusic({
