@@ -1,15 +1,18 @@
 import { activeUser, ErrorMessage, IsLoggedIn, logOut, RegisterAuthRefresh, sheetStack, showProfilePicture } from "shared/helper.ts";
-import { appendBody, asRefRecord, Color, Content, DialogContainer, EmailInput, FullWidthSection, Grid, PasswordInput, PrimaryButton, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { appendBody, asRefRecord, Color, Content, DialogContainer, EmailInput, Empty, FullWidthSection, Grid, PasswordInput, PrimaryButton, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { z } from "zod/mod.ts";
 import "../../assets/css/main.css";
 import { DynaNavigation } from "../../components/nav.ts";
 import { API, stupidErrorAlert } from "../../spec/mod.ts";
+import { state } from "./state.ts";
 
 await RegisterAuthRefresh();
 
 const state = asRefRecord({
     email: activeUser.email.value ?? "",
     name: activeUser.username.value,
+    phone: activeUser.phone.value ? activeUser.phone.value.slice(2)[1] : "",
+    phoneCountry: activeUser.phone.value ? activeUser.phone.value.slice(2)[0] : "",
     password: undefined,
     verifyPassword: undefined,
     validationState: <string | undefined> undefined,
@@ -25,7 +28,12 @@ appendBody(WebGenTheme(
             showProfilePicture(IsLoggedIn()!).setWidth("300px").setJustifySelf("center"),
             Grid(
                 TextInput(state.name, "Name"),
+                Empty(),
                 EmailInput(state.email, "Email"),
+                // Grid(
+                //     DropDown(["DE", "UK", "NL"], asRef(""), "Country").setValueRender((x) => x),
+                //     TextInput(state.phone, "Phone"),
+                // ).setTemplateColumns("25% 75%"),
                 PasswordInput(state.password, "New Password"),
                 PasswordInput(state.verifyPassword, "Verify New Password"),
             ).setDynamicColumns(20).setGap(),
@@ -33,6 +41,7 @@ appendBody(WebGenTheme(
                 const validator = z.object({
                     name: z.string().min(2),
                     email: z.string().email(),
+                    phone: z.string().optional(),
                     password: z.string().min(8).refine((val) => state.verifyPassword ? val == state.verifyPassword.value : true, { message: "Your new password didn't match" }).optional(),
                     verifyPassword: z.string().min(8).optional(),
                 }).safeParse(Object.fromEntries(Object.entries(state).map(([key, state]) => [key, state.value])));

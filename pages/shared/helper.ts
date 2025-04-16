@@ -56,6 +56,7 @@ function rawAccessToken() {
 export const activeUser = asRefRecord({
     emailVerified: <boolean | undefined> undefined,
     email: <string | undefined> undefined,
+    phone: <string | undefined> undefined,
     username: <string> "--",
     avatar: <string | undefined> undefined,
     permission: <Permission[]> [],
