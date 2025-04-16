@@ -19,7 +19,7 @@ export const Permissions = [
 export type Permission = typeof Permissions[number];
 
 export const APITools = {
-    oauthRedirect: (type: "discord" | "google" | "microsoft") => `${APITools.baseUrl()}auth/redirect/${type}?goal=${localStorage.getItem("goal") ?? "/c/music"}`,
+    oauthRedirect: (type: "discord" | "google" | "microsoft") => `${APITools.baseUrl()}api/@bbn/auth/redirect/${type}?goal=${localStorage.getItem("goal") ?? "/c/music"}`,
     token: () => localStorage.getItem("access-token"),
     baseUrl: () => localStorage.getItem("OVERRIDE_BASE_URL") || (location.hostname === "localhost" ? "http://localhost:8443/" : "https://bbn.music/"),
     isPermitted: (requiredPermissions: Permission[], userPermission: Permission[]) => requiredPermissions.every((required) => userPermission.find((user) => required.startsWith(user))),
