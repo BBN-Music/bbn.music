@@ -54,7 +54,7 @@ const songSheet = (song: RefRecord<Song>, save: (song: RefRecord<Song>) => void,
     ).setGap();
 };
 
-export function ManageSongs(songs: WriteSignal<Song[]>, id: string, provided: WriteSignal<Artist[] | undefined>, disabled: WriteSignal<boolean>) {
+export function ManageSongs(songs: WriteSignal<Song[]>, id: string, provided: WriteSignal<Artist[] | undefined>, disabled: WriteSignal<boolean> = asRef(false)) {
     function SongEntry(song: RefRecord<Song>) {
         return Grid(
             Grid(
@@ -139,7 +139,7 @@ export const createArtistSheet = (name?: string) => {
     return promise.promise;
 };
 
-export const EditArtistsDialog = (artists: WriteSignal<ArtistRef[]>, provided?: Artist[], disabled: WriteSignal<boolean>) => {
+export const EditArtistsDialog = (artists: WriteSignal<ArtistRef[]>, provided?: Artist[], disabled: WriteSignal<boolean> = asRef(false)) => {
     const artistList = provided ? asRef(provided) : asRef<Artist[]>([]);
 
     if (!provided) {
