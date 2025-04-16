@@ -198,7 +198,7 @@ appendBody(
 
 const pageOne = z.object({
     title: z.string().min(1, { message: "Title is required" }).max(100, { message: "Title is too long" }),
-    artists: zArtistRef.array().refine((x) => x.some(({ type }) => type == "PRIMARY"), { message: "At least one primary artist is required" }).refine((x) => x.some(({ type }) => type == "SONGWRITER"), { message: "At least one songwriter is required" }),
+    artists: zArtistRef.array().refine((x) => x.some(({ type }) => type == "PRIMARY"), { message: "At least one primary artist is required" }).refine((x) => x.some(({ type }) => type == "SONGWRITER"), { message: "At least one songwriter is required" }).refine((x) => x.filter(({ type }) => type === "SONGWRITER").every(({ name }) => name.split(" ").length > 1), { message: "Songwriters must have a first and last name" }),
     release: z.string().regex(/\d\d\d\d-\d\d-\d\d/, { message: "Not a date" }),
     language: z.string(),
     primaryGenre: z.string(),
