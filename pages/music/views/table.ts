@@ -96,7 +96,7 @@ export function ManageSongs(songs: WriteSignal<Song[]>, id: string, provided: Wr
                         sheetStack.addSheet(songSheet(songref, (x) => {
                             const songobj = Object.fromEntries(Object.entries(x).map((entry) => [entry[0], entry[1].getValue()])) as Song;
                             songs.setValue(songs.getValue().map((song) => song._id === songobj._id ? songobj : song));
-                        }, provided))
+                        }, provided, disabled))
                     );
                 },
             ).setGap(10)
