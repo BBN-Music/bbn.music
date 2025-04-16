@@ -30,6 +30,7 @@ const userSheet = async (user: User) => {
     const drops = await API.getDropsByAdmin({ query: { user: user._id } }).then(stupidErrorAlert);
     const wallet = await API.getIdByWalletsByAdmin({ path: { id: user._id } }).then(stupidErrorAlert);
     console.log(drops);
+    console.log(wallet);
     return Grid(
         SheetHeader("User", sheetStack),
         Grid(
@@ -42,10 +43,10 @@ const userSheet = async (user: User) => {
             ),
             Grid(
                 Label("Wallet"),
-                Label(`Restrained: ${wallet.balance.restrained.toFixed(2)}`),
-                Label(`Unrestrained: ${wallet.balance.unrestrained.toFixed(2)}`),
-                Label(`Generated: ${wallet.transactions.filter((t) => t.amount > 0).map((t) => t.amount).reduce((a, b) => a + b, 0).toFixed(2)}`),
-                TextButton("View Transactions").onClick(() => {
+                Label(`Restrained: ${wallet.balance?.restrained.toFixed(2) ?? "No wallet"}`),
+                Label(`Unrestrained: ${wallet.balance?.unrestrained.toFixed(2) ?? "No wallet"}`),
+                Label(`Generated: ${wallet.transactions?.filter((t) => t.amount > 0).map((t) => t.amount).reduce((a, b) => a + b, 0).toFixed(2) ?? "No wallet"}`),
+                TextButton("View Transactions").setDisabled(!wallet._id).onClick(() => {
                     sheetStack.addSheet(Box(walletSheet(asRef(wallet))));
                 }),
             ),
