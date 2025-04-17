@@ -27,6 +27,7 @@ export function WalletEntry(wallet: AdminWallet) {
     );
 }
 
+// deno-lint-ignore no-explicit-any
 export function ChatEntry(chat: any) {
     return Entry(BasicEntry(chat.username ? chat.username : chat.wa_id, chat.username ? chat.wa_id : ""));
 }
@@ -36,7 +37,7 @@ export function GroupEntry(group: Group) {
 }
 
 export function OAuthEntry(app: OAuthApp) {
-    const prefix = Async(API.getDownloadByFileByFilesByAdmin({ path: { fileId: app.icon } }).then(stupidErrorAlert).then((x) => Image(URL.createObjectURL(x), "App Icon").setWidth("100px").setCssStyle("display", "block").setRadius("large")), Spinner());
+    const prefix = Async(API.getDownloadByFileByFilesByAdmin({ path: { fileId: app.icon } }).then(stupidErrorAlert).then((x) => Image(URL.createObjectURL(x as Blob), "App Icon").setWidth("100px").setCssStyle("display", "block").setRadius("large")), Spinner());
     return Entry(
         BasicEntry(app.name, app._id)
             .addPrefix(prefix),
