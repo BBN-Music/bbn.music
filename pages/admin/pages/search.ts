@@ -1,7 +1,7 @@
 import { BasicEntry } from "shared/components.ts";
 import { ProfileData, RegisterAuthRefresh, sheetStack, showProfilePicture } from "shared/helper.ts";
 import { placeholder } from "shared/mod.ts";
-import { asRef, Box, Content, createPage, createRoute, DateInput, DropDown, Empty, Entry, Grid, Label, PrimaryButton, SheetHeader, Spinner, TextButton, TextInput, WriteSignal } from "webgen/mod.ts";
+import { asRef, Box, Content, createPage, createRoute, DateInput, DropDown, Empty, Entry, Grid, Label, PrimaryButton, SheetHeader, Spinner, TextInput, WriteSignal } from "webgen/mod.ts";
 import { API, PaymentType, SearchReturn, stupidErrorAlert, User, Wallet, zAccountType } from "../../../spec/mod.ts";
 import { WalletView } from "../../wallet/component.ts";
 import { ReviewEntry } from "../entries.ts";
@@ -92,25 +92,28 @@ const addTransactionSheet = (wallet: WriteSignal<Wallet>) => {
     const description = asRef("PayPal Payout");
     const counterParty = asRef("PayPal");
     return Grid(
-        DateInput(timestamp, "Date"),
-        TextInput(amount, "Amount"),
-        DropDown(["UNRESTRAINED", "RESTRAINED"], type, "TransactionType"),
-        TextInput(description, "Description"),
-        TextInput(counterParty, "Counter Party"),
-        TextButton("Send").onPromiseClick(async () => {
-            const walletobj = wallet.getValue();
-            walletobj.transactions.push({
-                amount: Number(amount.getValue()),
-                type: type.getValue(),
-                timestamp: String(new Date(timestamp.getValue() + "T00:00:00.000Z").getTime()),
-                description: description.getValue(),
-                counterParty: counterParty.getValue(),
-            });
-            await API.patchIdByWalletsByAdmin({ path: { id: walletobj._id }, body: walletobj });
-            wallet.setValue(walletobj);
-            sheetStack.removeOne();
-        }),
-    );
+        SheetHeader("Add Transaction", sheetStack),
+        Grid(
+            DateInput(timestamp, "Date"),
+            TextInput(amount, "Amount"),
+            DropDown(["UNRESTRAINED", "RESTRAINED"], type, "TransactionType"),
+            TextInput(description, "Description"),
+            TextInput(counterParty, "Counter Party"),
+            PrimaryButton("Add Transaction").onPromiseClick(async () => {
+                const walletobj = wallet.getValue();
+                walletobj.transactions.push({
+                    amount: Number(amount.getValue()),
+                    type: type.getValue(),
+                    timestamp: String(new Date(timestamp.getValue() + "T00:00:00.000Z").getTime()),
+                    description: description.getValue(),
+                    counterParty: counterParty.getValue(),
+                });
+                await API.patchIdByWalletsByAdmin({ path: { id: walletobj._id }, body: { transactions: walletobj.transactions } });
+                wallet.setValue(walletobj);
+                sheetStack.removeOne();
+            }),
+        ).setDynamicColumns(20).setGap(),
+    ).setGap();
 };
 
 createPage(
