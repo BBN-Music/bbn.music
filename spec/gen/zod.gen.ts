@@ -424,7 +424,7 @@ export const zOAuthApp = z.object({
     redirect: z.array(z.string().url()),
     secret: z.string(),
     icon: zObjectId,
-    users: z.array(zObjectId)
+    users: z.array(zObjectId).optional()
 });
 
 export const zPayoutResponse = z.object({

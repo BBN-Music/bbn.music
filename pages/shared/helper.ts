@@ -21,8 +21,10 @@ export type ProfileData = {
     _id: string;
     profile: {
         email: string;
+        phone?: string;
         verified?: {
             email?: boolean;
+            phone?: boolean;
         };
         username: string;
         avatar?: string;
@@ -74,6 +76,7 @@ export function updateActiveUserData() {
         activeUser.emailVerified.setValue(user.profile.verified?.email);
         activeUser.username.setValue(user.profile.username);
         activeUser.email.setValue(user.profile.email);
+        activeUser.phone.setValue(user.profile.phone);
         activeUser.avatar.setValue(user.profile.avatar);
         activeUser.id.setValue(user._id);
         activeUser.permission.setValue(user.permissions);
@@ -189,7 +192,7 @@ export function saveBlob(blob: Blob, fileName: string) {
 }
 
 export function showPreviewImage(x: { artwork?: string; _id?: string } | undefined) {
-    return x && x.artwork ? showImage(API.getArtworkByDropByMusic({ path: { dropId: x._id! } }).then(stupidErrorAlert) as Promise<Blob>, "Drop Artwork") : Image(templateArtwork, "A Placeholder Artwork.");
+    return x?.artwork ? showImage(API.getArtworkByDropByMusic({ path: { dropId: x._id! } }).then(stupidErrorAlert) as Promise<Blob>, "Drop Artwork") : Image(templateArtwork, "A Placeholder Artwork.");
 }
 
 export function showImage(blob: Promise<Blob>, alt: string) {

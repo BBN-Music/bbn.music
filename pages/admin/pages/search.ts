@@ -3,8 +3,8 @@ import { ProfileData, RegisterAuthRefresh, sheetStack, showProfilePicture } from
 import { placeholder } from "shared/mod.ts";
 import { asRef, Box, Content, createPage, createRoute, DateInput, DropDown, Empty, Entry, Grid, Label, SheetHeader, Spinner, TextButton, TextInput, WriteSignal } from "webgen/mod.ts";
 import { API, PaymentType, SearchReturn, stupidErrorAlert, User, Wallet, zAccountType } from "../../../spec/mod.ts";
-import { ReviewEntry } from "../../music/views/list.ts";
 import { WalletView } from "../../wallet/component.ts";
+import { ReviewEntry } from "../entries.ts";
 
 await RegisterAuthRefresh();
 

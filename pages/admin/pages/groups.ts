@@ -1,7 +1,7 @@
 import { RegisterAuthRefresh } from "shared/helper.ts";
-import { BasicEntry } from "shared/mod.ts";
-import { asRef, Content, createPage, createRoute, Entry, Label } from "webgen/mod.ts";
+import { asRef, Content, createPage, createRoute, Label } from "webgen/mod.ts";
 import { API, Group, stupidErrorAlert } from "../../../spec/mod.ts";
+import { GroupEntry } from "../entries.ts";
 
 await RegisterAuthRefresh();
 
@@ -21,6 +21,6 @@ createPage(
         weight: 4,
     },
     Content(
-        groups.map((groups) => groups === "loading" ? Label("Loading...") : groups.map((group) => Entry(BasicEntry(group.displayName, "Permissions: " + group.permission.join(", "))))),
+        groups.map((groups) => groups === "loading" ? Label("Loading...") : groups.map((group) => GroupEntry(group))),
     ),
 );

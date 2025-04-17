@@ -5,9 +5,9 @@ import { appendBody, Box, Color, Content, css, EmailInput, Empty, FullWidthSecti
 import "../../assets/css/main.css";
 import { discordLogo, googleLogo } from "../../assets/imports.ts";
 import { DynaNavigation } from "../../components/nav.ts";
+import { API, APITools } from "../../spec/mod.ts";
 import { handleStateChange, loginUser, registerUser } from "./actions.ts";
 import { state } from "./state.ts";
-import { API, APITools } from "../../spec/mod.ts";
 
 // @deno-types="https://raw.githubusercontent.com/lucsoft-DevTeam/lucsoft.de/master/custom.d.ts"
 import backgroundImage from "../holding/resources/background.jpg";
@@ -56,8 +56,7 @@ appendBody(
                 Grid(
                     isMobile.map((small) =>
                         Label("Welcome back!")
-                            .setMaxWidth("21rem")
-                            .setMargin("5rem 0 .8rem")
+                            .setMaxWidth("29rem")
                             .setFontWeight("extrabold")
                             .setTextSize(small ? "6xl" : "7xl")
                             .setCssStyle("lineHeight", small ? "var(--wg-lineheight-${6xl})" : "94px")
@@ -111,9 +110,10 @@ appendBody(
                                 Grid(
                                     Label("Already have an account?"),
                                     TextButton("Sign in")
+                                        .setMargin("-0.5rem 0")
                                         .onClick(() => state.type.setValue("login")),
                                 )
-                                    .setTemplateColumns("auto auto"),
+                                    .setTemplateColumns("max-content max-content"),
                             ).setGap();
                         }
 
@@ -151,13 +151,15 @@ appendBody(
                                 Grid(
                                     Label("New here?"),
                                     TextButton("Create an Account")
+                                        .setMargin("-0.5rem 0")
                                         .onClick(() => state.type.setValue("register")),
-                                ).setTemplateColumns("auto auto"),
+                                ).setTemplateColumns("max-content max-content"),
                                 Grid(
                                     Label("Forgot your Password?"),
                                     TextButton("Reset it here")
+                                        .setMargin("-0.5rem 0")
                                         .onClick(() => state.type.setValue("request-reset-password")),
-                                ).setTemplateColumns("auto auto"),
+                                ).setTemplateColumns("max-content max-content"),
                             ).setGap();
                         }
 
@@ -173,8 +175,9 @@ appendBody(
                                 Grid(
                                     Label("Already have an account?"),
                                     TextButton("Sign in")
+                                        .setMargin("-0.5rem 0")
                                         .onClick(() => state.type.setValue("login")),
-                                ).setTemplateColumns("auto auto"),
+                                ).setTemplateColumns("max-content max-content"),
                             ).setGap();
                         }
 

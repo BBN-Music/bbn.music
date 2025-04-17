@@ -1,7 +1,7 @@
 import { RegisterAuthRefresh } from "shared/helper.ts";
-import { BasicEntry } from "shared/mod.ts";
-import { asRef, Content, createPage, createRoute, Entry, Label } from "webgen/mod.ts";
+import { asRef, Content, createPage, createRoute, Label } from "webgen/mod.ts";
 import { API, stupidErrorAlert } from "../../../spec/mod.ts";
+import { ChatEntry } from "../entries.ts";
 
 await RegisterAuthRefresh();
 
@@ -21,6 +21,6 @@ createPage(
         weight: 4,
     },
     Content(
-        chats.map((chats) => chats === "loading" ? Label("Loading...") : chats.map((chat) => Entry(BasicEntry(chat.username ? chat.username : chat.wa_id, chat.username ? chat.wa_id : "")))),
+        chats.map((chats) => chats === "loading" ? Label("Loading...") : chats.map((chat) => ChatEntry(chat))),
     ),
 );

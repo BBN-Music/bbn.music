@@ -4,15 +4,13 @@ import { z } from "zod/mod.ts";
 import "../../assets/css/main.css";
 import { DynaNavigation } from "../../components/nav.ts";
 import { API, stupidErrorAlert } from "../../spec/mod.ts";
-import { state } from "./state.ts";
 
 await RegisterAuthRefresh();
 
 const state = asRefRecord({
     email: activeUser.email.value ?? "",
     name: activeUser.username.value,
-    phone: activeUser.phone.value ? activeUser.phone.value.slice(2)[1] : "",
-    phoneCountry: activeUser.phone.value ? activeUser.phone.value.slice(2)[0] : "",
+    phone: activeUser.phone.value ?? "",
     password: undefined,
     verifyPassword: undefined,
     validationState: <string | undefined> undefined,
@@ -30,10 +28,7 @@ appendBody(WebGenTheme(
                 TextInput(state.name, "Name"),
                 Empty(),
                 EmailInput(state.email, "Email"),
-                // Grid(
-                //     DropDown(["DE", "UK", "NL"], asRef(""), "Country").setValueRender((x) => x),
-                //     TextInput(state.phone, "Phone"),
-                // ).setTemplateColumns("25% 75%"),
+                TextInput(state.phone, "Phone").setInvalid(true),
                 PasswordInput(state.password, "New Password"),
                 PasswordInput(state.verifyPassword, "Verify New Password"),
             ).setDynamicColumns(20).setGap(),
