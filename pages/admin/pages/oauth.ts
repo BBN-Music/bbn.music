@@ -7,7 +7,7 @@ await RegisterAuthRefresh();
 
 const applications = asRef<OAuthApp[] | "loading">("loading");
 
-createPage(
+export const oauthPage = createPage(
     {
         route: createRoute({
             path: "/admin?list=oauth",

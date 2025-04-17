@@ -1,7 +1,7 @@
 import { BasicEntry } from "shared/components.ts";
 import { ProfileData, RegisterAuthRefresh, sheetStack, showProfilePicture } from "shared/helper.ts";
 import { placeholder } from "shared/mod.ts";
-import { asRef, Box, Content, createPage, createRoute, DateInput, DropDown, Empty, Entry, Grid, Label, SheetHeader, Spinner, TextButton, TextInput, WriteSignal } from "webgen/mod.ts";
+import { asRef, Box, Content, createPage, createRoute, DateInput, DropDown, Empty, Entry, Grid, Label, PrimaryButton, SheetHeader, Spinner, TextButton, TextInput, WriteSignal } from "webgen/mod.ts";
 import { API, PaymentType, SearchReturn, stupidErrorAlert, User, Wallet, zAccountType } from "../../../spec/mod.ts";
 import { WalletView } from "../../wallet/component.ts";
 import { ReviewEntry } from "../entries.ts";
@@ -29,8 +29,6 @@ searchString.listen(async (val) => {
 const userSheet = async (user: User) => {
     const drops = await API.getDropsByAdmin({ query: { user: user._id } }).then(stupidErrorAlert);
     const wallet = await API.getIdByWalletsByAdmin({ path: { id: user._id } }).then(stupidErrorAlert);
-    console.log(drops);
-    console.log(wallet);
     return Grid(
         SheetHeader("User", sheetStack),
         Grid(
@@ -46,38 +44,44 @@ const userSheet = async (user: User) => {
                 Label(`Restrained: ${wallet.balance?.restrained.toFixed(2) ?? "No wallet"}`),
                 Label(`Unrestrained: ${wallet.balance?.unrestrained.toFixed(2) ?? "No wallet"}`),
                 Label(`Generated: ${wallet.transactions?.filter((t) => t.amount > 0).map((t) => t.amount).reduce((a, b) => a + b, 0).toFixed(2) ?? "No wallet"}`),
-                TextButton("View Transactions").setDisabled(!wallet._id).onClick(() => {
+                PrimaryButton("View Transactions").setDisabled(!wallet._id).onClick(() => {
                     sheetStack.addSheet(Box(walletSheet(asRef(wallet))));
                 }),
             ),
-        ).setTemplateColumns("auto 1fr 1fr").setGap("1rem"),
+        ).setTemplateColumns("auto 1fr 1fr").setGap(),
         Grid(
             Label("Drops").setTextSize("2xl").setFontWeight("bold"),
             ...drops.map((drop) => ReviewEntry(drop, true)),
         ),
-    ).setGap("1rem");
+    ).setGap();
 };
 
-const walletSheet = (walletref: WriteSignal<Wallet>) => {
-    const selectedAccountType = asRef(walletref.getValue().accountType);
-    selectedAccountType.listen(async (e) => {
-        await API.patchIdByWalletsByAdmin({ path: { id: walletref.getValue()._id }, body: { ...walletref.getValue(), accountType: e } }).then(stupidErrorAlert);
-        walletref.setValue({ ...walletref.getValue(), accountType: e });
+const walletSheet = (wallet: WriteSignal<Wallet>) => {
+    const selectedAccountType = asRef(wallet.getValue().accountType);
+    selectedAccountType.listen(async (val, oldVal) => {
+        if (!oldVal) {
+            return;
+        }
+        await API.patchIdByWalletsByAdmin({ path: { id: wallet.getValue()._id }, body: { accountType: val } }).then(stupidErrorAlert);
+        wallet.setValue({ ...wallet.getValue(), accountType: val });
     });
 
-    const selectedCut = asRef(String(walletref.getValue().cut));
-    selectedCut.listen(async (c) => {
-        await API.patchIdByWalletsByAdmin({ path: { id: walletref.getValue()._id }, body: { ...walletref.getValue(), cut: Number(c) } }).then(stupidErrorAlert);
-        walletref.setValue({ ...walletref.getValue(), cut: Number(c) });
+    const selectedCut = asRef(String(wallet.getValue().cut));
+    selectedCut.listen(async (val, oldVal) => {
+        if (!oldVal) {
+            return;
+        }
+        await API.patchIdByWalletsByAdmin({ path: { id: wallet.getValue()._id }, body: { cut: val } }).then(stupidErrorAlert);
+        wallet.setValue({ ...wallet.getValue(), cut: Number(val) });
     });
     return Grid(
         SheetHeader("Wallet", sheetStack),
         Grid(
             DropDown(Object.values(zAccountType.Values), selectedAccountType, "AccountType"),
             TextInput(selectedCut, "Cut", "change"),
-            TextButton("Add Transaction").onClick(() => sheetStack.addSheet(addTransactionSheet(walletref))),
-        ).setEvenColumns(3).setGap("1rem"),
-        walletref.map((wallet) => WalletView(wallet)).value,
+            PrimaryButton("Add Transaction").onClick(() => sheetStack.addSheet(addTransactionSheet(wallet))),
+        ).setEvenColumns(3).setGap(),
+        wallet.map((wallet) => WalletView(wallet)).value,
     );
 };
 
@@ -130,7 +134,6 @@ createPage(
                                 return ReviewEntry(it._source);
                             case "users":
                                 return Entry(BasicEntry(it._source.profile.username, `${it._source._id} - ${it._source.profile.email}`)).onPromiseClick(async () => {
-                                    console.log("open user");
                                     sheetStack.addSheet(await userSheet(it._source));
                                 });
                             case "songs":

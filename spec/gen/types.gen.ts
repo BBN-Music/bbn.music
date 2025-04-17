@@ -1145,6 +1145,19 @@ export type DeleteIdByApplicationsByOauthData = {
     url: '/api/@bbn/oauth/applications/{id}';
 };
 
+export type PatchIdByApplicationsByOauthData = {
+    body?: {
+        name: string;
+        redirect: Array<string>;
+        icon: ObjectId;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/@bbn/oauth/applications/{id}';
+};
+
 export type GetUploadByApplicationsByOauthData = {
     body?: never;
     path?: never;

@@ -10,9 +10,11 @@ import "./pages/wallets.ts";
 
 import { RegisterAuthRefresh, sheetStack } from "shared/helper.ts";
 import { Navigation } from "shared/navigation.ts";
-import { appendBody, Content, createRoute, css, DialogContainer, FullWidthSection, StartRouting, WebGenTheme } from "webgen/mod.ts";
+import { activeRoute, appendBody, Box, Content, createRoute, css, DialogContainer, FullWidthSection, PrimaryButton, StartRouting, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
+import { oauthPage } from "./pages/oauth.ts";
 import { overviewPage } from "./pages/overview.ts";
+import { createOAuthSheet } from "./sheets.ts";
 
 await RegisterAuthRefresh();
 
@@ -33,7 +35,20 @@ appendBody(
                 DynaNavigation("Admin"),
             ),
         ),
-        Navigation(),
+        Navigation(
+            Box(
+                activeRoute.map((route) => route === oauthPage.route.entry)
+                    .map((x) =>
+                        x
+                            ? PrimaryButton("New App")
+                                .onClick(async () => {
+                                    await createOAuthSheet();
+                                    location.reload();
+                                })
+                            : []
+                    ),
+            ),
+        ),
     ).addStyle(css`
         :host {
             --wg-primary: #f81919;

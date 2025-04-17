@@ -1,15 +1,15 @@
 import { serve } from "https://deno.land/x/esbuild_serve@1.5.0/mod.ts";
-import { exists } from "jsr:@std/fs@1.0.5";
 import { createClient, defaultPlugins } from "npm:@hey-api/openapi-ts";
 
-let url = "https://bbn.music/openapi";
-await fetch("http://localhost:8443/openapi", {
-    timeout: 1000,
-}).then(() => url = "http://localhost:8443/openapi").catch(() => {});
+let input = "https://bbn.music/openapi";
+await fetch("http://localhost:8443/openapi").then(() => input = "http://localhost:8443/openapi").catch(() => {});
 
 await createClient({
-    input: await exists("openapi.json") ? "openapi.json" : url,
-    output: "spec/gen",
+    input,
+    output: {
+        path: "spec/gen",
+        format: false,
+    },
     plugins: [
         ...defaultPlugins,
         "@hey-api/client-fetch",
@@ -101,7 +101,7 @@ serve({
         "./bug-reporter.ts",
         "https://cdn.jsdelivr.net/npm/native-file-system-adapter@3.0.1/mod.js",
         "https://unpkg.com/urlpattern-polyfill@10.0.0/index.js",
-        "https://esm.sh/@virtualstate/navigation@1.0.1-alpha.206/polyfill",
+        "https://esm.sh/@virtualstate/navigation@1.0.1-alpha.209/polyfill",
     ],
 });
 

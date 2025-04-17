@@ -1,7 +1,8 @@
-import { showPreviewImage } from "shared/helper.ts";
+import { sheetStack, showPreviewImage } from "shared/helper.ts";
 import { BasicEntry } from "shared/mod.ts";
 import { Async, Box, Entry, Image, Label, Spinner } from "webgen/mod.ts";
 import { AdminDrop, AdminWallet, API, Group, OAuthApp, PayoutList, stupidErrorAlert } from "../../spec/mod.ts";
+import { editOAuthSheet } from "./sheets.ts";
 
 export function ReviewEntry(x: AdminDrop, small: boolean = false) {
     return Entry(
@@ -39,7 +40,7 @@ export function OAuthEntry(app: OAuthApp) {
     return Entry(
         BasicEntry(app.name, app._id)
             .addPrefix(prefix),
-    );
+    ).onClick(() => sheetStack.addSheet(editOAuthSheet(app)));
 }
 
 export function PayoutEntry(payout: PayoutList) {
