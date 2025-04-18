@@ -1,6 +1,6 @@
 import { sumOf } from "@std/collections";
 import { allowedImageFormats, ErrorMessage, getSecondary, RegisterAuthRefresh, sheetStack } from "shared/helper.ts";
-import { appendBody, asRefRecord, Box, Color, Content, createFilePicker, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, Image, Label, PrimaryButton, SecondaryButton, SheetHeader, Spinner, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { appendBody, asRef, asRefRecord, Box, Color, Content, createFilePicker, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, Image, Label, PrimaryButton, SecondaryButton, SheetHeader, Spinner, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { z } from "zod/mod.ts";
 import { templateArtwork } from "../../assets/imports.ts";
 import { DynaNavigation } from "../../components/nav.ts";
@@ -152,7 +152,7 @@ const wizard = creationState.page.map((page) => {
         ).setGap();
     } else if (page == 3) {
         return Grid(
-            ManageSongs(creationState.songs, dropId),
+            ManageSongs(creationState.songs, dropId, asRef(undefined)),
             footer(page),
         ).setGap();
     } else if (page == 4) {
