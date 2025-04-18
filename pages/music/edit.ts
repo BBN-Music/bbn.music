@@ -196,6 +196,8 @@ const ResponseDialog = Grid(
                     denyEdits: denyEdits.value,
                 },
             }).then(stupidErrorAlert);
+            sheetStack.removeOne();
+            location.reload();
         })
     )),
 ).setGap();
