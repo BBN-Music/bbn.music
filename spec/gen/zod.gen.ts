@@ -159,13 +159,16 @@ export const zSingleAdminDrop = z.object({
     user: zObjectId.optional(),
     type: zDropType.optional(),
     userInfo: z.object({
-        _id: z.unknown(),
+        _id: zObjectId,
         authentication: z.array(z.unknown()).optional(),
         profile: z.object({
             email: z.string(),
             phone: z.string().optional(),
             username: z.string(),
-            avatar: z.unknown().optional(),
+            avatar: z.union([
+                zObjectId,
+                z.string()
+            ]).optional(),
             verified: z.object({
                 email: z.boolean(),
                 phone: z.boolean().optional()
