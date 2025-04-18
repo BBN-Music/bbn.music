@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/x/esbuild_serve@1.5.0/mod.ts";
-import { createClient, defaultPlugins } from "npm:@hey-api/openapi-ts";
+import { createClient, defaultPlugins } from "npm:@hey-api/openapi-ts@0.66.5";
 
 let input = "https://bbn.music/openapi";
 await fetch("http://localhost:8443/openapi").then(() => input = "http://localhost:8443/openapi").catch(() => {});

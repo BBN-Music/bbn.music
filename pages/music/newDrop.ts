@@ -225,8 +225,9 @@ const pageTwo = z.object({
 });
 
 const pageThree = z.object({
+    title: z.string(),
     songs: zSong.omit({ user: true }).array().min(1, { message: "At least one song is required" }).refine((songs) => songs.every(({ instrumental, explicit }) => !(instrumental && explicit)), "Can't have an explicit instrumental song"),
     uploadingSongs: z.array(z.string()).max(0, { message: "Some uploads are still in progress" }),
-});
+}).refine((object) => (object.songs.length === 1 && object.songs[0].title === object.title) || object.songs.length > 1, { message: "Drop Title and Song Title must be the same for single song drops", path: ["songs"] });
 
 export const pages = <z.AnyZodObject[]> [pageOne, pageTwo, pageThree];
