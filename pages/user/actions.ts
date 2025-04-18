@@ -72,7 +72,7 @@ export async function handleStateChange() {
         return;
     }
     if (params.type == "reset-password" && params.token) {
-        const rsp = await API.getTokenByFromUserInteractionByAuth({ body: { token: params.token }, path: { token: params.token } });
+        const rsp = await API.getTokenByFromUserInteractionByAuth({ path: { token: params.token } });
         if (rsp.error) {
             return state.error.setValue(displayError(rsp.error));
         }
