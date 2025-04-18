@@ -226,7 +226,11 @@ appendBody(
                         try {
                             history.back();
                         } catch (_) {
-                            location.href = "/c/music";
+                            if (isAdmin) {
+                                location.href = "/admin?list=reviews";
+                            } else {
+                                location.href = "/c/music";
+                            }
                         }
                     }).setCssStyle("color", "gray"),
                     Label("Edit Drop").setTextSize("3xl").setFontWeight("bold"),
