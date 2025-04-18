@@ -257,6 +257,10 @@ appendBody(
                                 sheetStack.addSheet(EditArtistsDialog(creationState.artists, userArtists.value, disabled));
                             }),
                             genres.primary.map((_) => DropDown(genres.primary, creationState.primaryGenre, "Primary Genre").setDisabled(disabled)).value,
+                            Grid(
+                                TextInput(creationState.compositionCopyright, "Composition Copyright").setDisabled(disabled),
+                                TextInput(creationState.soundRecordingCopyright, "Sound Recording Copyright").setDisabled(disabled),
+                            ).setEvenColumns(isMobile.map((val) => val ? 1 : 2)).setGap(),
                         ).setGap(),
                     ).setTemplateColumns(isMobile.map((val) => val ? "auto" : "min-content auto")).setGap("1rem"),
                 ).setGap(),
