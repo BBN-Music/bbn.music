@@ -11,7 +11,7 @@ export function ReviewEntry(x: AdminDrop, small: boolean = false) {
                 Label(x.title ?? "(no drop name)").setFontWeight("bold").setTextSize(small ? "xl" : "3xl"),
                 Label(x.release ?? "(no release date)").setTextSize(small ? "lg" : "2xl").setPadding("0 0 0 0.5rem"),
             ),
-            `user: ${x.user} - gtin: ${x.gtin ?? "(no GTIN)"} - id: ${x._id}`,
+            `${x.accountType} user: ${x.user} - gtin: ${x.gtin ?? "(no GTIN)"} - id: ${x._id}`,
         )
             .onClick(() => location.href = `/c/music/edit?id=${x._id}`)
             .addPrefix(showPreviewImage(x).setWidth(small ? "50px" : "100px").setRadius("large")),
