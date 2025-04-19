@@ -69,12 +69,46 @@ export type SingleAdminDrop = {
     compositionCopyright?: string;
     soundRecordingCopyright?: string;
     artwork?: ObjectId;
-    songs?: Array<Song>;
+    songs?: Array<
+        Song & {
+            filename: string;
+        }
+    >;
     comments?: string;
     _id?: ObjectId;
     user?: ObjectId;
     type?: DropType;
-    userInfo?: User;
+    userInfo?: {
+        _id: ObjectId;
+        authentication?: Array<
+            {
+                type: "webAuthn";
+                id: string;
+                authenticatorAttachement: "cross-platform" | "platform";
+                publicKey: string;
+            } | {
+                type: "oauth";
+                provider: string;
+                id: string;
+            } | {
+                type: "password";
+                salt: string;
+                hash: string;
+            }
+        >;
+        profile: {
+            email: string;
+            phone?: string;
+            username: string;
+            avatar?: ObjectId | string;
+            verified: {
+                email: boolean;
+                phone?: boolean;
+            };
+        };
+        permissions: Array<string>;
+        groups: Array<ObjectId2>;
+    };
     events?: unknown;
     artistList?: Array<Artist>;
 };
@@ -1441,6 +1475,5 @@ export type PostEventByWhatsappData = {
 };
 
 export type ClientOptions = {
-    // deno-lint-ignore ban-types
     baseUrl: "https://example.one/api" | (string & {});
 };

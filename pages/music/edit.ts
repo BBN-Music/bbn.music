@@ -269,6 +269,7 @@ appendBody(
                     ).setTemplateColumns(isMobile.map((val) => val ? "auto" : "min-content auto")).setGap("1rem"),
                 ).setGap(),
                 ManageSongs(creationState.songs, id, userArtists, disabled),
+                isAdmin ? Box(creationState.songs.map((songs) => Grid(asRef(songs.map((song) => Label(song.filename)))))) : Empty(),
                 TextInput(creationState.comments, "Comments").setDisabled(disabled),
                 SecondaryButton("Save").setDisabled(disabled).onClick(() => {
                     save();
@@ -318,7 +319,7 @@ appendBody(
                                     Box(userProfile.map((user) => user ? Label(user.profile.email) : Spinner())),
                                     Box(userProfile.map((user) => user ? Label(user._id as string) : Spinner())),
                                 ).setGap(),
-                                Box(events.map((val) => val!.map((x) => Label(`${dateFromObjectId(x._id).toDateString()} ${x.meta.action} to ${x.meta.type} from ${x.userId}`)))),
+                                Grid(events.map((val) => val!.map((x) => Label(`${dateFromObjectId(x._id).toDateString()} ${x.meta.action} ${x.meta.type ? "to " + x.meta.type : ""} from ${x.userId}`)))),
                             ).setHeight("min-content"),
                         ).setEvenColumns(2).setGap(),
                     )

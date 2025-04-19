@@ -30,6 +30,14 @@ function fixImports(path: string) {
 }
 ["spec/gen/sdk.gen.ts", "spec/gen/zod.gen.ts"].forEach(fixImports);
 Deno.removeSync("spec/gen/index.ts");
+new Deno.Command("deno", {
+    args: [
+        "fmt",
+        "spec/gen/sdk.gen.ts",
+        "spec/gen/zod.gen.ts",
+        "spec/gen/types.gen.ts",
+    ]
+}).spawn();
 
 const title = new Map(Object.entries({
     "index": "BBN Music",
