@@ -28,7 +28,8 @@ function fixImports(path: string) {
             .replaceAll("'zod';", "'zod/mod.ts';"),
     );
 }
-["spec/gen/sdk.gen.ts", "spec/gen/zod.gen.ts"].forEach(fixImports);
+[ "spec/gen/sdk.gen.ts", "spec/gen/zod.gen.ts" ].forEach(fixImports);
+Deno.writeTextFileSync("spec/gen/types.gen.ts", Deno.readTextFileSync("spec/gen/types.gen.ts").replaceAll('baseUrl: ', '//baseUrl: '));
 Deno.removeSync("spec/gen/index.ts");
 new Deno.Command("deno", {
     args: [

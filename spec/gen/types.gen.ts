@@ -1475,5 +1475,5 @@ export type PostEventByWhatsappData = {
 };
 
 export type ClientOptions = {
-    baseUrl: "https://example.one/api" | (string & {});
+    //baseUrl: 'https://example.one/api' | (string & {});
 };
