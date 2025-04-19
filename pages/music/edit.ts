@@ -1,9 +1,10 @@
-import { activeUser, dateFromObjectId, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showPreviewImage, showProfilePicture, streamingImages } from "shared/helper.ts";
+import { activeUser, dateFromObjectId, ErrorMessage, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showPreviewImage, showProfilePicture, streamingImages } from "shared/helper.ts";
 import { appendBody, asRef, asRefRecord, Box, Checkbox, Content, createRoute, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, isMobile, Label, PrimaryButton, SecondaryButton, Spinner, StartRouting, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
 import { AdminDrop, API, Artist, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, User, zArtistTypes, zDropType, zObjectId } from "../../spec/mod.ts";
 
 import languages from "../../data/language.json" with { type: "json" };
+import { pageThree } from "./validator.ts";
 import { DropEntry } from "./views/list.ts";
 import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
 
@@ -236,6 +237,7 @@ function save() {
 }
 
 const disabled = asRef(false);
+const errorstate = asRef(<string | undefined> undefined);
 
 appendBody(
     WebGenTheme(
@@ -289,6 +291,12 @@ appendBody(
                 Box(creationState.type.map((val) => {
                     if (val === "PRIVATE") {
                         return PrimaryButton("Submit for Review").onClick(() => {
+                            const { error } = pageThree.safeParse(Object.fromEntries(Object.entries(creationState).map((entry) => [entry[0], entry[1].getValue()])));
+                            if (error) {
+                                console.error(error);
+                                errorstate.setValue(`${error.issues[0].path[0]}: ${error.issues[0].message}`);
+                                return;
+                            }
                             creationState.type.setValue("UNDER_REVIEW");
                             save();
                         });
@@ -301,6 +309,7 @@ appendBody(
                     }
                     return Empty();
                 })),
+                ErrorMessage(errorstate).setMargin("0.4rem 0 0 0"),
                 isAdmin
                     ? Grid(
                         Grid(
