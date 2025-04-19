@@ -184,6 +184,10 @@ const templates = () =>
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
             `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the Drop ends with silence that is too long.\nPlease remove the silence at the end of the Drop and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
+        "Artwork mismatch": [
+            `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the Artwork is not matching the Metadata.\nPlease update the Artwork in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+        ],
         "Accepted": [`${creationState.title.value} Accepted!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and I am happy to inform you that it has been accepted.\nYour music will now be sent to the stores.\nIt could take up to 72h for all stores to show your Drop.\n\nBest regards,\n${activeUser.username.value}`],
     }) as Record<string, [string, string]>;
 const action = asRef("");
