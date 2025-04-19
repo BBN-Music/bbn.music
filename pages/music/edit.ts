@@ -321,6 +321,12 @@ appendBody(
                                 );
                             }),
                             PrimaryButton("Accept").onClick(() => {
+                                const { error } = pageThree.safeParse(Object.fromEntries(Object.entries(creationState).map((entry) => [entry[0], entry[1].getValue()])));
+                                if (error) {
+                                    console.error(error);
+                                    errorstate.setValue(`${error.issues[0].path[0]}: ${error.issues[0].message}`);
+                                    return;
+                                }
                                 action.setValue("ACCEPT");
                                 selectedTemplate.setValue("Accepted");
                                 sheetStack.addSheet(ResponseDialog);
