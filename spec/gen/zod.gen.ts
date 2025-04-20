@@ -498,6 +498,32 @@ export const zRequestPayoutResponse = z.union([
     }),
 ]);
 
+export const zWaEvent = z.object({
+    _id: zObjectId,
+    changes: z.object({
+        messaging_product: z.string(),
+        metadata: z.object({
+            display_phone_number: z.string(),
+            phone_number_id: z.string(),
+        }),
+        contacts: z.array(z.object({
+            profile: z.object({
+                name: z.string(),
+            }),
+            wa_id: z.string(),
+        })),
+        messages: z.array(z.object({
+            from: z.string(),
+            id: z.string(),
+            timestamp: z.string(),
+            text: z.object({
+                body: z.string(),
+            }),
+            type: z.string(),
+        })),
+    }),
+});
+
 export const zGetDropsByAdminResponse = z.array(zAdminDrop);
 
 export const zGetIdByDropsByAdminResponse = zSingleAdminDrop;
@@ -608,4 +634,11 @@ export const zGetWalletResponse = zWallet;
 
 export const zPutWalletResponse = zRequestPayoutResponse;
 
-export const zGetChatsByWhatsappResponse = z.array(z.unknown());
+export const zGetChatsByWhatsappResponse = z.array(z.object({
+    wa_id: z.string(),
+    wa_name: z.string(),
+    user: z.string().optional(),
+    username: z.string().optional(),
+}));
+
+export const zGetIdByChatsByWhatsappResponse = z.array(zWaEvent);

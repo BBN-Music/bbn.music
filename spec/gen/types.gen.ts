@@ -416,6 +416,32 @@ export type RequestPayoutResponse = {
     type: "success";
 };
 
+export type WaEvent = {
+    _id: ObjectId;
+    changes: {
+        messaging_product: string;
+        metadata: {
+            display_phone_number: string;
+            phone_number_id: string;
+        };
+        contacts: Array<{
+            profile: {
+                name: string;
+            };
+            wa_id: string;
+        }>;
+        messages: Array<{
+            from: string;
+            id: string;
+            timestamp: string;
+            text: {
+                body: string;
+            };
+            type: string;
+        }>;
+    };
+};
+
 export type GetDropsByAdminData = {
     body?: never;
     path?: never;
@@ -1451,10 +1477,33 @@ export type GetChatsByWhatsappResponses = {
     /**
      * Successful operation
      */
-    200: Array<unknown>;
+    200: Array<{
+        wa_id: string;
+        wa_name: string;
+        user?: string;
+        username?: string;
+    }>;
 };
 
 export type GetChatsByWhatsappResponse = GetChatsByWhatsappResponses[keyof GetChatsByWhatsappResponses];
+
+export type GetIdByChatsByWhatsappData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: "/api/@bbn/whatsapp/chats/{id}";
+};
+
+export type GetIdByChatsByWhatsappResponses = {
+    /**
+     * Successful operation
+     */
+    200: Array<WaEvent>;
+};
+
+export type GetIdByChatsByWhatsappResponse = GetIdByChatsByWhatsappResponses[keyof GetIdByChatsByWhatsappResponses];
 
 export type GetEventByWhatsappData = {
     body?: {

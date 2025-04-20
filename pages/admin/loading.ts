@@ -1,7 +1,7 @@
 import { delay } from "@std/async";
 import { StreamingUploadHandler } from "shared/mod.ts";
-import { API } from "shared/restSpec.ts";
 import { createFilePicker } from "webgen/mod.ts";
+import { APITools } from "../../spec/mod.ts";
 
 const urls = {
     "manual": ["admin/payouts/upload", ".xlsx"],
@@ -12,9 +12,9 @@ export function upload(type: keyof typeof urls): Promise<string> {
     return new Promise((resolve) => {
         createFilePicker(extension).then((file) => {
             StreamingUploadHandler(url, {
-                failure: (message) => alert("Your Upload has failed. Please try a different file or try again later. " + message),
+                failure: (message) => alert(`Your Upload has failed. Please try a different file or try again later. ${message}`),
                 uploadDone: () => console.log("Upload done"),
-                credentials: () => API.getToken(),
+                credentials: () => APITools.token(),
                 backendResponse: (id) => resolve(id),
                 onUploadTick: async () => await delay(2),
             }, file);

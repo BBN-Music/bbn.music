@@ -32,6 +32,8 @@ import type {
     GetGenresByMusicResponse,
     GetGroupsByAdminData,
     GetGroupsByAdminResponse,
+    GetIdByChatsByWhatsappData,
+    GetIdByChatsByWhatsappResponse,
     GetIdByDropsByAdminData,
     GetIdByDropsByAdminResponse,
     GetIdByDropsByMusicData,
@@ -121,6 +123,7 @@ import {
     zGetFulldropByMusicResponse,
     zGetGenresByMusicResponse,
     zGetGroupsByAdminResponse,
+    zGetIdByChatsByWhatsappResponse,
     zGetIdByDropsByAdminResponse,
     zGetIdByDropsByMusicResponse,
     zGetIdByPayoutsByPaymentResponse,
@@ -1223,6 +1226,22 @@ export const getChatsByWhatsapp = <ThrowOnError extends boolean = false>(options
             return await zGetChatsByWhatsappResponse.parseAsync(data);
         },
         url: "/api/@bbn/whatsapp/chats",
+        ...options,
+    });
+};
+
+export const getIdByChatsByWhatsapp = <ThrowOnError extends boolean = false>(options: Options<GetIdByChatsByWhatsappData, ThrowOnError>) => {
+    return (options.client ?? _heyApiClient).get<GetIdByChatsByWhatsappResponse, unknown, ThrowOnError>({
+        security: [
+            {
+                scheme: "bearer",
+                type: "http",
+            },
+        ],
+        responseValidator: async (data) => {
+            return await zGetIdByChatsByWhatsappResponse.parseAsync(data);
+        },
+        url: "/api/@bbn/whatsapp/chats/{id}",
         ...options,
     });
 };

@@ -28,8 +28,8 @@ function fixImports(path: string) {
             .replaceAll("'zod';", "'zod/mod.ts';"),
     );
 }
-[ "spec/gen/sdk.gen.ts", "spec/gen/zod.gen.ts" ].forEach(fixImports);
-Deno.writeTextFileSync("spec/gen/types.gen.ts", Deno.readTextFileSync("spec/gen/types.gen.ts").replaceAll('baseUrl: ', 'baseUrl: "";//'));
+["spec/gen/sdk.gen.ts", "spec/gen/zod.gen.ts"].forEach(fixImports);
+Deno.writeTextFileSync("spec/gen/types.gen.ts", Deno.readTextFileSync("spec/gen/types.gen.ts").replaceAll("baseUrl: ", 'baseUrl: "";//'));
 Deno.removeSync("spec/gen/index.ts");
 new Deno.Command("deno", {
     args: [
@@ -37,7 +37,7 @@ new Deno.Command("deno", {
         "spec/gen/sdk.gen.ts",
         "spec/gen/zod.gen.ts",
         "spec/gen/types.gen.ts",
-    ]
+    ],
 }).spawn();
 
 const title = new Map(Object.entries({
@@ -70,8 +70,6 @@ serve({
     assets: {
         "sitemap.xml": "./static/sitemap.xml",
         "robots.txt": "./static/robots.txt",
-        "mitm.html": "./static/mitm.html",
-        "sw.js": "./static/sw.js",
         "favicon.ico": "./static/favicon.ico",
         "email-header.png": "./static/email-header.png",
         "app.webmanifest": "./static/app.webmanifest",

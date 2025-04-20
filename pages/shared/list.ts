@@ -1,5 +1,4 @@
-import { Grid, Label, Reference } from "webgen/mod.ts";
-import { External } from "./restSpec.ts";
+import { Grid, Label } from "webgen/mod.ts";
 
 export const placeholder = (title: string, subtitle: string) =>
     Grid(
@@ -10,14 +9,3 @@ export const placeholder = (title: string, subtitle: string) =>
         Label(subtitle)
             .setTextSize("xl"),
     ).setGap("1rem").setMargin("100px 0 0").setAttribute("align", "center");
-
-export async function loadMore<T>(source: Reference<External<T[]> | "loading">, func: () => Promise<External<T[]>>) {
-    const data = source.getValue();
-    if (data !== "loading" && data.status !== "rejected") {
-        const rsp = await func();
-        source.value = rsp.status == "rejected" ? rsp : {
-            status: "fulfilled",
-            value: [...data.value, ...rsp.value],
-        };
-    }
-}

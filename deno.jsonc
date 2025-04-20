@@ -1,6 +1,6 @@
 {
     "imports": {
-        "@hey-api/client-fetch": "https://esm.sh/@hey-api/client-fetch@0.8.2",
+        "@hey-api/client-fetch": "https://esm.sh/@hey-api/client-fetch@0.10.0",
         "@std/assert": "jsr:@std/assert@^1.0.7",
         "@std/async": "jsr:@std/async@^1.0.8",
         "@std/collections": "jsr:@std/collections@^1.0.9",
