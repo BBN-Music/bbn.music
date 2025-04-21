@@ -43,5 +43,5 @@ export const pageThree = pageTwo.and(z.object({
     uploadingSongs: z.array(z.string()).max(0, { message: "Some uploads are still in progress" }),
 }))
     .refine((object) => (object.songs.length === 1 && object.songs[ 0 ].title === object.title) || object.songs.length > 1, { message: "Drop Title and Song Title must be the same for single song drops", path: [ "songs" ] })
-    .refine((object) => (object.songs.length === 1 && object.songs[ 0 ].artists.length === object.artists.length && object.artists.map(normalize).toSorted().every((v, i) => v === object.songs[0].artists.map(normalize).toSorted()[i])), { message: "All artists must be the same for single song drops", path: [ "songs" ] })
+    .refine((object) => (object.songs.length === 1 && object.songs[ 0 ].artists.length === object.artists.length && object.artists.map(normalize).toSorted().every((v, i) => v === object.songs[0].artists.map(normalize).toSorted()[i]) || object.songs.length > 1), { message: "All artists must be the same for single song drops", path: [ "songs" ] })
 export const pages = <z.AnyZodObject[]> [pageOne, pageTwo, pageThree];
