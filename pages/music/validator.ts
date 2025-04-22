@@ -1,5 +1,6 @@
 import { z } from "zod/mod.ts";
 import { ArtistRef, zArtistRef, zSong } from "../../spec/mod.ts";
+import { sumOf } from "@std/collections/sum-of";
 
 const pageOne = z.object({
     title: z.string().min(1, { message: "Title is required" }).max(100, { message: "Title is too long" }),
