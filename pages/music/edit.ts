@@ -101,6 +101,11 @@ creationState.primaryGenre.listen((val) => {
         }
         return song;
     }));
+    if (val) {
+        if (Object.keys(genres.secondary.value).includes(val) && !genres.secondary.value[ val ].includes(creationState.secondaryGenre.value ?? "")) {
+            creationState.secondaryGenre.setValue(genres.secondary.value[ val ][ 0 ]);
+        }
+    }
 });
 
 creationState.songs.listen((val) => {
@@ -269,7 +274,12 @@ appendBody(
                             SecondaryButton("Artists").onClick(() => {
                                 sheetStack.addSheet(EditArtistsDialog(creationState.artists, userArtists.value, disabled));
                             }),
-                            genres.primary.map((_) => DropDown(genres.primary, creationState.primaryGenre, "Primary Genre").setDisabled(disabled)).value,
+                            Box(genres.primary.map((_) =>
+                                Grid(
+                                    DropDown(genres.primary, creationState.primaryGenre, "Primary Genre").setDisabled(disabled),
+                                    DropDown(genres.secondary.value[creationState.primaryGenre.value ?? ""], creationState.secondaryGenre, "Secondary Genre").setDisabled(disabled), //.setValueRender((x) => (genres.secondary.value[creationState.primaryGenre.value ?? ""])[x] ?? ""),
+                                ).setEvenColumns(isMobile.map((val) => val ? 1 : 2)).setGap()
+                            )),
                             Grid(
                                 TextInput(creationState.compositionCopyright, "Composition Copyright").setDisabled(disabled),
                                 TextInput(creationState.soundRecordingCopyright, "Sound Recording Copyright").setDisabled(disabled),
