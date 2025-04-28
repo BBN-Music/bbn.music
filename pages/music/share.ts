@@ -1,7 +1,6 @@
 import { showImage, streamingImages } from "shared/helper.ts";
 import { appendBody, asRef, Box, Content, css, Empty, Grid, Label, PrimaryButton, WebGenTheme } from "webgen/mod.ts";
 import { API, stupidErrorAlert } from "../../spec/mod.ts";
-import "./share.css";
 
 const params = new URLSearchParams(location.search);
 const data = Object.fromEntries(params.entries());
