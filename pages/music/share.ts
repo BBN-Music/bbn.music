@@ -54,8 +54,8 @@ appendBody(
                         ? Grid(
                             Grid(
                                 showImage(API.getArtworkBySlugByShareByMusic({ path: { slug: data.s } }).then(stupidErrorAlert) as Promise<Blob>, "Drop Artwork")
-                                    .setMinHeight("250px").setMinWidth("250px").setRadius("mid"),
-                                Label(shareVal.title).setCssStyle("textAlign", "center").setTextSize("2xl").setMargin("0 10px 0 0"),
+                                    .setMinHeight("250px").setMinWidth("250px").setMaxHeight("250px").setMaxWidth("250px").setRadius("mid"),
+                                Label(shareVal.title).setCssStyle("textAlign", "center").setTextSize("2xl").setMargin("10px 0 0 0"),
                                 Label(shareVal.artistNames.join(", ")).setCssStyle("textAlign", "center"),
                                 Grid(
                                     Empty(),
@@ -66,7 +66,7 @@ appendBody(
                                                 streamingImages[key]
                                                     .setHeight("1.5rem")
                                                     .setWidth("1.5rem")
-                                                    .setMargin("0 10px 0 0"),
+                                                    .setMargin("2px 5px 0 0"),
                                                 Label(key[0].toUpperCase() + key.slice(1)).setTextSize("xl"),
                                             ).setTemplateColumns("auto auto"),
                                         ).onClick(() => {
@@ -89,5 +89,9 @@ appendBody(
                 )),
             ),
         ),
-    ),
+    ).addStyle(css`
+        :host {
+            --wg-primary: rgb(255, 171, 82);
+        }
+    `),
 );
