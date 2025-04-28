@@ -1,5 +1,5 @@
 import { showImage, streamingImages } from "shared/helper.ts";
-import { appendBody, asRef, Box, Content, Empty, Grid, Label, PrimaryButton, WebGenTheme } from "webgen/mod.ts";
+import { appendBody, asRef, Box, Content, css, Empty, Grid, Label, PrimaryButton, WebGenTheme } from "webgen/mod.ts";
 import { API, stupidErrorAlert } from "../../spec/mod.ts";
 import "./share.css";
 
@@ -32,7 +32,24 @@ appendBody(
     WebGenTheme(
         Content(
             Grid(
-                showImage(API.getArtworkBySlugByShareByMusic({ path: { slug: data.s } }).then(stupidErrorAlert) as Promise<Blob>, "Drop Artwork"),
+                showImage(API.getArtworkBySlugByShareByMusic({ path: { slug: data.s } }).then(stupidErrorAlert) as Promise<Blob>, "Drop Artwork").addStyle(css`
+                    :host {
+                       filter: blur(20px) brightness(25%);
+                        -webkit-filter: blur(20px) brightness(25%);
+
+                        width: 100vw;
+                        height: 100vh;
+
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        background-size: cover;
+
+                        overflow: hidden;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        z-index: -1;
+                    }`),
                 Box(share.map((shareVal) =>
                     shareVal
                         ? Grid(
@@ -59,7 +76,15 @@ appendBody(
                                     ),
                                 ).setGap("0.5rem").setMargin("10px 0 0 0"),
                                 Label("Powered by BBN Music").setCssStyle("textAlign", "center").setMargin("10px 0 0 0"),
-                            ).addClass("share").setPadding("1rem").setRadius("mid"),
+                            ).setPadding("1rem").setRadius("mid").addStyle(css`
+                                :host {
+                                    background-color: black;
+                                    z-index: 2;
+                                    position: absolute;
+                                    top: 50%;
+                                    left: 50%;
+                                    transform: translate(-50%, -50%);
+                                }`),
                         )
                         : Empty()
                 )),
