@@ -122,7 +122,9 @@ const prefix = "bbn.music/share?s=";
 const SharingDialog = Box(share.map((shareVal) =>
     Grid(
         Label("Your Link:").setTextSize("xl").setCssStyle("color", shareVal ? "" : "gray"),
-        SecondaryButton(prefix + (shareVal?.slug ?? "xxx")).setDisabled(!shareVal)
+        SecondaryButton(prefix + (shareVal?.slug ?? "xxx")).setDisabled(!shareVal).onClick(() => {
+            globalThis.open(prefix + (shareVal?.slug ?? "xxx"), "_blank");
+        })
             .addClass("link"),
         Label("Services Found:").setTextSize("xl").setCssStyle("color", shareVal ? "" : "gray"),
         Grid(
