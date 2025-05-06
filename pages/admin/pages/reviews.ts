@@ -1,5 +1,5 @@
 import { RegisterAuthRefresh } from "shared/helper.ts";
-import { Box, Content, createCachedLoader, createIndexPaginationLoader, createPage, createRoute, Empty, TextButton } from "webgen/mod.ts";
+import { Box, Content, createCachedLoader, createIndexPaginationLoader, createPage, createRoute, Empty, Label, TextButton } from "webgen/mod.ts";
 import { API, stupidErrorAlert } from "../../../spec/mod.ts";
 import { ReviewEntry } from "../entries.ts";
 
@@ -30,7 +30,7 @@ createPage(
                 ? TextButton("Load More").onPromiseClick(async () => {
                     await loader.next();
                 })
-                : Empty()
+                : Label("No more reviews (no way)")
         )),
     ),
 );
