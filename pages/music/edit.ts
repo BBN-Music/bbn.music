@@ -79,7 +79,7 @@ const mainRoute = createRoute({
                 genres.secondary.setValue(x.secondary);
             });
             try {
-                API.getIdByShareByDropsByMusic({ path: { id: id } }).then((req) => stupidErrorAlert(req, false)).then((val) => share.setValue(val));
+                API.getIdByShareByDropsByMusic({ path: { id: id } }).then((req) => stupidErrorAlert(req, false)).then((val) => val ? share.setValue(val) : undefined);
                 // deno-lint-ignore no-empty
             } catch (_) {}
             if (isAdmin) {
