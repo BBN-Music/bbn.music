@@ -1,5 +1,5 @@
 import { RegisterAuthRefresh } from "shared/helper.ts";
-import { Box, Content, createCachedLoader, createIndexPaginationLoader, createPage, createRoute, Empty, Label, TextButton } from "webgen/mod.ts";
+import { Box, Content, createCachedLoader, createIndexPaginationLoader, createPage, createRoute, Label, TextButton } from "webgen/mod.ts";
 import { API, stupidErrorAlert } from "../../../spec/mod.ts";
 import { ReviewEntry } from "../entries.ts";
 
