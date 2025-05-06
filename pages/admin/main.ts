@@ -7,6 +7,7 @@ import "./pages/publishing.ts";
 import "./pages/reviews.ts";
 import "./pages/search.ts";
 import "./pages/wallets.ts";
+import "./pages/takedown.ts";
 
 import { RegisterAuthRefresh, sheetStack } from "shared/helper.ts";
 import { Navigation } from "shared/navigation.ts";

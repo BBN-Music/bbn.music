@@ -38,6 +38,7 @@ export const zAdminDrop = z.object({
     _id: z.string().optional(),
     user: z.string().optional(),
     type: z.enum([
+        "TAKEDOWN_REQUESTED",
         "PUBLISHED",
         "PUBLISHING",
         "PRIVATE",
@@ -85,6 +86,7 @@ export const zDrop = z.object({
     _id: z.string(),
     user: z.string(),
     type: z.enum([
+        "TAKEDOWN_REQUESTED",
         "PUBLISHED",
         "PUBLISHING",
         "PRIVATE",
@@ -114,6 +116,7 @@ export const zArtistRef = z.union([
 export const zObjectId = z.string();
 
 export const zDropType = z.enum([
+    "TAKEDOWN_REQUESTED",
     "PUBLISHED",
     "PUBLISHING",
     "PRIVATE",
@@ -592,7 +595,10 @@ export const zPostShareByDropsByMusicResponse = z.object({
     services: z.object({}),
 });
 
-export const zGetIdByShareByDropsByMusicResponse = zShare;
+export const zGetIdByShareByDropsByMusicResponse = z.union([
+    zShare,
+    z.literal(false),
+]);
 
 export const zGetFulldropByMusicResponse = z.array(zFullDrop);
 

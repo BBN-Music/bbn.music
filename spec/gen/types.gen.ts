@@ -54,7 +54,7 @@ export type ArtistRef = {
 
 export type ObjectId = string;
 
-export type DropType = "PUBLISHED" | "PUBLISHING" | "PRIVATE" | "UNDER_REVIEW" | "UNSUBMITTED" | "REVIEW_DECLINED";
+export type DropType = "TAKEDOWN_REQUESTED" | "PUBLISHED" | "PUBLISHING" | "PRIVATE" | "UNDER_REVIEW" | "UNSUBMITTED" | "REVIEW_DECLINED";
 
 export type AccountType = "DEFAULT" | "SUBSCRIBED" | "VIP";
 
@@ -997,7 +997,7 @@ export type GetIdByShareByDropsByMusicResponses = {
     /**
      * Successful operation
      */
-    200: Share;
+    200: Share | false;
 };
 
 export type GetIdByShareByDropsByMusicResponse = GetIdByShareByDropsByMusicResponses[keyof GetIdByShareByDropsByMusicResponses];

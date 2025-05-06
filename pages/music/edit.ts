@@ -191,7 +191,9 @@ const templates = () =>
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
             `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the Artwork is not matching the Metadata.\nPlease update the Artwork in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
+        "Takedown Declined": [`${creationState.title.value} Takedown Declined!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Takedown for the Drop ${creationState.title.value} with ID (${id}) and I am sorry to inform you that I have declined your request.\nPlease contact us if you have any questions.\n\nBest regards,\n${activeUser.username.value}`],
         "Accepted": [`${creationState.title.value} Accepted!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and I am happy to inform you that it has been accepted.\nYour music will now be sent to the stores.\nIt could take up to 72h for all stores to show your Drop.\n\nBest regards,\n${activeUser.username.value}`],
+        "Takedown Accepted": [`${creationState.title.value} Takedown Processed!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just processed your Takedown for the Drop ${creationState.title.value} with ID (${id}). The takedown has been sent to the stores.\nIt could take up to 72h for all stores to process the takedown.\n\nBest regards,\n${activeUser.username.value}`],
     }) as Record<string, [string, string]>;
 const action = asRef("");
 selectedTemplate.listen((val) => {
@@ -314,6 +316,18 @@ appendBody(
                             save();
                         });
                     }
+                    if (val === "PUBLISHED") {
+                        return SecondaryButton("Request Takedown").onClick(() => {
+                            creationState.type.setValue("TAKEDOWN_REQUESTED");
+                            save();
+                        });
+                    }
+                    if (val === "TAKEDOWN_REQUESTED") {
+                        return SecondaryButton("Cancel Takedown Request").onClick(() => {
+                            creationState.type.setValue("PUBLISHED");
+                            save();
+                        });
+                    }
                     return Empty();
                 })),
                 ErrorMessage(errorstate).setMargin("0.4rem 0 0 0"),
@@ -322,7 +336,11 @@ appendBody(
                         Grid(
                             PrimaryButton("Reject").onClick(() => {
                                 action.setValue("REJECT");
-                                selectedTemplate.setValue("Copyright bad");
+                                if (creationState.type.value === "TAKEDOWN_REQUESTED") {
+                                    selectedTemplate.setValue("Takedown Declined");
+                                } else {
+                                    selectedTemplate.setValue("Copyright bad");
+                                }
                                 sheetStack.addSheet(ResponseDialog);
                             }),
                             SecondaryButton("Change Droptype").onClick(() => {
@@ -340,7 +358,11 @@ appendBody(
                                     return;
                                 }
                                 action.setValue("ACCEPT");
-                                selectedTemplate.setValue("Accepted");
+                                if (creationState.type.value === "TAKEDOWN_REQUESTED") {
+                                    selectedTemplate.setValue("Takedown Accepted");
+                                } else {
+                                    selectedTemplate.setValue("Accepted");
+                                }
                                 sheetStack.addSheet(ResponseDialog);
                             }),
                         ).setEvenColumns(3).setGap(),
