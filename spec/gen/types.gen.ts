@@ -109,7 +109,7 @@ export type SingleAdminDrop = {
         permissions: Array<string>;
         groups: Array<ObjectId2>;
     };
-    events?: unknown;
+    events?: Array<UserHistoryEvent>;
     artistList?: Array<Artist>;
 };
 
@@ -162,6 +162,33 @@ export type User = {
 };
 
 export type ObjectId2 = string;
+
+export type UserHistoryEvent = {
+    userId: ObjectId2;
+    storeToken?: string;
+    type: "auth" | "refresh-auth" | "action";
+    ip?: string;
+    source?: {
+        type: "browser" | "mobile";
+        method?: {
+            type: "webAuthn";
+            id: string;
+            authenticatorAttachement: "cross-platform" | "platform";
+            publicKey: string;
+        } | {
+            type: "oauth";
+            provider: string;
+        } | {
+            type: "password";
+        };
+        platform?: string;
+        platformVersion?: string;
+        legacyUserAgent?: string;
+    };
+    meta?: {
+        [key: string]: unknown;
+    };
+};
 
 export type Artist = {
     _id: ObjectId;
@@ -404,6 +431,55 @@ export type File = {
 export type ReviewResponse = "APPROVED" | "DECLINE_COPYRIGHT" | "DECLINE_MALICIOUS_ACTIVITY";
 
 export type OAuthScopes = "profile" | "email" | "phone";
+
+export type Audit = {
+    action: "reset-password";
+} | {
+    action: "drop-review";
+    dropId: string;
+} | {
+    action: "drop-type-change";
+    dropId: string;
+    type: DropType;
+    data: FullDrop;
+} | {
+    action: "drop-create";
+    dropId: string;
+} | {
+    action: "oauth-validate";
+    appId: string;
+    scopes: Array<string>;
+} | {
+    action: "oauth-authorize";
+    appId: string;
+    scopes: Array<string>;
+} | {
+    action: "web-authn-sign-in";
+} | {
+    action: "web-authn-sign-up";
+} | {
+    action: "password-sign-in";
+} | {
+    action: "password-sign-up";
+} | {
+    action: "oauth-sign-in";
+    provider: string;
+} | {
+    action: "oauth-sign-up";
+    provider: string;
+} | {
+    action: "shazam-results";
+    dropId: string;
+    data: Array<{
+        title: string;
+        artist: string;
+        shazamUrl: string;
+        spotifyUrl?: string;
+        appleUrl?: string;
+        youtubeUrl?: string;
+        deezerUrl?: string;
+    }>;
+};
 
 export type RequestPayoutResponse = {
     type: "createAccount";
@@ -1328,6 +1404,7 @@ export type PutPlaceholderByTasksData = {
         file: File;
         reviewResponse: ReviewResponse;
         oAuthScopes: OAuthScopes;
+        audit: Audit;
     };
     path?: never;
     query?: never;

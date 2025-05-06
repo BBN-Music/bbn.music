@@ -1,8 +1,9 @@
-import { activeUser, dateFromObjectId, ErrorMessage, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showPreviewImage, showProfilePicture, streamingImages } from "shared/helper.ts";
+import { activeUser, ErrorMessage, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showPreviewImage, showProfilePicture, streamingImages } from "shared/helper.ts";
 import { appendBody, asRef, asRefRecord, Box, Checkbox, Content, createRoute, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, isMobile, Label, PrimaryButton, SecondaryButton, Spinner, StartRouting, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
-import { AdminDrop, API, Artist, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, User, zArtistTypes, zDropType, zObjectId } from "../../spec/mod.ts";
+import { AdminDrop, API, Artist, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, User, UserHistoryEvent, zArtistTypes, zDropType, zObjectId } from "../../spec/mod.ts";
 
+import { userHistoryEventEntry } from "shared/userHistoryEventEntry.ts";
 import languages from "../../data/language.json" with { type: "json" };
 import { pageThree } from "./validator.ts";
 import { DropEntry } from "./views/list.ts";
@@ -42,7 +43,7 @@ const share = asRef(<undefined | Share> undefined);
 
 const drops = asRef(<undefined | AdminDrop[]> undefined);
 
-const events = asRef(<object[]> []);
+const events = asRef(<UserHistoryEvent[]> []);
 const userProfile = asRef(<User | undefined> undefined);
 const userArtists = asRef(<Artist[] | undefined> undefined);
 
@@ -83,7 +84,7 @@ const mainRoute = createRoute({
                 // deno-lint-ignore no-empty
             } catch (_) {}
             if (isAdmin) {
-                events.setValue(adminDrop?.events as object[] ?? []);
+                events.setValue(adminDrop?.events ?? []);
                 userProfile.setValue(adminDrop?.userInfo);
                 userArtists.setValue(adminDrop?.artistList);
                 API.getDropsByAdmin({ query: { user: drop.user! } }).then(stupidErrorAlert).then((val) => {
@@ -375,7 +376,7 @@ appendBody(
                                     Box(userProfile.map((user) => user ? Label(user.profile.email) : Spinner())),
                                     Box(userProfile.map((user) => user ? Label(user._id as string) : Spinner())),
                                 ).setGap(),
-                                Grid(events.map((val) => val!.map((x) => Label(`${dateFromObjectId(x._id).toDateString()} ${x.meta.action} ${x.meta.type ? "to " + x.meta.type : ""} from ${x.userId}`)))),
+                                Grid(events.map((val) => val.map(userHistoryEventEntry))),
                             ).setHeight("min-content"),
                         ).setEvenColumns(2).setGap(),
                     )
