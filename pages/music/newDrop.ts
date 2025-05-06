@@ -53,8 +53,8 @@ API.getIdByDropsByMusic({ path: { id: dropId } }).then(stupidErrorAlert)
         creationState.artists.setValue(drop.artists ?? [{ type: zArtistTypes.enum.PRIMARY, _id: null! }]);
         creationState.primaryGenre.setValue(drop.primaryGenre);
         creationState.secondaryGenre.setValue(drop.secondaryGenre);
-        creationState.compositionCopyright.setValue(drop.compositionCopyright ?? "BBN Music (via bbn.music)");
-        creationState.soundRecordingCopyright.setValue(drop.soundRecordingCopyright ?? "BBN Music (via bbn.music)");
+        creationState.compositionCopyright.setValue(drop.compositionCopyright ?? "bbn.music");
+        creationState.soundRecordingCopyright.setValue(drop.soundRecordingCopyright ?? "bbn.music");
         creationState.artwork.setValue(drop.artwork);
         creationState.artworkData.setValue(drop.artwork ? await API.getArtworkByDropByMusic({ path: { dropId } }).then((x) => URL.createObjectURL(x.data)) : templateArtwork);
         creationState.songs.setValue(drop.songs ?? []);

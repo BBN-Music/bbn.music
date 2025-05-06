@@ -65,8 +65,8 @@ const mainRoute = createRoute({
             creationState.artists.setValue(drop.artists ?? [{ type: zArtistTypes.enum.PRIMARY, _id: null! }]);
             creationState.primaryGenre.setValue(drop.primaryGenre);
             creationState.secondaryGenre.setValue(drop.secondaryGenre);
-            creationState.compositionCopyright.setValue(drop.compositionCopyright ?? "BBN Music (via bbn.music)");
-            creationState.soundRecordingCopyright.setValue(drop.soundRecordingCopyright ?? "BBN Music (via bbn.music)");
+            creationState.compositionCopyright.setValue(drop.compositionCopyright ?? "bbn.music");
+            creationState.soundRecordingCopyright.setValue(drop.soundRecordingCopyright ?? "bbn.music");
             creationState.artwork.setValue(drop.artwork);
             creationState.songs.setValue(drop.songs ?? []);
             creationState.comments.setValue(drop.comments);
