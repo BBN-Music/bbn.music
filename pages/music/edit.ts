@@ -14,7 +14,7 @@ await RegisterAuthRefresh();
 const isAdmin = permCheck(
     "/hmsys/user/manage",
     "/bbn/manage",
-) && false;
+);
 
 const creationState = asRefRecord({
     gtin: <string | undefined> undefined,

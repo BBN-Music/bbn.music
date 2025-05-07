@@ -1,6 +1,5 @@
-import { Empty, Entry, Grid, Label } from "webgen/mod.ts";
+import { Entry } from "webgen/mod.ts";
 import { UserHistoryEvent, zAudit } from "../../spec/mod.ts";
-import { sheetStack } from "./helper.ts";
 import { BasicEntry } from "./mod.ts";
 
 export function userHistoryEventEntry(event: UserHistoryEvent) {
