@@ -441,7 +441,7 @@ export type Audit = {
     action: "drop-type-change";
     dropId: string;
     type: DropType;
-    data: FullDrop;
+    data?: FullDrop;
 } | {
     action: "drop-create";
     dropId: string;

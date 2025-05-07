@@ -574,7 +574,7 @@ export const zAudit = z.union([
         action: z.literal("drop-type-change"),
         dropId: z.string(),
         type: zDropType,
-        data: zFullDrop,
+        data: zFullDrop.optional(),
     }),
     z.object({
         action: z.literal("drop-create"),
