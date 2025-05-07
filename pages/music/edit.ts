@@ -368,7 +368,7 @@ appendBody(
                             }),
                         ).setEvenColumns(3).setGap(),
                         Grid(
-                            Grid(drops.map((val) => val!.map((x) => DropEntry(x, true)))),
+                            Grid(drops.map((val) => val ? val.map((x) => DropEntry(x, true)) : Spinner())),
                             Grid(
                                 Grid(
                                     userProfile.map((user) => user ? showProfilePicture(user as unknown as ProfileData) : Spinner()),
