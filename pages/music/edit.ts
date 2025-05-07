@@ -14,7 +14,7 @@ await RegisterAuthRefresh();
 const isAdmin = permCheck(
     "/hmsys/user/manage",
     "/bbn/manage",
-);
+) && false;
 
 const creationState = asRefRecord({
     gtin: <string | undefined> undefined,
@@ -282,7 +282,7 @@ appendBody(
                             Box(genres.primary.map((_) =>
                                 Grid(
                                     DropDown(genres.primary, creationState.primaryGenre, "Primary Genre").setDisabled(disabled),
-                                    DropDown(genres.secondary.value[creationState.primaryGenre.value ?? ""], creationState.secondaryGenre, "Secondary Genre").setDisabled(disabled), //.setValueRender((x) => (genres.secondary.value[creationState.primaryGenre.value ?? ""])[x] ?? ""),
+                                    Box(genres.secondary.map((secondaryGenres) => secondaryGenres ? Box(creationState.primaryGenre.map((primaryGenre) => DropDown(primaryGenre && secondaryGenres[primaryGenre] ? secondaryGenres[primaryGenre] : [], creationState.secondaryGenre, "Secondary Genre").setDisabled(disabled))) : Empty())), //.setValueRender((x) => (genres.secondary.value[creationState.primaryGenre.value ?? ""])[x] ?? ""),
                                 ).setEvenColumns(isMobile.map((val) => val ? 1 : 2)).setGap()
                             )),
                             Grid(
