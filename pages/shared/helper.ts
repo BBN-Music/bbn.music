@@ -3,7 +3,7 @@ import { LruCache, memoize } from "@std/cache";
 import { asRef, asRefRecord, Async, Box, Component, DropDown, Empty, Grid, Image, Label, PrimaryButton, Reference, SheetHeader, Sheets, Spinner, WriteSignal } from "webgen/mod.ts";
 import { templateArtwork } from "../../assets/imports.ts";
 import { loginRequired } from "../../components/pages.ts";
-import { API, APITools, ObjectId, Permission, Song, stupidErrorAlert } from "../../spec/mod.ts";
+import { API, APITools, ArtistRef, ObjectId, Permission, Song, stupidErrorAlert } from "../../spec/mod.ts";
 
 // @deno-types="https://raw.githubusercontent.com/lucsoft-DevTeam/lucsoft.de/master/custom.d.ts"
 import spotify from "../music-landing/assets/spotify.svg";
@@ -16,6 +16,9 @@ import apple from "../music-landing/assets/apple.svg";
 
 export const allowedAudioFormats = ["audio/flac", "audio/wav", "audio/mp3"];
 export const allowedImageFormats = ["image/png", "image/jpeg"];
+
+export type PriFeaArtist = ArtistRef & { _id: string };
+export type ProWriArtist = ArtistRef & { name: string };
 
 export type ProfileData = {
     _id: string;

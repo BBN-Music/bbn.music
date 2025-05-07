@@ -1,10 +1,15 @@
 import { z } from "zod/mod.ts";
 import { ArtistRef, zArtistRef, zSong } from "../../spec/mod.ts";
 import { sumOf } from "@std/collections/sum-of";
+import { ProWriArtist } from "shared/helper.ts";
 
 const pageOne = z.object({
     title: z.string().min(1, { message: "Title is required" }).max(100, { message: "Title is too long" }),
-    artists: zArtistRef.array().refine((x) => x.some(({ type }) => type == "PRIMARY"), { message: "At least one primary artist is required" }).refine((x) => x.some(({ type }) => type == "SONGWRITER"), { message: "At least one songwriter is required" }).refine((x) => x.filter(({ type }) => type === "SONGWRITER").every(({ name }) => name.split(" ").length > 1), { message: "Songwriters must have a first and last name" }),
+    artists: zArtistRef.array()
+        .refine((x) => x.some(({ type }) => type == "PRIMARY"), { message: "At least one primary artist is required" })
+        .refine((x) => x.some(({ type }) => type == "SONGWRITER"), { message: "At least one songwriter is required" })
+        .refine((x) => x.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "SONGWRITER").every(({ name }) => name.split(" ").length > 1), { message: "Songwriters must have a first and last name" })
+        .refine((x) => x.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "SONGWRITER").every(({ name }) => name.split(" ").every((v) => v[0] === v[0].toUpperCase() && v.slice(1) === v.slice(1).toLowerCase())), { message: "Songwriters need to be a real Name (e.g. Max Mustermann)" }),
     release: z.string().regex(/\d\d\d\d-\d\d-\d\d/, { message: "Not a date" }),
     language: z.string(),
     primaryGenre: z.string(),
@@ -40,7 +45,8 @@ export const pageThree = pageTwo.and(z.object({
         .refine((songs) => songs.every(({ artists }) => artists.length > 0), { message: "At least one artist is required" })
         .refine((songs) => songs.every(({ artists }) => artists.some(({ type }) => type === "PRIMARY")), { message: "At least one primary artist is required" })
         .refine((songs) => songs.every(({ artists }) => artists.some(({ type }) => type === "SONGWRITER")), { message: "At least one songwriter is required" })
-        .refine((songs) => songs.every(({ artists }) => artists.filter(({ type }) => type === "SONGWRITER").every(({ name }) => name.split(" ").length > 1)), { message: "Songwriters must have a first and last name" }),
+        .refine((songs) => songs.every(({ artists }) => artists.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "SONGWRITER").every(({ name }) => name.split(" ").length > 1)), { message: "Songwriters must have a first and last name" })
+        .refine((songs) => songs.every(({ artists }) => artists.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "SONGWRITER").every(({ name }) => name.split(" ").every((v) => v[0] === v[0].toUpperCase() && v.slice(1) === v.slice(1).toLowerCase()))), { message: "Songwriters need to be a real Name (e.g. Max Mustermann)" }),
     uploadingSongs: z.array(z.string()).max(0, { message: "Some uploads are still in progress" }),
 }))
     .refine((object) => (object.songs.length === 1 && object.songs[ 0 ].title === object.title) || object.songs.length > 1, { message: "Drop Title and Song Title must be the same for single song drops", path: [ "songs" ] })
