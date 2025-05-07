@@ -159,7 +159,10 @@ const templates = () =>
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
             `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and our Systems detected Copyright Issues with your Drop.\nCould you please send over proof that you own the rights to the Music?\nYou must own 100% of the legal rights to the music you are distributing.\nThis includes all types of samples or remixes.\nI have marked your Drop as rejected for now, until you send over the proof.\n\nBest regards,\n${activeUser.username.value}`,
         ],
-        "Full Songwriter Name": [`Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed missing Metadata. \nYour Drop is missing the Songwriters Full Name.\nPlease correct the names in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`],
+        "Full Songwriter Name": [
+            `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed missing Metadata. \nYour Drop is missing the Songwriters Full Name.\nPlease correct the names in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+        ],
         "Mismatched Title": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
             `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed incorrect Metadata. \nYour Drop only has one Song but the Song and the Drop have different titles. When a Drop only has one Song the titles need to match.\nPlease update your metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
@@ -191,6 +194,10 @@ const templates = () =>
         "Artwork mismatch": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
             `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the Artwork is not matching the Metadata.\nPlease update the Artwork in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+        ],
+        "Artwork already used": [
+            `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the Artwork is already used in another Drop.\nPlease update the Artwork in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
         "Takedown Declined": [`${creationState.title.value} Takedown Declined!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Takedown for the Drop ${creationState.title.value} with ID (${id}) and I am sorry to inform you that I have declined your request.\nPlease contact us if you have any questions.\n\nBest regards,\n${activeUser.username.value}`],
         "Accepted": [`${creationState.title.value} Accepted!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and I am happy to inform you that it has been accepted.\nYour music will now be sent to the stores.\nIt could take up to 72h for all stores to show your Drop.\n\nBest regards,\n${activeUser.username.value}`],
