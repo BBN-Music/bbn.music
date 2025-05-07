@@ -109,7 +109,30 @@ export type SingleAdminDrop = {
         permissions: Array<string>;
         groups: Array<ObjectId2>;
     };
-    events?: Array<UserHistoryEvent>;
+    events?: Array<{
+        userId: ObjectId2;
+        storeToken?: string;
+        type: "auth" | "refresh-auth" | "action";
+        ip?: string;
+        source?: {
+            type: "browser" | "mobile";
+            method?: {
+                type: "webAuthn";
+                id: string;
+                authenticatorAttachement: "cross-platform" | "platform";
+                publicKey: string;
+            } | {
+                type: "oauth";
+                provider: string;
+            } | {
+                type: "password";
+            };
+            platform?: string;
+            platformVersion?: string;
+            legacyUserAgent?: string;
+        };
+        meta?: Audit;
+    }>;
     artistList?: Array<Artist>;
 };
 
@@ -188,6 +211,73 @@ export type UserHistoryEvent = {
     meta?: {
         [key: string]: unknown;
     };
+};
+
+export type Audit = {
+    action: "reset-password";
+} | {
+    action: "drop-review";
+    dropId: string;
+} | {
+    action: "drop-type-change";
+    dropId: string;
+    type: DropType;
+    data?: FullDrop;
+} | {
+    action: "drop-create";
+    dropId: string;
+} | {
+    action: "oauth-validate";
+    appId: string;
+    scopes: Array<string>;
+} | {
+    action: "oauth-authorize";
+    appId: string;
+    scopes: Array<string>;
+} | {
+    action: "web-authn-sign-in";
+} | {
+    action: "web-authn-sign-up";
+} | {
+    action: "password-sign-in";
+} | {
+    action: "password-sign-up";
+} | {
+    action: "oauth-sign-in";
+    provider: string;
+} | {
+    action: "oauth-sign-up";
+    provider: string;
+} | {
+    action: "shazam-results";
+    dropId: string;
+    data: Array<{
+        title: string;
+        artist: string;
+        shazamUrl: string;
+        spotifyUrl?: string;
+        appleUrl?: string;
+        youtubeUrl?: string;
+        deezerUrl?: string;
+    }>;
+};
+
+export type FullDrop = {
+    gtin?: string;
+    title: string;
+    artists: Array<ArtistRef>;
+    release: string;
+    language: string;
+    primaryGenre: string;
+    secondaryGenre: string;
+    compositionCopyright: string;
+    soundRecordingCopyright: string;
+    artwork?: ObjectId;
+    songs: Array<Song>;
+    comments?: string;
+    _id: ObjectId;
+    user: ObjectId;
+    type: DropType;
 };
 
 export type Artist = {
@@ -335,24 +425,6 @@ export type SearchReturn =
         _score: number;
     };
 
-export type FullDrop = {
-    gtin?: string;
-    title: string;
-    artists: Array<ArtistRef>;
-    release: string;
-    language: string;
-    primaryGenre: string;
-    secondaryGenre: string;
-    compositionCopyright: string;
-    soundRecordingCopyright: string;
-    artwork?: ObjectId;
-    songs: Array<Song>;
-    comments?: string;
-    _id: ObjectId;
-    user: ObjectId;
-    type: DropType;
-};
-
 export type UpdateDrop = {
     gtin?: string;
     title?: string;
@@ -431,55 +503,6 @@ export type File = {
 export type ReviewResponse = "APPROVED" | "DECLINE_COPYRIGHT" | "DECLINE_MALICIOUS_ACTIVITY";
 
 export type OAuthScopes = "profile" | "email" | "phone";
-
-export type Audit = {
-    action: "reset-password";
-} | {
-    action: "drop-review";
-    dropId: string;
-} | {
-    action: "drop-type-change";
-    dropId: string;
-    type: DropType;
-    data?: FullDrop;
-} | {
-    action: "drop-create";
-    dropId: string;
-} | {
-    action: "oauth-validate";
-    appId: string;
-    scopes: Array<string>;
-} | {
-    action: "oauth-authorize";
-    appId: string;
-    scopes: Array<string>;
-} | {
-    action: "web-authn-sign-in";
-} | {
-    action: "web-authn-sign-up";
-} | {
-    action: "password-sign-in";
-} | {
-    action: "password-sign-up";
-} | {
-    action: "oauth-sign-in";
-    provider: string;
-} | {
-    action: "oauth-sign-up";
-    provider: string;
-} | {
-    action: "shazam-results";
-    dropId: string;
-    data: Array<{
-        title: string;
-        artist: string;
-        shazamUrl: string;
-        spotifyUrl?: string;
-        appleUrl?: string;
-        youtubeUrl?: string;
-        deezerUrl?: string;
-    }>;
-};
 
 export type RequestPayoutResponse = {
     type: "createAccount";

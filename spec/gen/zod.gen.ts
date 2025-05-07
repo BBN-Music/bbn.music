@@ -220,7 +220,98 @@ export const zSingleAdminDrop = z.object({
             platformVersion: z.string().optional(),
             legacyUserAgent: z.string().optional(),
         }).optional(),
-        meta: z.object({}).optional(),
+        meta: z.union([
+            z.object({
+                action: z.literal("reset-password"),
+            }),
+            z.object({
+                action: z.literal("drop-review"),
+                dropId: z.string(),
+            }),
+            z.object({
+                action: z.literal("drop-type-change"),
+                dropId: z.string(),
+                type: zDropType,
+                data: z.object({
+                    gtin: z.string().optional(),
+                    title: z.string(),
+                    artists: z.array(zArtistRef),
+                    release: z.string().date(),
+                    language: z.string(),
+                    primaryGenre: z.string(),
+                    secondaryGenre: z.string(),
+                    compositionCopyright: z.string(),
+                    soundRecordingCopyright: z.string(),
+                    artwork: zObjectId.optional(),
+                    songs: z.array(z.object({
+                        _id: zObjectId,
+                        user: zObjectId,
+                        isrc: z.string().optional(),
+                        title: z.string(),
+                        artists: z.array(zArtistRef),
+                        primaryGenre: z.string(),
+                        secondaryGenre: z.string(),
+                        year: z.number(),
+                        country: z.string().optional(),
+                        language: z.string(),
+                        explicit: z.boolean(),
+                        instrumental: z.boolean(),
+                        file: zObjectId,
+                    })),
+                    comments: z.string().optional(),
+                    _id: zObjectId,
+                    user: zObjectId,
+                    type: zDropType,
+                }).optional(),
+            }),
+            z.object({
+                action: z.literal("drop-create"),
+                dropId: z.string(),
+            }),
+            z.object({
+                action: z.literal("oauth-validate"),
+                appId: z.string(),
+                scopes: z.array(z.string()),
+            }),
+            z.object({
+                action: z.literal("oauth-authorize"),
+                appId: z.string(),
+                scopes: z.array(z.string()),
+            }),
+            z.object({
+                action: z.literal("web-authn-sign-in"),
+            }),
+            z.object({
+                action: z.literal("web-authn-sign-up"),
+            }),
+            z.object({
+                action: z.literal("password-sign-in"),
+            }),
+            z.object({
+                action: z.literal("password-sign-up"),
+            }),
+            z.object({
+                action: z.literal("oauth-sign-in"),
+                provider: z.string(),
+            }),
+            z.object({
+                action: z.literal("oauth-sign-up"),
+                provider: z.string(),
+            }),
+            z.object({
+                action: z.literal("shazam-results"),
+                dropId: z.string(),
+                data: z.array(z.object({
+                    title: z.string(),
+                    artist: z.string(),
+                    shazamUrl: z.string(),
+                    spotifyUrl: z.string().optional(),
+                    appleUrl: z.string().optional(),
+                    youtubeUrl: z.string().optional(),
+                    deezerUrl: z.string().optional(),
+                })),
+            }),
+        ]).optional(),
     })).optional(),
     artistList: z.array(z.object({
         _id: zObjectId,
@@ -304,6 +395,103 @@ export const zUserHistoryEvent = z.object({
         legacyUserAgent: z.string().optional(),
     }).optional(),
     meta: z.object({}).optional(),
+});
+
+export const zAudit = z.union([
+    z.object({
+        action: z.literal("reset-password"),
+    }),
+    z.object({
+        action: z.literal("drop-review"),
+        dropId: z.string(),
+    }),
+    z.object({
+        action: z.literal("drop-type-change"),
+        dropId: z.string(),
+        type: zDropType,
+        data: z.object({
+            gtin: z.string().optional(),
+            title: z.string(),
+            artists: z.array(zArtistRef),
+            release: z.string().date(),
+            language: z.string(),
+            primaryGenre: z.string(),
+            secondaryGenre: z.string(),
+            compositionCopyright: z.string(),
+            soundRecordingCopyright: z.string(),
+            artwork: zObjectId.optional(),
+            songs: z.array(zSong),
+            comments: z.string().optional(),
+            _id: zObjectId,
+            user: zObjectId,
+            type: zDropType,
+        }).optional(),
+    }),
+    z.object({
+        action: z.literal("drop-create"),
+        dropId: z.string(),
+    }),
+    z.object({
+        action: z.literal("oauth-validate"),
+        appId: z.string(),
+        scopes: z.array(z.string()),
+    }),
+    z.object({
+        action: z.literal("oauth-authorize"),
+        appId: z.string(),
+        scopes: z.array(z.string()),
+    }),
+    z.object({
+        action: z.literal("web-authn-sign-in"),
+    }),
+    z.object({
+        action: z.literal("web-authn-sign-up"),
+    }),
+    z.object({
+        action: z.literal("password-sign-in"),
+    }),
+    z.object({
+        action: z.literal("password-sign-up"),
+    }),
+    z.object({
+        action: z.literal("oauth-sign-in"),
+        provider: z.string(),
+    }),
+    z.object({
+        action: z.literal("oauth-sign-up"),
+        provider: z.string(),
+    }),
+    z.object({
+        action: z.literal("shazam-results"),
+        dropId: z.string(),
+        data: z.array(z.object({
+            title: z.string(),
+            artist: z.string(),
+            shazamUrl: z.string(),
+            spotifyUrl: z.string().optional(),
+            appleUrl: z.string().optional(),
+            youtubeUrl: z.string().optional(),
+            deezerUrl: z.string().optional(),
+        })),
+    }),
+]);
+
+export const zFullDrop = z.object({
+    gtin: z.string().optional(),
+    title: z.string(),
+    artists: z.array(zArtistRef),
+    release: z.string().date(),
+    language: z.string(),
+    primaryGenre: z.string(),
+    secondaryGenre: z.string(),
+    compositionCopyright: z.string(),
+    soundRecordingCopyright: z.string(),
+    artwork: zObjectId.optional(),
+    songs: z.array(zSong),
+    comments: z.string().optional(),
+    _id: zObjectId,
+    user: zObjectId,
+    type: zDropType,
 });
 
 export const zArtist = z.object({
@@ -454,24 +642,6 @@ export const zSearchReturn = z.intersection(
     }),
 );
 
-export const zFullDrop = z.object({
-    gtin: z.string().optional(),
-    title: z.string(),
-    artists: z.array(zArtistRef),
-    release: z.string().date(),
-    language: z.string(),
-    primaryGenre: z.string(),
-    secondaryGenre: z.string(),
-    compositionCopyright: z.string(),
-    soundRecordingCopyright: z.string(),
-    artwork: zObjectId.optional(),
-    songs: z.array(zSong),
-    comments: z.string().optional(),
-    _id: zObjectId,
-    user: zObjectId,
-    type: zDropType,
-});
-
 export const zUpdateDrop = z.object({
     gtin: z.string().optional(),
     title: z.string().optional(),
@@ -560,69 +730,6 @@ export const zOAuthScopes = z.enum([
     "profile",
     "email",
     "phone",
-]);
-
-export const zAudit = z.union([
-    z.object({
-        action: z.literal("reset-password"),
-    }),
-    z.object({
-        action: z.literal("drop-review"),
-        dropId: z.string(),
-    }),
-    z.object({
-        action: z.literal("drop-type-change"),
-        dropId: z.string(),
-        type: zDropType,
-        data: zFullDrop.optional(),
-    }),
-    z.object({
-        action: z.literal("drop-create"),
-        dropId: z.string(),
-    }),
-    z.object({
-        action: z.literal("oauth-validate"),
-        appId: z.string(),
-        scopes: z.array(z.string()),
-    }),
-    z.object({
-        action: z.literal("oauth-authorize"),
-        appId: z.string(),
-        scopes: z.array(z.string()),
-    }),
-    z.object({
-        action: z.literal("web-authn-sign-in"),
-    }),
-    z.object({
-        action: z.literal("web-authn-sign-up"),
-    }),
-    z.object({
-        action: z.literal("password-sign-in"),
-    }),
-    z.object({
-        action: z.literal("password-sign-up"),
-    }),
-    z.object({
-        action: z.literal("oauth-sign-in"),
-        provider: z.string(),
-    }),
-    z.object({
-        action: z.literal("oauth-sign-up"),
-        provider: z.string(),
-    }),
-    z.object({
-        action: z.literal("shazam-results"),
-        dropId: z.string(),
-        data: z.array(z.object({
-            title: z.string(),
-            artist: z.string(),
-            shazamUrl: z.string(),
-            spotifyUrl: z.string().optional(),
-            appleUrl: z.string().optional(),
-            youtubeUrl: z.string().optional(),
-            deezerUrl: z.string().optional(),
-        })),
-    }),
 ]);
 
 export const zRequestPayoutResponse = z.union([
