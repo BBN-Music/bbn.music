@@ -55,7 +55,7 @@ export function userHistoryEventEntry(event: UserHistoryEvent) {
                 return Entry(
                     BasicEntry(
                         "Drop type changed",
-                        `from ${audit.data.type} to ${audit.type} by ${event.userId}`,
+                        `from ${audit.data?.type ?? "unknown"} to ${audit.type} by ${event.userId}`,
                     ),
                 ).setWidth("100%").setPadding("0.5rem 0");
             case "drop-review":
