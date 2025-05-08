@@ -1,15 +1,15 @@
-import { activeUser, allowedImageFormats, ErrorMessage, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showPreviewImage, showProfilePicture, streamingImages } from "shared/helper.ts";
+import { activeUser, allowedImageFormats, ErrorMessage, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showProfilePicture, streamingImages } from "shared/helper.ts";
 import { appendBody, asRef, asRefRecord, Box, Checkbox, Content, createFilePicker, createRoute, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, Image, isMobile, Label, PrimaryButton, SecondaryButton, Spinner, StartRouting, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
 import { AdminDrop, API, Artist, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, User, UserHistoryEvent, zArtistTypes, zDropType, zObjectId } from "../../spec/mod.ts";
 
 import { userHistoryEventEntry } from "shared/userHistoryEventEntry.ts";
+import { templateArtwork } from "../../assets/imports.ts";
 import languages from "../../data/language.json" with { type: "json" };
+import { uploadArtwork } from "./data.ts";
 import { pageThree } from "./validator.ts";
 import { DropEntry } from "./views/list.ts";
 import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
-import { uploadArtwork } from "./data.ts";
-import { templateArtwork } from "../../assets/imports.ts";
 
 await RegisterAuthRefresh();
 
@@ -28,7 +28,7 @@ const creationState = asRefRecord({
     secondaryGenre: <string | undefined> undefined,
     compositionCopyright: <string | undefined> undefined,
     soundRecordingCopyright: <string | undefined> undefined,
-    artwork: <string | undefined>undefined,
+    artwork: <string | undefined> undefined,
     artworkData: <string | undefined> undefined,
     uploadingSongs: <Record<string, number>[]> [],
     songs: <Song[]> [],
@@ -278,13 +278,18 @@ appendBody(
                     Label("Edit Drop").setTextSize("3xl").setFontWeight("bold"),
                     Grid(
                         Grid(
-                            creationState.artworkData.map((data) => 
-                                data === "loading" ? Spinner() : Image(data!, "Drop Artwork").setWidth("200px").setHeight("200px").setRadius("large")
-                            ),
-                            SecondaryButton("Change Artwork").onClick(() => {
-                                createFilePicker(allowedImageFormats.join(",")).then((file) => uploadArtwork(id.value, file, creationState.artwork, creationState.artworkData))
-                            }),
-                            SecondaryButton(share.map((x) => x ? "Sharing Enabled" : "Sharing Disabled")).onClick(() => sheetStack.addSheet(SharingDialog)),
+                            creationState.artworkData.map((data) => data === "loading" ? Spinner() : Image(data!, "Drop Artwork").setWidth("200px").setHeight("200px").setRadius("large")),
+                            Box(creationState.type.map((type) => {
+                                if (type === "PRIVATE") {
+                                    return SecondaryButton("Change Artwork").onClick(() => {
+                                        createFilePicker(allowedImageFormats.join(",")).then((file) => uploadArtwork(id.value, file, creationState.artwork, creationState.artworkData));
+                                    });
+                                }
+                                if (type === "PUBLISHED") {
+                                    return SecondaryButton(share.map((x) => x ? "Sharing Enabled" : "Sharing Disabled")).onClick(() => sheetStack.addSheet(SharingDialog));
+                                }
+                                return Empty();
+                            })),
                         ).setGap(),
                         Grid(
                             TextInput(creationState.title, "Title").setDisabled(disabled),
@@ -308,7 +313,7 @@ appendBody(
                         ).setGap(),
                     ).setTemplateColumns(isMobile.map((val) => val ? "auto" : "min-content auto")).setGap("1rem"),
                 ).setGap(),
-                Box(id.map(id => ManageSongs(creationState.songs, id, userArtists, disabled))),
+                Box(id.map((id) => ManageSongs(creationState.songs, id, userArtists, disabled))),
                 isAdmin ? Box(creationState.songs.map((songs) => Grid(asRef(songs.map((song) => Label(song.filename)))))) : Empty(),
                 TextInput(creationState.comments, "Comments").setDisabled(disabled),
                 SecondaryButton("Save").setDisabled(disabled).onClick(() => {
