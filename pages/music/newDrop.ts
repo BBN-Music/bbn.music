@@ -65,8 +65,8 @@ API.getIdByDropsByMusic({ path: { id: dropId } }).then(stupidErrorAlert)
 const additionalDropInformation = Grid(
     SheetHeader("Additional Information", sheetStack),
     TextInput(creationState.gtin, "UPC/EAN"),
-    TextInput(creationState.compositionCopyright, "Composition Copyright"),
-    TextInput(creationState.soundRecordingCopyright, "Sound Recording Copyright"),
+    TextInput(creationState.compositionCopyright, "Composition Copyright").setDisabled(true),
+    TextInput(creationState.soundRecordingCopyright, "Sound Recording Copyright").setDisabled(true),
     PrimaryButton("Save").onClick(() => sheetStack.removeOne()),
 ).setGap();
 

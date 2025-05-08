@@ -307,9 +307,10 @@ appendBody(
                                 ).setEvenColumns(isMobile.map((val) => val ? 1 : 2)).setGap()
                             )),
                             Grid(
-                                TextInput(creationState.compositionCopyright, "Composition Copyright").setDisabled(disabled),
-                                TextInput(creationState.soundRecordingCopyright, "Sound Recording Copyright").setDisabled(disabled),
-                            ).setEvenColumns(isMobile.map((val) => val ? 1 : 2)).setGap(),
+                                TextInput(creationState.compositionCopyright, "Composition Copyright").setDisabled(true),
+                                TextInput(creationState.soundRecordingCopyright, "Sound Recording Copyright").setDisabled(true),
+                                TextInput(creationState.gtin, "UPC/EAN").setDisabled(disabled),
+                            ).setEvenColumns(isMobile.map((val) => val ? 1 : 3)).setGap(),
                         ).setGap(),
                     ).setTemplateColumns(isMobile.map((val) => val ? "auto" : "min-content auto")).setGap("1rem"),
                 ).setGap(),
