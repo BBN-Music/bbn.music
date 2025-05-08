@@ -1,5 +1,5 @@
-import { activeUser, ErrorMessage, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showPreviewImage, showProfilePicture, streamingImages } from "shared/helper.ts";
-import { appendBody, asRef, asRefRecord, Box, Checkbox, Content, createRoute, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, isMobile, Label, PrimaryButton, SecondaryButton, Spinner, StartRouting, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
+import { activeUser, allowedImageFormats, ErrorMessage, permCheck, ProfileData, RegisterAuthRefresh, sheetStack, showPreviewImage, showProfilePicture, streamingImages } from "shared/helper.ts";
+import { appendBody, asRef, asRefRecord, Box, Checkbox, Content, createFilePicker, createRoute, css, DateInput, DialogContainer, DropDown, Empty, FullWidthSection, Grid, Image, isMobile, Label, PrimaryButton, SecondaryButton, Spinner, StartRouting, TextAreaInput, TextInput, WebGenTheme } from "webgen/mod.ts";
 import { DynaNavigation } from "../../components/nav.ts";
 import { AdminDrop, API, Artist, ArtistRef, DropType, FullDrop, Share, Song, stupidErrorAlert, User, UserHistoryEvent, zArtistTypes, zDropType, zObjectId } from "../../spec/mod.ts";
 
@@ -8,6 +8,8 @@ import languages from "../../data/language.json" with { type: "json" };
 import { pageThree } from "./validator.ts";
 import { DropEntry } from "./views/list.ts";
 import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
+import { uploadArtwork } from "./data.ts";
+import { templateArtwork } from "../../assets/imports.ts";
 
 await RegisterAuthRefresh();
 
@@ -26,7 +28,8 @@ const creationState = asRefRecord({
     secondaryGenre: <string | undefined> undefined,
     compositionCopyright: <string | undefined> undefined,
     soundRecordingCopyright: <string | undefined> undefined,
-    artwork: <string | undefined> undefined,
+    artwork: <string | undefined>undefined,
+    artworkData: <string | undefined> undefined,
     uploadingSongs: <Record<string, number>[]> [],
     songs: <Song[]> [],
     comments: <string | undefined> undefined,
@@ -69,6 +72,7 @@ const mainRoute = createRoute({
             creationState.compositionCopyright.setValue(drop.compositionCopyright ?? "bbn.music");
             creationState.soundRecordingCopyright.setValue(drop.soundRecordingCopyright ?? "bbn.music");
             creationState.artwork.setValue(drop.artwork);
+            creationState.artworkData.setValue(drop.artwork ? await API.getArtworkByDropByMusic({ path: { dropId: id.value } }).then((x) => URL.createObjectURL(x.data)) : templateArtwork);
             creationState.songs.setValue(drop.songs ?? []);
             creationState.comments.setValue(drop.comments);
             creationState.type.setValue(drop.type);
@@ -274,7 +278,12 @@ appendBody(
                     Label("Edit Drop").setTextSize("3xl").setFontWeight("bold"),
                     Grid(
                         Grid(
-                            creationState.artwork.map((artwork) => showPreviewImage({ artwork: artwork, _id: id.value }).setRadius("large").setWidth("200px").setHeight("200px").setCssStyle("overflow", "hidden")),
+                            creationState.artworkData.map((data) => 
+                                data === "loading" ? Spinner() : Image(data!, "Drop Artwork").setWidth("200px").setHeight("200px").setRadius("large")
+                            ),
+                            SecondaryButton("Change Artwork").onClick(() => {
+                                createFilePicker(allowedImageFormats.join(",")).then((file) => uploadArtwork(id.value, file, creationState.artwork, creationState.artworkData))
+                            }),
                             SecondaryButton(share.map((x) => x ? "Sharing Enabled" : "Sharing Disabled")).onClick(() => sheetStack.addSheet(SharingDialog)),
                         ).setGap(),
                         Grid(
