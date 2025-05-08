@@ -47,7 +47,7 @@ const events = asRef(<UserHistoryEvent[]> []);
 const userProfile = asRef(<User | undefined> undefined);
 const userArtists = asRef(<Artist[] | undefined> undefined);
 
-let id: string;
+const id = asRef(<string | undefined> undefined);
 const mainRoute = createRoute({
     path: "/c/music/edit",
     search: {
@@ -55,9 +55,9 @@ const mainRoute = createRoute({
     },
     events: {
         onActive: async () => {
-            id = mainRoute.search.id;
-            const adminDrop = isAdmin ? await API.getIdByDropsByAdmin({ path: { id: id } }).then(stupidErrorAlert) : undefined;
-            const drop = isAdmin ? adminDrop as Partial<FullDrop> : await API.getIdByDropsByMusic({ path: { id: id } }).then(stupidErrorAlert);
+            id.setValue(mainRoute.search.id);
+            const adminDrop = isAdmin ? await API.getIdByDropsByAdmin({ path: { id: id.value } }).then(stupidErrorAlert) : undefined;
+            const drop = isAdmin ? adminDrop as Partial<FullDrop> : await API.getIdByDropsByMusic({ path: { id: id.value } }).then(stupidErrorAlert);
 
             creationState.gtin.setValue(drop.gtin);
             creationState.title.setValue(drop.title);
@@ -80,7 +80,7 @@ const mainRoute = createRoute({
                 genres.secondary.setValue(x.secondary);
             });
             try {
-                API.getIdByShareByDropsByMusic({ path: { id: id } }).then((req) => stupidErrorAlert(req, false)).then((val) => val ? share.setValue(val) : undefined);
+                API.getIdByShareByDropsByMusic({ path: { id: id.value } }).then((req) => stupidErrorAlert(req, false)).then((val) => val ? share.setValue(val) : undefined);
                 // deno-lint-ignore no-empty
             } catch (_) {}
             if (isAdmin) {
@@ -140,10 +140,10 @@ const SharingDialog = Box(share.map((shareVal) =>
         ).setEvenColumns(shareVal ? Object.keys(shareVal.services).length : 4).setGap("1rem").setJustifyContent("start").setPadding("0 .3rem"),
         PrimaryButton(shareVal ? "Disable Link Sharing" : "Enable Link Sharing").onPromiseClick(async () => {
             if (shareVal) {
-                await API.deleteIdByShareByDropsByMusic({ path: { id: id } });
+                await API.deleteIdByShareByDropsByMusic({ path: { id: id.value } });
                 share.setValue(undefined);
             } else {
-                share.setValue(await API.postShareByDropsByMusic({ body: { id: id } }).then(stupidErrorAlert) as Share);
+                share.setValue(await API.postShareByDropsByMusic({ body: { id: id.value } }).then(stupidErrorAlert) as Share);
             }
         }).setMargin("1rem 0 0 0"),
     )
@@ -157,51 +157,51 @@ const templates = () =>
     ({
         "Copyright bad": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
-            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and our Systems detected Copyright Issues with your Drop.\nCould you please send over proof that you own the rights to the Music?\nYou must own 100% of the legal rights to the music you are distributing.\nThis includes all types of samples or remixes.\nI have marked your Drop as rejected for now, until you send over the proof.\n\nBest regards,\n${activeUser.username.value}`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and our Systems detected Copyright Issues with your Drop.\nCould you please send over proof that you own the rights to the Music?\nYou must own 100% of the legal rights to the music you are distributing.\nThis includes all types of samples or remixes.\nI have marked your Drop as rejected for now, until you send over the proof.\n\nBest regards,\n${activeUser.username.value}`,
         ],
         "Full Songwriter Name": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
-            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed missing Metadata. \nYour Drop is missing the Songwriters Full Name.\nPlease correct the names in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed missing Metadata. \nYour Drop is missing the Songwriters Full Name.\nPlease correct the names in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
         "Mismatched Title": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
-            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed incorrect Metadata. \nYour Drop only has one Song but the Song and the Drop have different titles. When a Drop only has one Song the titles need to match.\nPlease update your metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed incorrect Metadata. \nYour Drop only has one Song but the Song and the Drop have different titles. When a Drop only has one Song the titles need to match.\nPlease update your metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
         "AI Generated": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
-            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the Drop is AI generated.\nWe are currently not accepting AI generated music.\nPlease remove the AI generated music and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed that the Drop is AI generated.\nWe are currently not accepting AI generated music.\nPlease remove the AI generated music and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
         "Wrong Language": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
-            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the language of the Drop and/or Songs is wrong.\nPlease update the language in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed that the language of the Drop and/or Songs is wrong.\nPlease update the language in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
         "Wrong Genre": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
-            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the genre of the Drop and/or Songs is wrong.\nPlease update the genre in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed that the genre of the Drop and/or Songs is wrong.\nPlease update the genre in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
         "Missing Songwriter": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
-            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the Songwriter is missing.\nPlease add the Songwriter in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed that the Songwriter is missing.\nPlease add the Songwriter in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
         "Not Instrumental": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
-            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the Drop is not instrumental even though the type is set to instrumental.\nPlease update the type in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed that the Drop is not instrumental even though the type is set to instrumental.\nPlease update the type in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
         "Ending with silence": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
-            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the Drop ends with silence that is too long.\nPlease remove the silence at the end of the Drop and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed that the Drop ends with silence that is too long.\nPlease remove the silence at the end of the Drop and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
         "Artwork mismatch": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
-            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the Artwork is not matching the Metadata.\nPlease update the Artwork in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed that the Artwork is not matching the Metadata.\nPlease update the Artwork in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
         "Artwork already used": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
-            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and noticed that the Artwork is already used in another Drop.\nPlease update the Artwork in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed that the Artwork is already used in another Drop.\nPlease update the Artwork in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
-        "Takedown Declined": [`${creationState.title.value} Takedown Declined!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Takedown for the Drop ${creationState.title.value} with ID (${id}) and I am sorry to inform you that I have declined your request.\nPlease contact us if you have any questions.\n\nBest regards,\n${activeUser.username.value}`],
-        "Accepted": [`${creationState.title.value} Accepted!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id}) and I am happy to inform you that it has been accepted.\nYour music will now be sent to the stores.\nIt could take up to 72h for all stores to show your Drop.\n\nBest regards,\n${activeUser.username.value}`],
-        "Takedown Accepted": [`${creationState.title.value} Takedown Processed!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just processed your Takedown for the Drop ${creationState.title.value} with ID (${id}). The takedown has been sent to the stores.\nIt could take up to 72h for all stores to process the takedown.\n\nBest regards,\n${activeUser.username.value}`],
+        "Takedown Declined": [`${creationState.title.value} Takedown Declined!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Takedown for the Drop ${creationState.title.value} with ID (${id.value}) and I am sorry to inform you that I have declined your request.\nPlease contact us if you have any questions.\n\nBest regards,\n${activeUser.username.value}`],
+        "Accepted": [`${creationState.title.value} Accepted!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and I am happy to inform you that it has been accepted.\nYour music will now be sent to the stores.\nIt could take up to 72h for all stores to show your Drop.\n\nBest regards,\n${activeUser.username.value}`],
+        "Takedown Accepted": [`${creationState.title.value} Takedown Processed!`, `Hey ${userProfile.getValue()?.profile.username},\n\nI just processed your Takedown for the Drop ${creationState.title.value} with ID (${id.value}). The takedown has been sent to the stores.\nIt could take up to 72h for all stores to process the takedown.\n\nBest regards,\n${activeUser.username.value}`],
     }) as Record<string, [string, string]>;
 const action = asRef("");
 selectedTemplate.listen((val) => {
@@ -225,7 +225,7 @@ const ResponseDialog = Grid(
     Box(action.map((val) =>
         PrimaryButton(val).onPromiseClick(async () => {
             await API.postReviewByDropByMusic({
-                path: { dropId: id },
+                path: { dropId: id.value },
                 body: {
                     title: titleText.value,
                     action: action.value,
@@ -241,7 +241,7 @@ const ResponseDialog = Grid(
 
 function save() {
     API.patchIdByDropsByMusic({
-        path: { id },
+        path: { id: id.value },
         body: Object.fromEntries(Object.entries(creationState).map((entry) => [entry[0], entry[1].getValue()])),
     }).then(stupidErrorAlert).then(() => {
         location.reload();
@@ -274,7 +274,7 @@ appendBody(
                     Label("Edit Drop").setTextSize("3xl").setFontWeight("bold"),
                     Grid(
                         Grid(
-                            creationState.artwork.map((artwork) => showPreviewImage({ artwork: artwork, _id: id }).setRadius("large").setWidth("200px").setHeight("200px").setCssStyle("overflow", "hidden")),
+                            creationState.artwork.map((artwork) => showPreviewImage({ artwork: artwork, _id: id.value }).setRadius("large").setWidth("200px").setHeight("200px").setCssStyle("overflow", "hidden")),
                             SecondaryButton(share.map((x) => x ? "Sharing Enabled" : "Sharing Disabled")).onClick(() => sheetStack.addSheet(SharingDialog)),
                         ).setGap(),
                         Grid(
@@ -299,7 +299,7 @@ appendBody(
                         ).setGap(),
                     ).setTemplateColumns(isMobile.map((val) => val ? "auto" : "min-content auto")).setGap("1rem"),
                 ).setGap(),
-                ManageSongs(creationState.songs, id, userArtists, disabled),
+                Box(id.map(id => ManageSongs(creationState.songs, id, userArtists, disabled))),
                 isAdmin ? Box(creationState.songs.map((songs) => Grid(asRef(songs.map((song) => Label(song.filename)))))) : Empty(),
                 TextInput(creationState.comments, "Comments").setDisabled(disabled),
                 SecondaryButton("Save").setDisabled(disabled).onClick(() => {
