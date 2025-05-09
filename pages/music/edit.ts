@@ -282,7 +282,13 @@ appendBody(
                     Label("Edit Drop").setTextSize("3xl").setFontWeight("bold"),
                     Grid(
                         Grid(
-                            creationState.artworkData.map((data) => data === "loading" ? Spinner() : Image(data!, "Drop Artwork").setWidth("200px").setHeight("200px").setRadius("large")),
+                            creationState.artworkData.map((data) =>
+                                data === "loading" ? Spinner() : Image(data!, "Drop Artwork").onClick(() => {
+                                    API.getFullArtworkByDropByMusic({ path: { dropId: id.value } }).then(stupidErrorAlert).then((x) => {
+                                        globalThis.open(URL.createObjectURL(x), "_blank");
+                                    });
+                                }).setWidth("200px").setHeight("200px").setRadius("large")
+                            ),
                             Box(creationState.type.map((type) => {
                                 if (type === "PRIVATE") {
                                     return SecondaryButton("Change Artwork").onClick(() => {

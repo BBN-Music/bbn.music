@@ -26,6 +26,7 @@ import type {
     GetDropsByMusicData,
     GetDropsByMusicResponse,
     GetEventByWhatsappData,
+    GetFullArtworkByDropByMusicData,
     GetFulldropByMusicData,
     GetFulldropByMusicResponse,
     GetGenresByMusicData,
@@ -485,6 +486,23 @@ export const getArtworkByDropByMusic = <ThrowOnError extends boolean = false>(op
             },
         ],
         url: "/api/@bbn/music/{dropId}/artwork",
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...options?.headers,
+        },
+    });
+};
+
+export const getFullArtworkByDropByMusic = <ThrowOnError extends boolean = false>(options: Options<GetFullArtworkByDropByMusicData, ThrowOnError>) => {
+    return (options.client ?? _heyApiClient).get<unknown, unknown, ThrowOnError>({
+        security: [
+            {
+                scheme: "bearer",
+                type: "http",
+            },
+        ],
+        url: "/api/@bbn/music/{dropId}/fullArtwork",
         ...options,
         headers: {
             "Content-Type": "application/json",

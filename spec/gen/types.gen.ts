@@ -855,6 +855,17 @@ export type GetArtworkByDropByMusicData = {
     url: "/api/@bbn/music/{dropId}/artwork";
 };
 
+export type GetFullArtworkByDropByMusicData = {
+    body?: {
+        [key: string]: unknown;
+    };
+    path: {
+        dropId: string;
+    };
+    query?: never;
+    url: "/api/@bbn/music/{dropId}/fullArtwork";
+};
+
 export type PostReviewByDropByMusicData = {
     body?: {
         [key: string]: unknown;
