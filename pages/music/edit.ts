@@ -167,6 +167,10 @@ const templates = () =>
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
             `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed missing Metadata. \nYour Drop is missing the Songwriters Full Name.\nPlease correct the names in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
         ],
+        "Full Producer Name": [
+            `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
+            `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed missing Metadata. \nYour Drop is missing the Producers Full Name.\nPlease correct the names in the Metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
+        ],
         "Mismatched Title": [
             `Issue with drop: ${creationState.title.value} [IMPORTANT - Your action required]`,
             `Hey ${userProfile.getValue()?.profile.username},\n\nI just reviewed your Drop ${creationState.title.value} with ID (${id.value}) and noticed incorrect Metadata. \nYour Drop only has one Song but the Song and the Drop have different titles. When a Drop only has one Song the titles need to match.\nPlease update your metadata and resubmit your Drop for review.\n\nBest regards,\n${activeUser.username.value}`,
