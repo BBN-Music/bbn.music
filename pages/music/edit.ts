@@ -383,12 +383,14 @@ appendBody(
                                     ).setGap().setMargin("0rem 0rem 0rem 0rem"),
                                 );
                             }),
-                            PrimaryButton("Accept").onClick(() => {
-                                const { error } = pageThree.safeParse(Object.fromEntries(Object.entries(creationState).map((entry) => [entry[0], entry[1].getValue()])));
-                                if (error) {
-                                    console.error(error);
-                                    errorstate.setValue(`${error.issues[0].path[0]}: ${error.issues[0].message}`);
-                                    return;
+                            PrimaryButton("Accept").onClick(e => {
+                                if (!(e as PointerEvent).shiftKey) {
+                                    const { error } = pageThree.safeParse(Object.fromEntries(Object.entries(creationState).map((entry) => [ entry[ 0 ], entry[ 1 ].getValue() ])));
+                                    if (error) {
+                                        console.error(error);
+                                        errorstate.setValue(`${error.issues[ 0 ].path[ 0 ]}: ${error.issues[ 0 ].message}`);
+                                        return;
+                                    }
                                 }
                                 action.setValue("ACCEPT");
                                 if (creationState.type.value === "TAKEDOWN_REQUESTED") {
