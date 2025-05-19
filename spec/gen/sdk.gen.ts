@@ -43,6 +43,8 @@ import type {
     GetIdByPayoutsByPaymentResponse,
     GetIdByShareByDropsByMusicData,
     GetIdByShareByDropsByMusicResponse,
+    GetIdByShazamByMusicData,
+    GetIdByShazamByMusicResponse,
     GetIdBySongsByMusicData,
     GetIdBySongsByMusicResponse,
     GetIdByWalletsByAdminData,
@@ -129,6 +131,7 @@ import {
     zGetIdByDropsByMusicResponse,
     zGetIdByPayoutsByPaymentResponse,
     zGetIdByShareByDropsByMusicResponse,
+    zGetIdByShazamByMusicResponse,
     zGetIdBySongsByMusicResponse,
     zGetIdByWalletsByAdminResponse,
     zGetPayoutsByAdminResponse,
@@ -796,6 +799,22 @@ export const getArtworkBySlugByShareByMusic = <ThrowOnError extends boolean = fa
             "Content-Type": "application/json",
             ...options?.headers,
         },
+    });
+};
+
+export const getIdByShazamByMusic = <ThrowOnError extends boolean = false>(options: Options<GetIdByShazamByMusicData, ThrowOnError>) => {
+    return (options.client ?? _heyApiClient).get<GetIdByShazamByMusicResponse, unknown, ThrowOnError>({
+        security: [
+            {
+                scheme: "bearer",
+                type: "http",
+            },
+        ],
+        responseValidator: async (data) => {
+            return await zGetIdByShazamByMusicResponse.parseAsync(data);
+        },
+        url: "/api/@bbn/music/shazam/{id}",
+        ...options,
     });
 };
 

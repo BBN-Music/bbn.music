@@ -383,12 +383,16 @@ appendBody(
                                     ).setGap().setMargin("0rem 0rem 0rem 0rem"),
                                 );
                             }),
-                            PrimaryButton("Accept").onClick(e => {
+                            SecondaryButton("Request Shazam").onPromiseClick(async () => {
+                                const data = await API.getIdByShazamByMusic({ path: { id: id.value } }).then(stupidErrorAlert);
+                                alert("Result: " + JSON.stringify(data));
+                            }),
+                            PrimaryButton("Accept").onClick((e) => {
                                 if (!(e as PointerEvent).shiftKey) {
-                                    const { error } = pageThree.safeParse(Object.fromEntries(Object.entries(creationState).map((entry) => [ entry[ 0 ], entry[ 1 ].getValue() ])));
+                                    const { error } = pageThree.safeParse(Object.fromEntries(Object.entries(creationState).map((entry) => [entry[0], entry[1].getValue()])));
                                     if (error) {
                                         console.error(error);
-                                        errorstate.setValue(`${error.issues[ 0 ].path[ 0 ]}: ${error.issues[ 0 ].message}`);
+                                        errorstate.setValue(`${error.issues[0].path[0]}: ${error.issues[0].message}`);
                                         return;
                                     }
                                 }
@@ -400,7 +404,7 @@ appendBody(
                                 }
                                 sheetStack.addSheet(ResponseDialog);
                             }),
-                        ).setEvenColumns(3).setGap(),
+                        ).setEvenColumns(4).setGap(),
                         Grid(
                             Grid(drops.map((val) => val ? val.map((x) => DropEntry(x, true)) : Spinner())),
                             Grid(

@@ -494,6 +494,16 @@ export const zFullDrop = z.object({
     type: zDropType,
 });
 
+export const zShazamResults = z.array(z.object({
+    title: z.string(),
+    artist: z.string(),
+    shazamUrl: z.string(),
+    spotifyUrl: z.string().optional(),
+    appleUrl: z.string().optional(),
+    youtubeUrl: z.string().optional(),
+    deezerUrl: z.string().optional(),
+}));
+
 export const zArtist = z.object({
     _id: zObjectId,
     name: z.string(),
@@ -852,6 +862,11 @@ export const zGetGenresByMusicResponse = z.object({
     primary: z.array(z.string()),
     secondary: z.object({}),
 });
+
+export const zGetIdByShazamByMusicResponse = z.union([
+    zShazamResults,
+    z.null(),
+]);
 
 export const zGetSongsByMusicResponse = z.array(zSong);
 

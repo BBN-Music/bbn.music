@@ -251,15 +251,7 @@ export type Audit = {
 } | {
     action: "shazam-results";
     dropId: string;
-    data: Array<{
-        title: string;
-        artist: string;
-        shazamUrl: string;
-        spotifyUrl?: string;
-        appleUrl?: string;
-        youtubeUrl?: string;
-        deezerUrl?: string;
-    }>;
+    data: ShazamResults;
 };
 
 export type FullDrop = {
@@ -279,6 +271,16 @@ export type FullDrop = {
     user: ObjectId;
     type: DropType;
 };
+
+export type ShazamResults = Array<{
+    title: string;
+    artist: string;
+    shazamUrl: string;
+    spotifyUrl?: string;
+    appleUrl?: string;
+    youtubeUrl?: string;
+    deezerUrl?: string;
+}>;
 
 export type Artist = {
     _id: ObjectId;
@@ -1170,6 +1172,24 @@ export type GetArtworkBySlugByShareByMusicData = {
     query?: never;
     url: "/api/@bbn/music/share/{slug}/artwork";
 };
+
+export type GetIdByShazamByMusicData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: "/api/@bbn/music/shazam/{id}";
+};
+
+export type GetIdByShazamByMusicResponses = {
+    /**
+     * Successful operation
+     */
+    200: ShazamResults | null;
+};
+
+export type GetIdByShazamByMusicResponse = GetIdByShazamByMusicResponses[keyof GetIdByShazamByMusicResponses];
 
 export type GetSongsByMusicData = {
     body?: never;
