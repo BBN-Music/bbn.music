@@ -15,7 +15,7 @@ export const publishedDrops = createPage(
             events: {
                 onLazyInit: async () => {
                     const list = await API.getDropsByMusic().then(stupidErrorAlert);
-                    data.value = list.filter((x) => x.type === zDropType.enum.PUBLISHED);
+                    data.value = list.filter((x) => x.type === zDropType.enum.PUBLISHED || x.type === zDropType.enum.TAKEDOWN_REQUESTED);
                 },
             },
         }),

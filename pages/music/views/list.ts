@@ -40,6 +40,10 @@ export function DropEntry(x: Partial<Drop>, showAll: boolean = false) {
                     return PillSuffix("Draft");
                 }
 
+                if (showAll && x.type == zDropType.enum.TAKEDOWN_REQUESTED) {
+                    return PillSuffix("Takedown Requested");
+                }
+
                 return Empty();
             })()),
     ).onClick(() => location.href = x.type === zDropType.enum.UNSUBMITTED ? `/c/music/new-drop?id=${x._id}` : `/c/music/edit?id=${x._id}`);
