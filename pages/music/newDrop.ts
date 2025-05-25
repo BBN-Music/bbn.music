@@ -12,9 +12,9 @@ import { EditArtistsDialog, ManageSongs } from "./views/table.ts";
 await RegisterAuthRefresh();
 
 document.adoptedStyleSheets.push(css`
-body {
-    background: linear-gradient(139.46deg, #F19D2D 6.59%, #DB5721 101.73%) no-repeat center center fixed !important;
-}
+    body {
+        background: linear-gradient(139.46deg, #f19d2d 6.59%, #db5721 101.73%) no-repeat center center fixed !important;
+    }
 `);
 
 const params = new URLSearchParams(location.search);
@@ -141,10 +141,11 @@ const wizard = creationState.page.map((page) => {
                             .onClick(() => createFilePicker(allowedImageFormats.join(",")).then((file) => uploadArtwork(dropId, file, creationState.artwork, creationState.artworkData))),
                     ).setTemplateColumns("1fr auto 1fr"),
                     data === "loading" ? Spinner() : Image(data!, "Drop Artwork").addStyle(css`
-                    img {
-                        width: 60%;
-                        margin: 0 auto;
-                    }`),
+                        img {
+                            width: 60%;
+                            margin: 0 auto;
+                        }
+                    `),
                 ).setGap()
             ),
             footer(page),
@@ -157,10 +158,10 @@ const wizard = creationState.page.map((page) => {
     } else if (page == 4) {
         return Grid(
             Grid(
-                Label("Thanks! That's everything we need."),
+                Label("Thanks! That's everything we need.").setTextSize("xl").setFontWeight("bold").setJustifySelf("center"),
             ),
             Grid(
-                TextAreaInput(creationState.comments, "Comments for Review Team"),
+                TextAreaInput(creationState.comments, "Comments for Review Team, Beats/Samples used, Rights Information, etc."),
             ),
             Grid(
                 SecondaryButton("Back").setJustifyContent("center").onClick(() => creationState.page.setValue(3)),
