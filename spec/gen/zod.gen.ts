@@ -301,6 +301,7 @@ export const zSingleAdminDrop = z.object({
             z.object({
                 action: z.literal("shazam-results"),
                 dropId: z.string(),
+                songId: z.string(),
                 data: z.array(z.object({
                     title: z.string(),
                     artist: z.string(),
@@ -464,6 +465,7 @@ export const zAudit = z.union([
     z.object({
         action: z.literal("shazam-results"),
         dropId: z.string(),
+        songId: z.string(),
         data: z.array(z.object({
             title: z.string(),
             artist: z.string(),
@@ -863,10 +865,7 @@ export const zGetGenresByMusicResponse = z.object({
     secondary: z.object({}),
 });
 
-export const zGetIdByShazamByMusicResponse = z.union([
-    zShazamResults,
-    z.null(),
-]);
+export const zGetIdByShazamByMusicResponse = z.null();
 
 export const zGetSongsByMusicResponse = z.array(zSong);
 

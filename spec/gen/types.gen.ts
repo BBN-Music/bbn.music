@@ -251,6 +251,7 @@ export type Audit = {
 } | {
     action: "shazam-results";
     dropId: string;
+    songId: string;
     data: ShazamResults;
 };
 
@@ -1186,7 +1187,7 @@ export type GetIdByShazamByMusicResponses = {
     /**
      * Successful operation
      */
-    200: ShazamResults | null;
+    200: null;
 };
 
 export type GetIdByShazamByMusicResponse = GetIdByShazamByMusicResponses[keyof GetIdByShazamByMusicResponses];
