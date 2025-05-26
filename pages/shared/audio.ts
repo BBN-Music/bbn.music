@@ -3,7 +3,7 @@ import { asWebGenComponent, HTMLComponent } from "webgen/mod.ts";
 @asWebGenComponent("audio")
 export class AudioComponent extends HTMLComponent {
     audioElement: HTMLAudioElement;
-    constructor(blob: Blob) {
+    constructor(blob: Blob | MediaSource) {
         super();
         this.audioElement = document.createElement("audio");
         this.audioElement.controls = true;
@@ -25,6 +25,6 @@ export class AudioComponent extends HTMLComponent {
     }
 }
 
-export function Audio(blob: Blob) {
+export function Audio(blob: Blob | MediaSource) {
     return new AudioComponent(blob).make();
 }
