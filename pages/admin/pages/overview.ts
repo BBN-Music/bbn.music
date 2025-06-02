@@ -23,7 +23,7 @@ export const overviewPage = createPage(
     Content(
         Box(wallets.map((wallets) =>
             Entry(
-                BasicEntry("BBN Revenue", `£ ${Object.values(wallets.find((w) => w.user === "62ea6fa5321b3702e93ca21c")?.balance ?? {}).reduce((a, b) => a + b, 0)}`),
+                BasicEntry("BBN Revenue", `£ ${Object.values(wallets.find((w) => w.user === "62ea6fa5321b3702e93ca21c")?.balance ?? {}).reduce((a, b) => a + b, 0).toFixed(2)}`),
             )
         )),
     ),
