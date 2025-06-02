@@ -287,7 +287,7 @@ appendBody(
                                     API.getFullArtworkByDropByMusic({ path: { dropId: id.value } }).then(stupidErrorAlert).then((x) => {
                                         globalThis.open(URL.createObjectURL(x), "_blank");
                                     });
-                                }).setWidth("200px").setHeight("200px").setRadius("large")
+                                }).setWidth("200px").setHeight("200px").setRadius("large").setCssStyle("cursor", "pointer")
                             ),
                             Box(creationState.type.map((type) => {
                                 if (type === "PRIVATE") {
