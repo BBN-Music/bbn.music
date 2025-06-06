@@ -110,6 +110,7 @@ export type SingleAdminDrop = {
         groups: Array<ObjectId2>;
     };
     events?: Array<{
+        _id: ObjectId2;
         userId: ObjectId2;
         storeToken?: string;
         type: "auth" | "refresh-auth" | "action";
@@ -187,6 +188,7 @@ export type User = {
 export type ObjectId2 = string;
 
 export type UserHistoryEvent = {
+    _id: ObjectId2;
     userId: ObjectId2;
     storeToken?: string;
     type: "auth" | "refresh-auth" | "action";
@@ -1151,6 +1153,25 @@ export type GetGenresByMusicResponses = {
 };
 
 export type GetGenresByMusicResponse = GetGenresByMusicResponses[keyof GetGenresByMusicResponses];
+
+export type GetIdByProviderByPublishByMusicData = {
+    body?: never;
+    path: {
+        provider: string;
+        id: string;
+    };
+    query?: never;
+    url: "/api/@bbn/music/publish/{provider}/{id}";
+};
+
+export type GetIdByProviderByPublishByMusicResponses = {
+    /**
+     * Successful operation
+     */
+    200: boolean;
+};
+
+export type GetIdByProviderByPublishByMusicResponse = GetIdByProviderByPublishByMusicResponses[keyof GetIdByProviderByPublishByMusicResponses];
 
 export type GetSlugByShareByMusicData = {
     body?: {

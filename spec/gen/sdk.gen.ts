@@ -41,6 +41,8 @@ import type {
     GetIdByDropsByMusicResponse,
     GetIdByPayoutsByPaymentData,
     GetIdByPayoutsByPaymentResponse,
+    GetIdByProviderByPublishByMusicData,
+    GetIdByProviderByPublishByMusicResponse,
     GetIdByShareByDropsByMusicData,
     GetIdByShareByDropsByMusicResponse,
     GetIdByShazamByMusicData,
@@ -130,6 +132,7 @@ import {
     zGetIdByDropsByAdminResponse,
     zGetIdByDropsByMusicResponse,
     zGetIdByPayoutsByPaymentResponse,
+    zGetIdByProviderByPublishByMusicResponse,
     zGetIdByShareByDropsByMusicResponse,
     zGetIdByShazamByMusicResponse,
     zGetIdBySongsByMusicResponse,
@@ -776,6 +779,22 @@ export const getGenresByMusic = <ThrowOnError extends boolean = false>(options?:
             return await zGetGenresByMusicResponse.parseAsync(data);
         },
         url: "/api/@bbn/music/genres",
+        ...options,
+    });
+};
+
+export const getIdByProviderByPublishByMusic = <ThrowOnError extends boolean = false>(options: Options<GetIdByProviderByPublishByMusicData, ThrowOnError>) => {
+    return (options.client ?? _heyApiClient).get<GetIdByProviderByPublishByMusicResponse, unknown, ThrowOnError>({
+        security: [
+            {
+                scheme: "bearer",
+                type: "http",
+            },
+        ],
+        responseValidator: async (data) => {
+            return await zGetIdByProviderByPublishByMusicResponse.parseAsync(data);
+        },
+        url: "/api/@bbn/music/publish/{provider}/{id}",
         ...options,
     });
 };

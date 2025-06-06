@@ -185,6 +185,7 @@ export const zSingleAdminDrop = z.object({
         groups: z.array(z.string()),
     }).optional(),
     events: z.array(z.object({
+        _id: z.string(),
         userId: z.string(),
         storeToken: z.string().optional(),
         type: z.enum([
@@ -360,6 +361,7 @@ export const zUser = z.object({
 export const zObjectId2 = z.string();
 
 export const zUserHistoryEvent = z.object({
+    _id: zObjectId2,
     userId: zObjectId2,
     storeToken: z.string().optional(),
     type: z.enum([
@@ -864,6 +866,8 @@ export const zGetGenresByMusicResponse = z.object({
     primary: z.array(z.string()),
     secondary: z.object({}),
 });
+
+export const zGetIdByProviderByPublishByMusicResponse = z.boolean();
 
 export const zGetIdByShazamByMusicResponse = z.null();
 
