@@ -412,7 +412,7 @@ appendBody(
                                 }
                                 sheetStack.addSheet(ResponseDialog);
                             }),
-                        ).setEvenColumns(4).setGap(),
+                        ).setEvenColumns(5).setGap(),
                         Grid(
                             Grid(drops.map((val) => val ? val.map((x) => DropEntry(x, true)) : Spinner())),
                             Grid(
