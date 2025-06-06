@@ -391,7 +391,7 @@ appendBody(
                                 const data = await API.getIdByShazamByMusic({ path: { id: id.value } }).then(stupidErrorAlert);
                                 alert("Result: " + JSON.stringify(data));
                             }),
-                            SecondaryButton("Publish").onClick(async (e) => {
+                            SecondaryButton("Publish").onClick(async () => {
                                 const data = await API.getIdByProviderByPublishByMusic({ path: { id: id.value, provider: "ampsuite" } });
                                 alert("Result: " + JSON.stringify(data));
                             }),
