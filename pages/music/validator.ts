@@ -1,7 +1,7 @@
 import { z } from "zod/mod.ts";
 import { ArtistRef, zArtistRef, zSong } from "../../spec/mod.ts";
 import { sumOf } from "@std/collections/sum-of";
-import { ProWriArtist } from "shared/helper.ts";
+import { PriFeaArtist, ProWriArtist } from "shared/helper.ts";
 
 const pageOne = z.object({
     title: z.string().min(1, { message: "Title is required" }).max(100, { message: "Title is too long" }),
@@ -9,6 +9,9 @@ const pageOne = z.object({
         .refine((x) => x.some(({ type }) => type == "PRIMARY"), { message: "At least one primary artist is required" })
         .refine((x) => x.some(({ type }) => type == "SONGWRITER"), { message: "At least one songwriter is required" })
         .refine((x) => x.some(({ type }) => type == "PRODUCER"), { message: "At least one producer is required" })
+        .refine((x) => x.filter<PriFeaArtist>((artist): artist is PriFeaArtist => artist.type === "PRIMARY").every(({_id}, index, arr) => arr.findIndex(x => x._id === _id) === index), { message: "Duplicate Primary Artist" })
+        .refine((x) => x.filter<PriFeaArtist>((artist): artist is PriFeaArtist => artist.type === "FEATURING").every(({_id}, index, arr) => arr.findIndex(x => x._id === _id) === index), { message: "Duplicate Featuring Artist" })
+        .refine((x) => x.filter<PriFeaArtist>((artist): artist is PriFeaArtist => artist.type === "PRIMARY" || artist.type === "FEATURING").every(({_id}, index, arr) => arr.findIndex(x => x._id === _id) === index), { message: "Primary Artist cant be a Featuring Artist at the same time" })
         .refine((x) => x.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "SONGWRITER").every(({ name }) => name.split(" ").length > 1), { message: "Songwriters must have a first and last name" })
         .refine((x) => x.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "PRODUCER").every(({ name }) => name.split(" ").length > 1), { message: "Producers must have a first and last name" }),
     release: z.string().regex(/\d\d\d\d-\d\d-\d\d/, { message: "Not a date" }),
@@ -44,6 +47,9 @@ export const pageThree = pageTwo.and(z.object({
         .refine((songs) => songs.every(({ instrumental, explicit }) => !(instrumental && explicit)), "Can't have an explicit instrumental song")
         .refine((songs) => songs.every(({ title }) => title.length <= 100), { message: "Song Title is too long" })
         .refine((songs) => songs.every(({ artists }) => artists.length > 0), { message: "At least one artist is required" })
+        .refine((songs) => songs.every(({ artists }) => artists.filter<PriFeaArtist>((artist): artist is PriFeaArtist => artist.type === "PRIMARY").every(({_id}, index, arr) => arr.findIndex(x => x._id === _id) === index)), { message: "Duplicate Primary Artist" })
+        .refine((songs) => songs.every(({ artists }) => artists.filter<PriFeaArtist>((artist): artist is PriFeaArtist => artist.type === "FEATURING").every(({_id}, index, arr) => arr.findIndex(x => x._id === _id) === index)), { message: "Duplicate Featuring Artist" })
+        .refine((songs) => songs.every(({ artists }) => artists.filter<PriFeaArtist>((artist): artist is PriFeaArtist => artist.type === "PRIMARY" || artist.type === "FEATURING").every(({_id}, index, arr) => arr.findIndex(x => x._id === _id) === index)), { message: "Primary Artist cant be a Featuring Artist at the same time" })
         .refine((songs) => songs.every(({ artists }) => artists.some(({ type }) => type === "PRIMARY")), { message: "At least one primary artist is required" })
         .refine((songs) => songs.every(({ artists }) => artists.some(({ type }) => type === "SONGWRITER")), { message: "At least one songwriter is required" })
         .refine((songs) => songs.every(({ artists }) => artists.some(({ type }) => type === "PRODUCER")), { message: "At least one producer is required" })
