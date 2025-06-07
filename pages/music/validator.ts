@@ -13,7 +13,9 @@ const pageOne = z.object({
         .refine((x) => x.filter<PriFeaArtist>((artist): artist is PriFeaArtist => artist.type === "FEATURING").every(({_id}, index, arr) => arr.findIndex(x => x._id === _id) === index), { message: "Duplicate Featuring Artist" })
         .refine((x) => x.filter<PriFeaArtist>((artist): artist is PriFeaArtist => artist.type === "PRIMARY" || artist.type === "FEATURING").every(({_id}, index, arr) => arr.findIndex(x => x._id === _id) === index), { message: "Primary Artist cant be a Featuring Artist at the same time" })
         .refine((x) => x.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "SONGWRITER").every(({ name }) => name.split(" ").length > 1), { message: "Songwriters must have a first and last name" })
-        .refine((x) => x.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "PRODUCER").every(({ name }) => name.split(" ").length > 1), { message: "Producers must have a first and last name" }),
+        .refine((x) => x.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "PRODUCER").every(({ name }) => name.split(" ").length > 1), { message: "Producers must have a first and last name" })
+        .refine((x) => x.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "SONGWRITER").every(({ name }, index, arr) => arr.findIndex(y => y.name === name) === index), { message: "Duplicate Songwriter" })
+        .refine((x) => x.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "PRODUCER").every(({ name }, index, arr) => arr.findIndex(y => y.name === name) === index), { message: "Duplicate Producer" }),
     release: z.string().regex(/\d\d\d\d-\d\d-\d\d/, { message: "Not a date" }),
     language: z.string(),
     primaryGenre: z.string(),
@@ -54,7 +56,9 @@ export const pageThree = pageTwo.and(z.object({
         .refine((songs) => songs.every(({ artists }) => artists.some(({ type }) => type === "SONGWRITER")), { message: "At least one songwriter is required" })
         .refine((songs) => songs.every(({ artists }) => artists.some(({ type }) => type === "PRODUCER")), { message: "At least one producer is required" })
         .refine((songs) => songs.every(({ artists }) => artists.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "SONGWRITER").every(({ name }) => name.split(" ").length > 1)), { message: "Songwriters must have a first and last name" })
-        .refine((songs) => songs.every(({ artists }) => artists.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "PRODUCER").every(({ name }) => name.split(" ").length > 1)), { message: "Producers must have a first and last name" }),
+        .refine((songs) => songs.every(({ artists }) => artists.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "PRODUCER").every(({ name }) => name.split(" ").length > 1)), { message: "Producers must have a first and last name" })
+        .refine((songs) => songs.every(({ artists }) => artists.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "SONGWRITER").every(({ name }, index, arr) => arr.findIndex(y => y.name === name) === index)), { message: "Duplicate Songwriter" })
+        .refine((songs) => songs.every(({ artists }) => artists.filter<ProWriArtist>((artist): artist is ProWriArtist => artist.type === "PRODUCER").every(({ name }, index, arr) => arr.findIndex(y => y.name === name) === index)), { message: "Duplicate Producer" }),
     uploadingSongs: z.array(z.string()).max(0, { message: "Some uploads are still in progress" }),
 }))
     .refine((object) => (object.songs.length === 1 && object.songs[ 0 ].title === object.title) || object.songs.length > 1, { message: "Drop Title and Song Title must be the same for single song drops", path: [ "songs" ] })
