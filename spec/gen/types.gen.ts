@@ -110,7 +110,6 @@ export type SingleAdminDrop = {
         groups: Array<ObjectId2>;
     };
     events?: Array<{
-        _id: ObjectId2;
         userId: ObjectId2;
         storeToken?: string;
         type: "auth" | "refresh-auth" | "action";
@@ -188,7 +187,6 @@ export type User = {
 export type ObjectId2 = string;
 
 export type UserHistoryEvent = {
-    _id: ObjectId2;
     userId: ObjectId2;
     storeToken?: string;
     type: "auth" | "refresh-auth" | "action";
