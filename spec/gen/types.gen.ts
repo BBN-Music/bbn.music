@@ -110,6 +110,7 @@ export type SingleAdminDrop = {
         groups: Array<ObjectId2>;
     };
     events?: Array<{
+        _id: ObjectId2;
         userId: ObjectId2;
         storeToken?: string;
         type: "auth" | "refresh-auth" | "action";
@@ -187,6 +188,7 @@ export type User = {
 export type ObjectId2 = string;
 
 export type UserHistoryEvent = {
+    _id: ObjectId2;
     userId: ObjectId2;
     storeToken?: string;
     type: "auth" | "refresh-auth" | "action";
@@ -221,7 +223,7 @@ export type Audit = {
 } | {
     action: "drop-type-change";
     dropId: string;
-    type: DropType;
+    type?: DropType;
     data?: FullDrop;
 } | {
     action: "drop-create";
@@ -251,7 +253,7 @@ export type Audit = {
 } | {
     action: "shazam-results";
     dropId: string;
-    songId: string;
+    songId?: string;
     data: ShazamResults;
 };
 
