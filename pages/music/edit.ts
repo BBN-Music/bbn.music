@@ -395,6 +395,9 @@ appendBody(
                                 const data = await API.getIdByProviderByPublishByMusic({ path: { id: id.value, provider: "ampsuite" } });
                                 alert("Result: " + JSON.stringify(data));
                             }),
+                            SecondaryButton("Reenable Edit").onClick(() => {
+                                disabled.setValue(false);
+                            }),
                             PrimaryButton("Accept").onClick((e) => {
                                 if (!(e as PointerEvent).shiftKey) {
                                     const { error } = pageThree.safeParse(Object.fromEntries(Object.entries(creationState).map((entry) => [entry[0], entry[1].getValue()])));
@@ -412,7 +415,7 @@ appendBody(
                                 }
                                 sheetStack.addSheet(ResponseDialog);
                             }),
-                        ).setEvenColumns(5).setGap(),
+                        ).setEvenColumns(6).setGap(),
                         Grid(
                             Grid(drops.map((val) => val ? val.map((x) => DropEntry(x, true)) : Spinner())),
                             Grid(
