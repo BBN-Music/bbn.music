@@ -415,9 +415,8 @@ appendBody(
                                 }
                                 sheetStack.addSheet(ResponseDialog);
                             }),
-                        ).setEvenColumns(6).setGap(),
+                        ).setEvenColumns(isMobile ? 1 : 6).setGap(),
                         Grid(
-                            Grid(drops.map((val) => val ? val.map((x) => DropEntry(x, true)) : Spinner())),
                             Grid(
                                 Grid(
                                     userProfile.map((user) => user ? showProfilePicture(user as unknown as ProfileData) : Spinner()),
@@ -427,7 +426,8 @@ appendBody(
                                 ).setGap(),
                                 Grid(events.map((val) => val.map(userHistoryEventEntry))),
                             ).setHeight("min-content"),
-                        ).setEvenColumns(2).setGap(),
+                            Grid(drops.map((val) => val ? val.map((x) => DropEntry(x, true)) : Spinner())),
+                        ).setEvenColumns(isMobile ? 1 : 2).setGap(),
                     )
                     : Empty(),
             ).setGap().setMargin("1rem 0rem 0rem 0rem"),
