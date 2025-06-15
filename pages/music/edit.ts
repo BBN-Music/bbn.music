@@ -370,64 +370,68 @@ appendBody(
                 ErrorMessage(errorstate).setMargin("0.4rem 0 0 0"),
                 isAdmin
                     ? Grid(
-                        Grid(
-                            PrimaryButton("Reject").onClick(() => {
-                                action.setValue("REJECT");
-                                if (creationState.type.value === "TAKEDOWN_REQUESTED") {
-                                    selectedTemplate.setValue("Takedown Declined");
-                                } else {
-                                    selectedTemplate.setValue("Copyright bad");
-                                }
-                                sheetStack.addSheet(ResponseDialog);
-                            }),
-                            SecondaryButton("Change Droptype").onClick(() => {
-                                sheetStack.addSheet(
-                                    Grid(
-                                        DropDown(Object.values(zDropType.Values), creationState.type, "Change Type"),
-                                    ).setGap().setMargin("0rem 0rem 0rem 0rem"),
-                                );
-                            }),
-                            SecondaryButton("Request Shazam").onPromiseClick(async () => {
-                                const data = await API.getIdByShazamByMusic({ path: { id: id.value } }).then(stupidErrorAlert);
-                                alert("Result: " + JSON.stringify(data));
-                            }),
-                            SecondaryButton("Publish").onClick(async () => {
-                                const data = await API.getIdByProviderByPublishByMusic({ path: { id: id.value, provider: "ampsuite" } });
-                                alert("Result: " + JSON.stringify(data));
-                            }),
-                            SecondaryButton("Reenable Edit").onClick(() => {
-                                disabled.setValue(false);
-                            }),
-                            PrimaryButton("Accept").onClick((e) => {
-                                if (!(e as PointerEvent).shiftKey) {
-                                    const { error } = pageThree.safeParse(Object.fromEntries(Object.entries(creationState).map((entry) => [entry[0], entry[1].getValue()])));
-                                    if (error) {
-                                        console.error(error);
-                                        errorstate.setValue(`${error.issues[0].path[0]}: ${error.issues[0].message}`);
-                                        return;
+                        Box(isMobile.map((isMobile) =>
+                            Grid(
+                                PrimaryButton("Reject").onClick(() => {
+                                    action.setValue("REJECT");
+                                    if (creationState.type.value === "TAKEDOWN_REQUESTED") {
+                                        selectedTemplate.setValue("Takedown Declined");
+                                    } else {
+                                        selectedTemplate.setValue("Copyright bad");
                                     }
-                                }
-                                action.setValue("ACCEPT");
-                                if (creationState.type.value === "TAKEDOWN_REQUESTED") {
-                                    selectedTemplate.setValue("Takedown Accepted");
-                                } else {
-                                    selectedTemplate.setValue("Accepted");
-                                }
-                                sheetStack.addSheet(ResponseDialog);
-                            }),
-                        ).setEvenColumns(isMobile ? 1 : 6).setGap(),
-                        Grid(
+                                    sheetStack.addSheet(ResponseDialog);
+                                }),
+                                SecondaryButton("Change Droptype").onClick(() => {
+                                    sheetStack.addSheet(
+                                        Grid(
+                                            DropDown(Object.values(zDropType.Values), creationState.type, "Change Type"),
+                                        ).setGap().setMargin("0rem 0rem 0rem 0rem"),
+                                    );
+                                }),
+                                SecondaryButton("Request Shazam").onPromiseClick(async () => {
+                                    const data = await API.getIdByShazamByMusic({ path: { id: id.value } }).then(stupidErrorAlert);
+                                    alert("Result: " + JSON.stringify(data));
+                                }),
+                                SecondaryButton("Publish").onClick(async () => {
+                                    const data = await API.getIdByProviderByPublishByMusic({ path: { id: id.value, provider: "ampsuite" } });
+                                    alert("Result: " + JSON.stringify(data));
+                                }),
+                                SecondaryButton("Reenable Edit").onClick(() => {
+                                    disabled.setValue(false);
+                                }),
+                                PrimaryButton("Accept").onClick((e) => {
+                                    if (!(e as PointerEvent).shiftKey) {
+                                        const { error } = pageThree.safeParse(Object.fromEntries(Object.entries(creationState).map((entry) => [entry[0], entry[1].getValue()])));
+                                        if (error) {
+                                            console.error(error);
+                                            errorstate.setValue(`${error.issues[0].path[0]}: ${error.issues[0].message}`);
+                                            return;
+                                        }
+                                    }
+                                    action.setValue("ACCEPT");
+                                    if (creationState.type.value === "TAKEDOWN_REQUESTED") {
+                                        selectedTemplate.setValue("Takedown Accepted");
+                                    } else {
+                                        selectedTemplate.setValue("Accepted");
+                                    }
+                                    sheetStack.addSheet(ResponseDialog);
+                                }),
+                            ).setEvenColumns(isMobile ? 1 : 6).setGap()
+                        )),
+                        Box(isMobile.map((isMobile) =>
                             Grid(
                                 Grid(
-                                    userProfile.map((user) => user ? showProfilePicture(user as unknown as ProfileData) : Spinner()),
-                                    Box(userProfile.map((user) => user ? Label(user.profile.username) : Spinner())),
-                                    Box(userProfile.map((user) => user ? Label(user.profile.email) : Spinner())),
-                                    Box(userProfile.map((user) => user ? Label(user._id as string) : Spinner())),
-                                ).setGap(),
-                                Grid(events.map((val) => val.map(userHistoryEventEntry))),
-                            ).setHeight("min-content"),
-                            Grid(drops.map((val) => val ? val.map((x) => DropEntry(x, true)) : Spinner())),
-                        ).setEvenColumns(isMobile ? 1 : 2).setGap(),
+                                    Grid(
+                                        userProfile.map((user) => user ? showProfilePicture(user as unknown as ProfileData) : Spinner()),
+                                        Box(userProfile.map((user) => user ? Label(user.profile.username) : Spinner())),
+                                        Box(userProfile.map((user) => user ? Label(user.profile.email) : Spinner())),
+                                        Box(userProfile.map((user) => user ? Label(user._id as string) : Spinner())),
+                                    ).setGap(),
+                                    Grid(events.map((val) => val.map(userHistoryEventEntry))),
+                                ).setHeight("min-content"),
+                                Grid(drops.map((val) => val ? val.map((x) => DropEntry(x, true)) : Spinner())),
+                            ).setEvenColumns(isMobile ? 1 : 2).setGap()
+                        )),
                     )
                     : Empty(),
             ).setGap().setMargin("1rem 0rem 0rem 0rem"),
